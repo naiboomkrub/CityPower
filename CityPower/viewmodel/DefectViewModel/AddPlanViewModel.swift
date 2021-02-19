@@ -7,9 +7,20 @@
 //
 
 import Foundation
+import RxSwift
+import RxCocoa
 
 class AddPlanViewModel {
     
+    let formatterDay: DateFormatter = {
+         let formatter = DateFormatter()
+         formatter.dateFormat = "dd/MM/yyyy"
+         return formatter
+     }()
     
+    let defectDate = BehaviorRelay(value: "")
     
+    init() {
+        defectDate.accept(formatterDay.string(from: Date()))
+    }
 }

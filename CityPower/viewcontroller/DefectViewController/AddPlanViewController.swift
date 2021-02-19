@@ -8,16 +8,138 @@
 
 import Foundation
 import CardParts
+import RxCocoa
+import RxSwift
 
 class AddPlanViewController: CardsViewController {
     
     var viewModel: AddPlanViewModel!
+    var addPlanController: AddPlanController!
         
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let cards: [CardController] = []
+        let cards: [CardController] = [addPlanController]
          
         loadCards(cards: cards)
     }
+}
+
+
+class AddPlanController: CardPartsViewController {
+    
+    var viewModel: AddPlanViewModel!
+        
+    let planTitle = CardPartTextView(type: .normal)
+    let planTitleField = CardPartTextField(format: .none)
+    let currentDate = CardPartTextView(type: .normal)
+    let dateView = CardPartTextView(type: .normal)
+    
+    let titleStack = CardPartStackView()
+    let planStack = CardPartStackView()
+    let dateStack = CardPartStackView()
+    
+    let selectPlan = CardPartButtonView()
+    let saveButton = CardPartButtonView()
+                
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        setupHideKeyboardOnTap()
+
+        planTitle.text = "Plan Title"
+        currentDate.text = "Date"
+
+        planTitle.textColor = .blueCity
+        currentDate.textColor = .blueCity
+        dateView.textColor = .blueCity
+        
+        saveButton.setTitle("Save", for: .normal)
+        saveButton.setTitleColor(.blueCity, for: .normal)
+        saveButton.setTitleColor(.general, for: .disabled)
+        saveButton.titleLabel?.font = UIFont(name: "SukhumvitSet-Bold", size: CGFloat(18))!
+        saveButton.contentHorizontalAlignment = .center
+
+        planTitleField.font = UIFont(name: "SukhumvitSet-Bold", size: CGFloat(18))!
+        planTitleField.keyboardType = .default
+        planTitleField.placeholder = "กรอกชื่อแบบ"
+        planTitleField.textColor = .black
+        planTitleField.smartInsertDeleteType = UITextSmartInsertDeleteType.no
+        
+        selectPlan.setTitle("Select Location 🔘", for: .normal)
+        selectPlan.setTitleColor(.blueCity, for: .normal)
+        selectPlan.titleLabel?.font = UIFont(name: "SukhumvitSet-Bold", size: CGFloat(18))!
+        
+        [dateStack, titleStack].forEach { stack in
+            stack.axis = .horizontal
+            stack.spacing = 50
+            stack.distribution = .equalSpacing
+            stack.isLayoutMarginsRelativeArrangement = true
+            stack.layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+            stack.pinBackground(stack.backgroundView, to: stack)
+        }
+        
+        planStack.axis = .vertical
+        planStack.spacing = 20
+        planStack.distribution = .equalSpacing
+        planStack.isLayoutMarginsRelativeArrangement = true
+        planStack.layoutMargins = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
+        planStack.pinBackground(planStack.backgroundView, to: planStack)
+        
+        [currentDate, dateView].forEach { view in
+            dateStack.addArrangedSubview(view)}
+        
+        [planTitle, planTitleField].forEach { view in
+            titleStack.addArrangedSubview(view)}
+        
+        [dateStack, CardPartSeparatorView(), titleStack, CardPartSeparatorView(),
+         selectPlan, CardPartSeparatorView(), saveButton].forEach { view in
+            planStack.addArrangedSubview(view)}
+        
+        viewModel.defectDate.asObservable().bind(to: dateView.rx.text).disposed(by: bag)
+        
+//        planTitleField.rx.text.subscribe(onNext: { [unowned self] title in
+//            if let title = title {
+//                self.viewModel.commentBody.accept(title)
+//            }
+//        }).disposed(by: bag)
+        
+//        planTitleField.rx.controlEvent(.editingChanged).subscribe(onNext: { [unowned self] in
+//            if let title = self.commentTitleField.text {
+//                self.viewModel.commentTopic.accept(title)
+//            }
+//        }).disposed(by: bag)
+//
+
+        saveButton.rx.tap.bind(onNext: { [weak self] in
+
+            let alert = UIAlertController(title: "Are you Sure ?", message: "", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Confirm", style: UIAlertAction.Style.default, handler: { action in
+                //self?.viewModel.saveComment()
+            }))
+            alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel, handler: nil))
+
+            self?.present(alert, animated: true, completion: nil)
+
+        }).disposed(by: bag)
+      
+        let desValidation = planTitleField
+            .rx.text.orEmpty
+            .map({ $0.count > 0 })
+            .share(replay: 1)
+        
+//        let topicValidation = commentTitleField
+//            .rx.text.orEmpty
+//            .map({ $0.count > 0 })
+//            .share(replay: 1)
+//
+//        let saveEnabled = Observable.combineLatest(desValidation, topicValidation) { $0 && $1 }.share(replay: 1)
+        
+        desValidation
+            .bind(to: saveButton.rx.isEnabled)
+            .disposed(by: bag)
+        
+        setupCardParts([planStack])
+    }
+    
 }

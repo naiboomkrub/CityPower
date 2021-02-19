@@ -290,8 +290,11 @@ func viewController(forViewModel viewModel: Any) -> UIViewController? {
   
   case let viewModel as AddPlanViewModel:
     let viewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "AddPlanViewController") as? AddPlanViewController
-    viewController?.title = "Plan Creator"
+    let addPlanController = AddPlanController()
+    addPlanController.viewModel = viewModel
+    viewController?.addPlanController = addPlanController
     viewController?.viewModel = viewModel
+    viewController?.title = "Plan Creator"
     
     let navi =  UINavigationController.init(rootViewController: viewController!)
     return navi
