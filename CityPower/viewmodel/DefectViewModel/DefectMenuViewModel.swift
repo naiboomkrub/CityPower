@@ -51,6 +51,7 @@ class DefectMenuViewModel {
     
     enum Event {
         case SelectArea
+        case AddPlan
      }
     
     var dataSource = BehaviorRelay<[DefectGroup]>(value: [])
@@ -102,5 +103,9 @@ class DefectMenuViewModel {
     
     func selectedArea() {
         events.onNext(.SelectArea)
+    }
+    
+    func addPlan() {
+        events.onNext(.AddPlan)
     }
 }

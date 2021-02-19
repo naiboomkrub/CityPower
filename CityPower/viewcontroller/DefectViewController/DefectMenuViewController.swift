@@ -116,7 +116,7 @@ class DefectMenuViewController: UIViewController, UITableViewDelegate {
         }
         
         logo.rx.tap.bind(onNext: { [weak self] in
-            print("BOOM")
+            self?.viewModel.addPlan()
         }).disposed(by: tapBag)
         
         viewModel.reloadData()

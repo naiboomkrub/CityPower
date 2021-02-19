@@ -287,6 +287,14 @@ func viewController(forViewModel viewModel: Any) -> UIViewController? {
     viewController?.viewModel = viewModel
     return viewController
     
+  // MARK: - AddPlanViewModel
+  
+  case let viewModel as AddPlanViewModel:
+    let viewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "AddPlanViewController") as? AddPlanViewController
+    viewController?.title = "Defect Creator"
+    viewController?.viewModel = viewModel
+    return viewController
+    
   // MARK: - DashBoardViewModel
   
   case let viewModel as DashBoardViewModel:

@@ -72,6 +72,8 @@
 		1A25CB6125CE6F5B00A7EC93 /* Promise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A25CB5F25CE6F5B00A7EC93 /* Promise.swift */; };
 		1A25CB6225CE6F5B00A7EC93 /* ServiceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A25CB6025CE6F5B00A7EC93 /* ServiceFactory.swift */; };
 		1A25CB6A25CE95F400A7EC93 /* BaseUiKitRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A25CB6925CE95F400A7EC93 /* BaseUiKitRouter.swift */; };
+		1A26EE8F25DFC0D200E576E7 /* AddPlanViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A26EE8E25DFC0D200E576E7 /* AddPlanViewController.swift */; };
+		1A26EE9425DFC0E200E576E7 /* AddPlanViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A26EE9325DFC0E200E576E7 /* AddPlanViewModel.swift */; };
 		1A275E8B25C7AEC000805C7C /* DefectDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A275E8A25C7AEC000805C7C /* DefectDetailViewController.swift */; };
 		1A275E9025C7B6E000805C7C /* DefectDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A275E8F25C7B6E000805C7C /* DefectDetailViewModel.swift */; };
 		1A275E9825C7BDAA00805C7C /* DefectListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A275E9725C7BDAA00805C7C /* DefectListViewController.swift */; };
@@ -268,6 +270,8 @@
 		1A25CB5F25CE6F5B00A7EC93 /* Promise.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Promise.swift; sourceTree = "<group>"; };
 		1A25CB6025CE6F5B00A7EC93 /* ServiceFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServiceFactory.swift; sourceTree = "<group>"; };
 		1A25CB6925CE95F400A7EC93 /* BaseUiKitRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseUiKitRouter.swift; sourceTree = "<group>"; };
+		1A26EE8E25DFC0D200E576E7 /* AddPlanViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPlanViewController.swift; sourceTree = "<group>"; };
+		1A26EE9325DFC0E200E576E7 /* AddPlanViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPlanViewModel.swift; sourceTree = "<group>"; };
 		1A275E8A25C7AEC000805C7C /* DefectDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefectDetailViewController.swift; sourceTree = "<group>"; };
 		1A275E8F25C7B6E000805C7C /* DefectDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefectDetailViewModel.swift; sourceTree = "<group>"; };
 		1A275E9725C7BDAA00805C7C /* DefectListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefectListViewController.swift; sourceTree = "<group>"; };
@@ -563,6 +567,7 @@
 				1A37CC6C25D4036B00D6F0AD /* RootAddDefectViewModel.swift */,
 				1A37CC5A25D3E61700D6F0AD /* AddDefectViewModel.swift */,
 				1A843BF125DA5E0000D120F9 /* AddCommentViewModel.swift */,
+				1A26EE9325DFC0E200E576E7 /* AddPlanViewModel.swift */,
 				1A37CC7C25D4051000D6F0AD /* SelectPositionViewModel.swift */,
 				1A233A3B25C18174004DF050 /* DefectMenuViewModel.swift */,
 				1A275E8F25C7B6E000805C7C /* DefectDetailViewModel.swift */,
@@ -578,6 +583,7 @@
 				1AA6018C25BEB772000841B6 /* DefectViewController.swift */,
 				1A233A3625C180BA004DF050 /* DefectMenuViewController.swift */,
 				1A37CC6225D3E62200D6F0AD /* AddDefectViewController.swift */,
+				1A26EE8E25DFC0D200E576E7 /* AddPlanViewController.swift */,
 				1A843BF625DA5E4600D120F9 /* AddCommentViewController.swift */,
 				1A37CC7125D4050200D6F0AD /* SelectPositionViewController.swift */,
 				1A275E8A25C7AEC000805C7C /* DefectDetailViewController.swift */,
@@ -1130,6 +1136,7 @@
 				1A25CAF925CE6EEA00A7EC93 /* PhotoTweakView.swift in Sources */,
 				1A233A3725C180BA004DF050 /* DefectMenuViewController.swift in Sources */,
 				31FA69D824F53AB800FBC9A0 /* CardPartsBoomTheme.swift in Sources */,
+				1A26EE9425DFC0E200E576E7 /* AddPlanViewModel.swift in Sources */,
 				1A25CADF25CE6D3200A7EC93 /* CameraOutputView.swift in Sources */,
 				31D546BE25774D48001908FB /* EventTasks.swift in Sources */,
 				1A843BF725DA5E4600D120F9 /* AddCommentViewController.swift in Sources */,
@@ -1160,6 +1167,7 @@
 				31BC825925807FEC000156B1 /* ChooseLessonViewController.swift in Sources */,
 				31B7EF9025ADC53000CC2C44 /* InstallHistoryViewModel.swift in Sources */,
 				1AA6018525BEA872000841B6 /* KnowledgeMenuViewModel.swift in Sources */,
+				1A26EE8F25DFC0D200E576E7 /* AddPlanViewController.swift in Sources */,
 				31AAE9222574A46F003EAAC8 /* LessonViewModel.swift in Sources */,
 				31B7EF8025ADA5FA00CC2C44 /* InstallHistories.swift in Sources */,
 				1A37CC5B25D3E61700D6F0AD /* AddDefectViewModel.swift in Sources */,

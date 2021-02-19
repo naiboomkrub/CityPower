@@ -38,6 +38,10 @@ class RootDefectViewModel {
         return self.createAddCommentViewModel()
     }()
     
+    lazy private(set) var addPlanViewModel: AddPlanViewModel = {
+        return self.createAddPlanViewModel()
+    }()
+    
     lazy private(set) var defectDetailViewModel: DefectDetailViewModel = {
         return self.createDefectDetailViewModel()
     }()
@@ -93,6 +97,13 @@ class RootDefectViewModel {
         let defectViewModel = DefectViewModel()
         
         return defectViewModel
+    }
+    
+    func createAddPlanViewModel() -> AddPlanViewModel {
+    
+        let addPlanViewModel = AddPlanViewModel()
+        
+        return addPlanViewModel
     }
     
     func createAddCommentViewModel() -> AddCommentViewModel {
@@ -216,6 +227,8 @@ class RootDefectViewModel {
             switch event {
             case .SelectArea:
                 self?.areaSelected()
+            case .AddPlan:
+                self?.addPlan()
             }
             }).disposed(by: disposeBag)
         
@@ -236,6 +249,10 @@ class RootDefectViewModel {
     
     private func addDefect() {
         self.defectStackActions.onNext(.present(viewModel: self.createRootAddDefectViewModel(), animated: true))
+    }
+    
+    private func addPlan() {
+        self.defectStackActions.onNext(.present(viewModel: self.addPlanViewModel, animated: true))
     }
     
     private func addComment() {
