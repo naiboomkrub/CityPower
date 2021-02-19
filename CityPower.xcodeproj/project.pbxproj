@@ -74,6 +74,7 @@
 		1A25CB6A25CE95F400A7EC93 /* BaseUiKitRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A25CB6925CE95F400A7EC93 /* BaseUiKitRouter.swift */; };
 		1A26EE8F25DFC0D200E576E7 /* AddPlanViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A26EE8E25DFC0D200E576E7 /* AddPlanViewController.swift */; };
 		1A26EE9425DFC0E200E576E7 /* AddPlanViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A26EE9325DFC0E200E576E7 /* AddPlanViewModel.swift */; };
+		1A26EEAA25DFC72000E576E7 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1A26EEA925DFC72000E576E7 /* GoogleService-Info.plist */; };
 		1A275E8B25C7AEC000805C7C /* DefectDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A275E8A25C7AEC000805C7C /* DefectDetailViewController.swift */; };
 		1A275E9025C7B6E000805C7C /* DefectDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A275E8F25C7B6E000805C7C /* DefectDetailViewModel.swift */; };
 		1A275E9825C7BDAA00805C7C /* DefectListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A275E9725C7BDAA00805C7C /* DefectListViewController.swift */; };
@@ -86,7 +87,6 @@
 		1A37CB8D25C404CA002815B6 /* GenerateProcess.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A37CB8C25C404CA002815B6 /* GenerateProcess.swift */; };
 		1A37CB9525C43EA0002815B6 /* DataTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A37CB9425C43EA0002815B6 /* DataTest.swift */; };
 		1A37CC1125D392D900D6F0AD /* DefectDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A37CC1025D392D900D6F0AD /* DefectDetail.swift */; };
-		1A37CC1625D3B8CF00D6F0AD /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1A37CC1525D3B8CF00D6F0AD /* GoogleService-Info.plist */; };
 		1A37CC5B25D3E61700D6F0AD /* AddDefectViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A37CC5A25D3E61700D6F0AD /* AddDefectViewModel.swift */; };
 		1A37CC6325D3E62200D6F0AD /* AddDefectViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A37CC6225D3E62200D6F0AD /* AddDefectViewController.swift */; };
 		1A37CC6825D4035400D6F0AD /* RootAddDefectController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A37CC6725D4035400D6F0AD /* RootAddDefectController.swift */; };
@@ -272,6 +272,7 @@
 		1A25CB6925CE95F400A7EC93 /* BaseUiKitRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseUiKitRouter.swift; sourceTree = "<group>"; };
 		1A26EE8E25DFC0D200E576E7 /* AddPlanViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPlanViewController.swift; sourceTree = "<group>"; };
 		1A26EE9325DFC0E200E576E7 /* AddPlanViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPlanViewModel.swift; sourceTree = "<group>"; };
+		1A26EEA925DFC72000E576E7 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		1A275E8A25C7AEC000805C7C /* DefectDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefectDetailViewController.swift; sourceTree = "<group>"; };
 		1A275E8F25C7B6E000805C7C /* DefectDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefectDetailViewModel.swift; sourceTree = "<group>"; };
 		1A275E9725C7BDAA00805C7C /* DefectListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefectListViewController.swift; sourceTree = "<group>"; };
@@ -284,7 +285,6 @@
 		1A37CB8C25C404CA002815B6 /* GenerateProcess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenerateProcess.swift; sourceTree = "<group>"; };
 		1A37CB9425C43EA0002815B6 /* DataTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataTest.swift; sourceTree = "<group>"; };
 		1A37CC1025D392D900D6F0AD /* DefectDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefectDetail.swift; sourceTree = "<group>"; };
-		1A37CC1525D3B8CF00D6F0AD /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		1A37CC5A25D3E61700D6F0AD /* AddDefectViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDefectViewModel.swift; sourceTree = "<group>"; };
 		1A37CC6225D3E62200D6F0AD /* AddDefectViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDefectViewController.swift; sourceTree = "<group>"; };
 		1A37CC6725D4035400D6F0AD /* RootAddDefectController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootAddDefectController.swift; sourceTree = "<group>"; };
@@ -565,6 +565,7 @@
 			children = (
 				31AAE92B2574A787003EAAC8 /* RootDefectViewModel.swift */,
 				1A37CC6C25D4036B00D6F0AD /* RootAddDefectViewModel.swift */,
+				1AA6019425BEB793000841B6 /* DefectViewModel.swift */,
 				1A37CC5A25D3E61700D6F0AD /* AddDefectViewModel.swift */,
 				1A843BF125DA5E0000D120F9 /* AddCommentViewModel.swift */,
 				1A26EE9325DFC0E200E576E7 /* AddPlanViewModel.swift */,
@@ -572,7 +573,6 @@
 				1A233A3B25C18174004DF050 /* DefectMenuViewModel.swift */,
 				1A275E8F25C7B6E000805C7C /* DefectDetailViewModel.swift */,
 				1A275E9F25C7BDDD00805C7C /* DefectListViewModel.swift */,
-				1AA6019425BEB793000841B6 /* DefectViewModel.swift */,
 			);
 			path = DefectViewModel;
 			sourceTree = "<group>";
@@ -776,12 +776,12 @@
 				31DEA48A24F3B1EA00D98A95 /* Main.storyboard */,
 				31DEA48D24F3B1EA00D98A95 /* Assets.xcassets */,
 				31DEA49224F3B1EA00D98A95 /* Info.plist */,
-				1A37CC1525D3B8CF00D6F0AD /* GoogleService-Info.plist */,
 				31FA69D724F53AB800FBC9A0 /* CardPartsBoomTheme.swift */,
 				3172316224F8C6B90020EBB6 /* Launch Screen.storyboard */,
 				31FA69D924F53B4900FBC9A0 /* UIColor.swift */,
 				31DB8BF124F63B8A001E33EE /* Global.swift */,
 				319CBD29257636BF00141CCE /* CityPower-Bridging-Header.h */,
+				1A26EEA925DFC72000E576E7 /* GoogleService-Info.plist */,
 			);
 			path = CityPower;
 			sourceTree = "<group>";
@@ -992,7 +992,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1A37CC1625D3B8CF00D6F0AD /* GoogleService-Info.plist in Resources */,
+				1A26EEAA25DFC72000E576E7 /* GoogleService-Info.plist in Resources */,
 				31DEA48C24F3B1EA00D98A95 /* Main.storyboard in Resources */,
 				31DEA48E24F3B1EA00D98A95 /* Assets.xcassets in Resources */,
 				318766DA250BF614000B43F4 /* SukhumvitSet-Text.ttf in Resources */,

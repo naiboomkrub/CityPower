@@ -30,62 +30,6 @@ extension CardPartStackView {
     }
 }
 
-extension UIViewController: UIImagePickerControllerDelegate & UINavigationControllerDelegate  {
-    
-    func didTapOnImageView() {
-        showAlert()
-    }
-    
-    func showAlert() {
-
-        let alert = UIAlertController(title: "Image Selection", message: "Where you want to pick the image?", preferredStyle: .actionSheet)
-        alert.addAction(UIAlertAction(title: "Camera", style: .default, handler: {(action: UIAlertAction) in
-            self.getImage(fromSourceType: .camera)
-        }))
-        alert.addAction(UIAlertAction(title: "Photo Album", style: .default, handler: {(action: UIAlertAction) in
-            self.getImage(fromSourceType: .photoLibrary)
-        }))
-        alert.addAction(UIAlertAction(title: "Cancel", style: .destructive, handler: nil))
-        alert.pruneNegativeWidthConstraints()
-        self.present(alert, animated: true, completion: nil)
-    }
-    
-    private func getImage(fromSourceType sourceType: UIImagePickerController.SourceType) {
-        
-        if UIImagePickerController.isSourceTypeAvailable(sourceType) {
-        
-            let imagePickerController = UIImagePickerController()
-            imagePickerController.delegate = self
-            imagePickerController.sourceType = sourceType
-            if sourceType == .camera {
-                imagePickerController.allowsEditing = false
-            } else {
-                imagePickerController.allowsEditing = true
-            }
-            self.present(imagePickerController, animated: true, completion: nil)
-            
-        } else {
-            let alert  = UIAlertController(title: "Warning", message: "You don't have permission.", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-            self.present(alert, animated: true, completion: nil)
-        }
-    }
-    
-    public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-
-        //self.dismiss(animated: true) { [weak self] in
-
-           // guard let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage else { return }
-
-      //  }
-    }
-    
-    public func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-        picker.dismiss(animated: true, completion: nil)
-    }
-}
-
-
 extension UIAlertController {
     func pruneNegativeWidthConstraints() {
         for subView in self.view.subviews {

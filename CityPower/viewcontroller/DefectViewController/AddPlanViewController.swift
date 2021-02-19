@@ -52,7 +52,7 @@ class AddPlanController: CardPartsViewController {
 
         planTitle.textColor = .blueCity
         currentDate.textColor = .blueCity
-        dateView.textColor = .blueCity
+        dateView.textColor = .general2
         
         saveButton.setTitle("Save", for: .normal)
         saveButton.setTitleColor(.blueCity, for: .normal)
@@ -66,7 +66,7 @@ class AddPlanController: CardPartsViewController {
         planTitleField.textColor = .black
         planTitleField.smartInsertDeleteType = UITextSmartInsertDeleteType.no
         
-        selectPlan.setTitle("Select Location 🔘", for: .normal)
+        selectPlan.setTitle("Select Plan 🔘", for: .normal)
         selectPlan.setTitleColor(.blueCity, for: .normal)
         selectPlan.titleLabel?.font = UIFont(name: "SukhumvitSet-Bold", size: CGFloat(18))!
         
@@ -97,19 +97,15 @@ class AddPlanController: CardPartsViewController {
             planStack.addArrangedSubview(view)}
         
         viewModel.defectDate.asObservable().bind(to: dateView.rx.text).disposed(by: bag)
+        selectPlan.rx.tap.bind(onNext: { [weak self] in
+            self?.didTapOnImageView()
+        }).disposed(by: bag)
         
-//        planTitleField.rx.text.subscribe(onNext: { [unowned self] title in
-//            if let title = title {
-//                self.viewModel.commentBody.accept(title)
-//            }
-//        }).disposed(by: bag)
-        
-//        planTitleField.rx.controlEvent(.editingChanged).subscribe(onNext: { [unowned self] in
-//            if let title = self.commentTitleField.text {
-//                self.viewModel.commentTopic.accept(title)
-//            }
-//        }).disposed(by: bag)
-//
+        planTitleField.rx.controlEvent(.editingChanged).subscribe(onNext: { [unowned self] in
+            if let title = self.planTitleField.text {
+                self.viewModel.planName.accept(title)
+            }
+        }).disposed(by: bag)
 
         saveButton.rx.tap.bind(onNext: { [weak self] in
 
@@ -142,4 +138,55 @@ class AddPlanController: CardPartsViewController {
         setupCardParts([planStack])
     }
     
+}
+
+
+extension AddPlanController: UIImagePickerControllerDelegate & UINavigationControllerDelegate  {
+    
+    func didTapOnImageView() {
+        showAlert()
+    }
+    
+    func showAlert() {
+
+        let alert = UIAlertController(title: "Image Selection", message: "Please Select Image", preferredStyle: .actionSheet)
+
+        alert.addAction(UIAlertAction(title: "Photo Album", style: .default, handler: {(action: UIAlertAction) in
+            self.getImage(fromSourceType: .photoLibrary)
+        }))
+        alert.addAction(UIAlertAction(title: "Cancel", style: .destructive, handler: nil))
+        alert.pruneNegativeWidthConstraints()
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    private func getImage(fromSourceType sourceType: UIImagePickerController.SourceType) {
+        
+        if UIImagePickerController.isSourceTypeAvailable(sourceType) {
+        
+            let imagePickerController = UIImagePickerController()
+            imagePickerController.delegate = self
+            imagePickerController.sourceType = sourceType
+            imagePickerController.allowsEditing = true
+
+            self.present(imagePickerController, animated: true, completion: nil)
+            
+        } else {
+            let alert  = UIAlertController(title: "Warning", message: "You don't have permission.", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            self.present(alert, animated: true, completion: nil)
+        }
+    }
+    
+    public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+
+        //self.dismiss(animated: true) { [weak self] in
+
+           // guard let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage else { return }
+
+      //  }
+    }
+    
+    public func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        picker.dismiss(animated: true, completion: nil)
+    }
 }

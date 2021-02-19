@@ -19,6 +19,7 @@ class AddPlanViewModel {
      }()
     
     let defectDate = BehaviorRelay(value: "")
+    let planName = BehaviorRelay(value: "")
     
     init() {
         defectDate.accept(formatterDay.string(from: Date()))
