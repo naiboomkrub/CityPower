@@ -252,7 +252,6 @@ func viewController(forViewModel viewModel: Any) -> UIViewController? {
     viewController?.viewModel = viewModel
     
     let navi =  UINavigationController.init(rootViewController: viewController!)
-    
     return navi
     
   // MARK: - RootAddDefectViewModel
@@ -291,10 +290,12 @@ func viewController(forViewModel viewModel: Any) -> UIViewController? {
   
   case let viewModel as AddPlanViewModel:
     let viewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "AddPlanViewController") as? AddPlanViewController
-    viewController?.title = "Defect Creator"
+    viewController?.title = "Plan Creator"
     viewController?.viewModel = viewModel
-    return viewController
     
+    let navi =  UINavigationController.init(rootViewController: viewController!)
+    return navi
+
   // MARK: - DashBoardViewModel
   
   case let viewModel as DashBoardViewModel:
