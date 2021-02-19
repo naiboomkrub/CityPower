@@ -18,8 +18,6 @@ class AddDefectViewModel {
         case AddLocation
      }
     
-    private var ref: DocumentReference? = nil
-    
     let events = PublishSubject<Event>()
     let defectDate = BehaviorRelay(value: "")
     let dueDate = BehaviorRelay(value: "")
@@ -40,15 +38,15 @@ class AddDefectViewModel {
     
     func saveDefect() {
         
-        let imageStruct = DefectDetail(defectNumber: "BOOM", defectTitle: "BOOM", defectImage: [ImageStruct(image: "BOOM", timeStamp: "BOOM", fileName: "BOOM")], defectComment: [CommentStruct(title: "BOOM", timeStamp: "BOOM")], finish: false, system: "General", timeStamp: "BOOM", dueDate: "BOOM", positionX: 123, positionY: 123)
+        let dataStruct = DefectDetail(defectNumber: "BOOM", defectTitle: defectTitle.value, defectImage: [], defectComment: [], finish: false, system: "General", timeStamp: defectDate.value, dueDate: dueDate.value, positionX: Double(resultPosition.value.x), positionY: Double(resultPosition.value.y))
         
         do {
-            let jsonData = try imageStruct.jsonData()
+            let jsonData = try dataStruct.jsonData()
             let json = try JSONSerialization.jsonObject(with: jsonData, options: [])
             
-            guard let dictionary = json as? [String : Any] else { return }
+            guard let dictionary = json as? [String : Any], let ref = DefectDetails.shared.ref else { return }
             
-            ref = db.collection("defect").addDocument(data: dictionary) { [weak self] err in
+            ref.addDocument(data: dictionary) { [weak self] err in
                 if let err = err {
                     print("Error adding document: \(err)")
                 } else {
@@ -59,7 +57,7 @@ class AddDefectViewModel {
         } catch {
             print("Failed to write JSON data: \(error.localizedDescription)")
         }
-      }
+    }
     
     func addLocation() {
         events.onNext(.AddLocation)

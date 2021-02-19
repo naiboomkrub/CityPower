@@ -23,7 +23,6 @@ class TabRootViewModel {
         EventTasks.shared.loadTask()
         Schedule.shared.loadTask()
         InstallHistories.shared.loadTask()
-        DefectDetails.shared.loadDefect()
         
         return self.createMainMenuViewModel()
     }()

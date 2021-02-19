@@ -10,6 +10,7 @@ import Foundation
 import CardParts
 import RxCocoa
 import RxSwift
+import Firebase
 
 class AddPlanViewController: CardsViewController {
     
@@ -20,6 +21,9 @@ class AddPlanViewController: CardsViewController {
         super.viewDidLoad()
 
         let cards: [CardController] = [addPlanController]
+        
+        collectionView.contentInsetAdjustmentBehavior = .never
+        collectionView.isScrollEnabled = false
          
         loadCards(cards: cards)
     }
@@ -34,13 +38,17 @@ class AddPlanController: CardPartsViewController {
     let planTitleField = CardPartTextField(format: .none)
     let currentDate = CardPartTextView(type: .normal)
     let dateView = CardPartTextView(type: .normal)
+    let planImage = CardPartImageView()
     
     let titleStack = CardPartStackView()
     let planStack = CardPartStackView()
+    let imageStack = CardPartStackView()
     let dateStack = CardPartStackView()
     
     let selectPlan = CardPartButtonView()
     let saveButton = CardPartButtonView()
+    
+    var completionHandler: (() -> Void)?
                 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -53,6 +61,9 @@ class AddPlanController: CardPartsViewController {
         planTitle.textColor = .blueCity
         currentDate.textColor = .blueCity
         dateView.textColor = .general2
+        
+        planImage.contentMode = .scaleAspectFit
+        planImage.addConstraint(NSLayoutConstraint(item: planImage, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 50))
         
         saveButton.setTitle("Save", for: .normal)
         saveButton.setTitleColor(.blueCity, for: .normal)
@@ -70,7 +81,7 @@ class AddPlanController: CardPartsViewController {
         selectPlan.setTitleColor(.blueCity, for: .normal)
         selectPlan.titleLabel?.font = UIFont(name: "SukhumvitSet-Bold", size: CGFloat(18))!
         
-        [dateStack, titleStack].forEach { stack in
+        [dateStack, titleStack, imageStack].forEach { stack in
             stack.axis = .horizontal
             stack.spacing = 50
             stack.distribution = .equalSpacing
@@ -92,8 +103,11 @@ class AddPlanController: CardPartsViewController {
         [planTitle, planTitleField].forEach { view in
             titleStack.addArrangedSubview(view)}
         
+        [selectPlan, planImage].forEach { view in
+            imageStack.addArrangedSubview(view)}
+        
         [dateStack, CardPartSeparatorView(), titleStack, CardPartSeparatorView(),
-         selectPlan, CardPartSeparatorView(), saveButton].forEach { view in
+         imageStack, CardPartSeparatorView(), saveButton].forEach { view in
             planStack.addArrangedSubview(view)}
         
         viewModel.defectDate.asObservable().bind(to: dateView.rx.text).disposed(by: bag)
@@ -111,7 +125,13 @@ class AddPlanController: CardPartsViewController {
 
             let alert = UIAlertController(title: "Are you Sure ?", message: "", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "Confirm", style: UIAlertAction.Style.default, handler: { action in
-                //self?.viewModel.saveComment()
+                
+                self?.completionHandler = {
+                    self?.viewModel.savePlan()
+                }
+                if let image = self?.planImage.image {
+                    self?.uploadFile(image)
+                }
             }))
             alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel, handler: nil))
 
@@ -124,13 +144,6 @@ class AddPlanController: CardPartsViewController {
             .map({ $0.count > 0 })
             .share(replay: 1)
         
-//        let topicValidation = commentTitleField
-//            .rx.text.orEmpty
-//            .map({ $0.count > 0 })
-//            .share(replay: 1)
-//
-//        let saveEnabled = Observable.combineLatest(desValidation, topicValidation) { $0 && $1 }.share(replay: 1)
-        
         desValidation
             .bind(to: saveButton.rx.isEnabled)
             .disposed(by: bag)
@@ -138,6 +151,36 @@ class AddPlanController: CardPartsViewController {
         setupCardParts([planStack])
     }
     
+    private func uploadFile(_ image: UIImage) {
+        guard let imageData = image.jpegData(compressionQuality: 1.0) else { return }
+        let fileName = Int(Date.timeIntervalSinceReferenceDate * 1000)
+        let imagePath = "DefectPicture" + "/\(fileName).jpg"
+        
+        let storage = Storage.storage()
+        let storageRef = storage.reference()
+        let storageChild = storageRef.child(imagePath)
+        
+        storageChild.putData(imageData, metadata: nil) { [weak self] (metadata, error) in
+                            
+            if let error = error {
+                print(error.localizedDescription)
+            } else {
+                print("Complete")
+            }
+                
+            storageChild.downloadURL { (url, error) in
+                guard let downloadURL = url, let completionHandler = self?.completionHandler else { return }
+                    
+                if let error = error {
+                    print(error)
+                } else {
+                    print(downloadURL)
+                    self?.viewModel.imageLink.accept(downloadURL.absoluteString)
+                    completionHandler()
+                }
+            }
+        }
+    }
 }
 
 
@@ -179,11 +222,12 @@ extension AddPlanController: UIImagePickerControllerDelegate & UINavigationContr
     
     public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
 
-        //self.dismiss(animated: true) { [weak self] in
+        self.dismiss(animated: true) { [weak self] in
 
-           // guard let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage else { return }
+            guard let image = info[UIImagePickerController.InfoKey.editedImage] as? UIImage else { return }
+            self?.planImage.image = image
 
-      //  }
+        }
     }
     
     public func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {

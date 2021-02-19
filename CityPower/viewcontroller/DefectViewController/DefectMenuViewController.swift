@@ -31,7 +31,6 @@ class DefectMenuViewController: UIViewController, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        //guard let currentCell = tableView.cellForRow(at: indexPath) as? DefectMenuCell else { return }
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -71,10 +70,10 @@ class DefectMenuViewController: UIViewController, UITableViewDelegate {
             .disposed(by: disposeBag)
         
         menuTable.rx.modelSelected(DefectGroup.self)
-            .subscribe(onNext: { [unowned self] task in
-                //self.viewModel.editTask(taskClick: [task])
-                guard let url = task.url?.absoluteString else { return }
-                self.viewModel.planDetail.accept(url)
+            .subscribe(onNext: { [unowned self] data in
+                DefectDetails.shared.stopListening()
+                DefectDetails.shared.loadList(data.planTitle)
+                self.viewModel.planDetail.accept(data.planUrl)
                 self.viewModel.selectedArea()
             })
             .disposed(by: disposeBag)
@@ -82,6 +81,7 @@ class DefectMenuViewController: UIViewController, UITableViewDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         menuTable.separatorStyle = .none
         menuTable.rx.setDelegate(self).disposed(by: disposeBag)
         
@@ -109,7 +109,7 @@ class DefectMenuViewController: UIViewController, UITableViewDelegate {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+                
         if !load {
             setUpTable()
             load = true
@@ -220,7 +220,7 @@ class DefectMenuCell: UITableViewCell {
         
         let pipeline = DataPipeLine.shared
         
-        guard let url = data.url else { return }
+        guard let url = URL(string: data.planUrl) else { return }
         
         let request = DataRequest(url: url, processors: [ImageProcessors.Resize(size: pdfImage.bounds.size)])
         
@@ -234,7 +234,7 @@ class DefectMenuCell: UITableViewCell {
                 self?.animateFadeIn()
             }
         }
-        defectPlanLabel.text = data.defectTitle
+        defectPlanLabel.text = data.planTitle
     }
     
     private func display(_ container: ImageContainer) {

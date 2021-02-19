@@ -222,6 +222,16 @@ class DefectDetails {
     
     var currentIndex: Int?
     var documentID: [String]?
+    var groupDocumentID: [String]?
+    var ref: CollectionReference?
+    
+    var savedGroup: [DefectGroup?] = [] {
+        didSet {
+            if let updateGroup = updateGroup {
+                updateGroup()
+            }
+        }
+    }
     
     var savedDefect: [DefectDetail?] = [] {
         didSet {
@@ -250,8 +260,10 @@ class DefectDetails {
     var updateCell: (() -> Void)?
     var updatePicture: (() -> Void)?
     var updateComment: (() -> Void)?
+    var updateGroup: (() -> Void)?
     
     private var defectReference: [DocumentSnapshot] = []
+    private var groupReference: [DocumentSnapshot] = []
     private var myUID: String?
     
     private var listener: ListenerRegistration? {
@@ -335,8 +347,35 @@ class DefectDetails {
     func loadDefect()  {
 
         guard listener == nil else { return }
-       
-        listener = db.collection("defect").addSnapshotListener { [unowned self] querySnapshot, error in
+        
+        listener = db.collection("plan").addSnapshotListener { [unowned self] querySnapshot, error in
+            
+            guard let snapshot = querySnapshot else {
+              print("Error fetching snapshot results: \(error!)")
+              return
+            }
+                        
+            var models: [DefectGroup] = []
+            var ids: [String] = []
+            
+            for document in snapshot.documents {
+                if let model = DefectGroup(dictionary: document.data()) {
+                    models.append(model)
+                    ids.append(document.documentID)
+                }
+            }
+            
+            self.savedGroup = models
+            self.groupDocumentID = ids
+            self.groupReference = snapshot.documents
+        }
+    }
+    
+    func loadList(_ planName: String) {
+        
+        guard listener == nil else { return }
+                
+        listener = db.collection("plan").document(planName).collection("defect").addSnapshotListener { [unowned self] querySnapshot, error in
             
             guard let snapshot = querySnapshot else {
               print("Error fetching snapshot results: \(error!)")
@@ -362,6 +401,7 @@ class DefectDetails {
                 self.savedPicture = models[currentIndex].defectImage
             }
         }
+        ref = db.collection("plan").document(planName).collection("defect")
     }
     
     func index(of document: DocumentSnapshot) -> Int? {
@@ -372,14 +412,15 @@ class DefectDetails {
 
         guard let index = currentIndex,
               let currentData = DefectDetails.shared.savedDefect[index],
-              let id = documentID?[index] else { return }
+              let id = documentID?[index],
+              let ref = ref else { return }
         
         if let data = data as? CommentStruct, !currentData.defectComment.contains(data) {
             let field = "defectComment"
             let newValue = FieldValue.arrayUnion([["title": data.title,
                                                    "timeStamp": data.timeStamp, "value": data.value]])
             
-            db.collection("defect").document(id).updateData([field: newValue]) { err in
+            ref.document(id).updateData([field: newValue]) { err in
                 if let err = err {
                     print(err.localizedDescription)
                 } else {
@@ -393,7 +434,7 @@ class DefectDetails {
                                                    "timeStamp": data.timeStamp,
                                                    "fileName": data.fileName]])
             
-            db.collection("defect").document(id).updateData([field: newValue]) { err in
+            ref.document(id).updateData([field: newValue]) { err in
                 if let err = err {
                     print(err.localizedDescription)
                 } else {
@@ -403,18 +444,23 @@ class DefectDetails {
         }
     }
     
+    func stopListening() {
+        listener = nil
+    }
+    
     func remove<T: Hashable>(_ data: T) {
 
         guard let index = currentIndex,
               let currentData = DefectDetails.shared.savedDefect[index],
-              let id = documentID?[index] else { return }
+              let id = documentID?[index],
+              let ref = ref else { return }
         
         if let data = data as? CommentStruct, currentData.defectComment.contains(data) {
             let field = "defectComment"
             let newValue = FieldValue.arrayRemove([["title": data.title,
                                                    "timeStamp": data.timeStamp, "value": data.value]])
             
-            db.collection("defect").document(id).updateData([field: newValue]) { err in
+            ref.document(id).updateData([field: newValue]) { err in
                 if let err = err {
                     print(err.localizedDescription)
                 } else {
@@ -434,7 +480,7 @@ class DefectDetails {
                                                    "timeStamp": data.timeStamp,
                                                    "fileName": data.fileName]])
             
-            db.collection("defect").document(id).updateData([field: newValue]) { err in
+            ref.document(id).updateData([field: newValue]) { err in
                 if let err = err {
                     print(err.localizedDescription)
                 } else {
@@ -456,7 +502,8 @@ class DefectDetails {
         
         guard let index = currentIndex,
               let id = documentID?[index],
-              index < DefectDetails.shared.savedDefect.count else { return }
+              index < DefectDetails.shared.savedDefect.count,
+              let ref = ref else { return }
         
         if let data = data as? CommentStruct, let newData = newData as? CommentStruct {
             
@@ -465,7 +512,7 @@ class DefectDetails {
                                                    "timeStamp": newData.timeStamp, "value": newData.value]])
             
             let batch = db.batch()
-            let docuRef = db.collection("defect").document(id)
+            let docuRef = ref.document(id)
             let removeValue = FieldValue.arrayRemove([["title": data.title,
                                                            "timeStamp": data.timeStamp, "value": data.value]])
                 
@@ -487,7 +534,7 @@ class DefectDetails {
                                                    "fileName": newData.fileName]])
             
             let batch = db.batch()
-            let docuRef = db.collection("defect").document(id)
+            let docuRef = ref.document(id)
             let removeValue = FieldValue.arrayRemove([["image": data.image,
                                                        "timeStamp": data.timeStamp,
                                                        "fileName": data.fileName]])

@@ -27,6 +27,7 @@ class RootDefectViewModel {
     }()
     
     lazy private(set) var defectMenuViewModel: DefectMenuViewModel = {
+        DefectDetails.shared.loadDefect()
         return self.createDefectMenuViewModel()
     }()
     
@@ -102,6 +103,14 @@ class RootDefectViewModel {
     func createAddPlanViewModel() -> AddPlanViewModel {
     
         let addPlanViewModel = AddPlanViewModel()
+        
+        addPlanViewModel.events
+            .subscribe(onNext: { [weak self] event in
+            switch event {
+            case .Save:
+                self?.saveDefect()
+            }
+            }).disposed(by: disposeBag)
         
         return addPlanViewModel
     }

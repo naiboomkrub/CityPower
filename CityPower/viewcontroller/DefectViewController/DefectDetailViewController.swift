@@ -13,7 +13,6 @@ import CardParts
 import Firebase
 import RxDataSources
 
-
 class DefectDetailViewController: CardsViewController {
     
     var viewModel: DefectDetailViewModel!
@@ -113,6 +112,7 @@ class DefectDetailController: CardPartsViewController, CustomMarginCardTrait {
     
     let doneLayer = CAGradientLayer()
     let doneBorder = UIView()
+    let imageHolder = UIImageView()
         
     private var completion = { }
     
@@ -153,11 +153,12 @@ class DefectDetailController: CardPartsViewController, CustomMarginCardTrait {
         viewModel.dueDate.asObservable().bind(to: defectDue.rx.text).disposed(by: bag)
         
         viewModel.photos.asObservable().bind(onNext: { [weak self] photo in
-            guard let image: ImageSource = photo.first else { return }
-            self?.defectView.setImage(fromSource: image)
-
-            if let imageToUpload = self?.defectView.image {
-                self?.uploadFile(imageToUpload)
+            for image in photo {
+                self?.imageHolder.setImage(fromSource: image)
+                
+                if let imageToUpload = self?.imageHolder.image {
+                    self?.uploadFile(imageToUpload)
+                }
             }
 
         }).disposed(by: bag)
@@ -253,9 +254,9 @@ class DefectDetailController: CardPartsViewController, CustomMarginCardTrait {
         storageChild.putData(imageData, metadata: nil) { [weak self] (metadata, error) in
                             
             if let error = error {
-                self?.defectTitle.text = error.localizedDescription
+                print(error.localizedDescription)
             } else {
-                self?.defectTitle.text = "Complete"
+                print("Complete")
             }
                 
             storageChild.downloadURL { (url, error) in

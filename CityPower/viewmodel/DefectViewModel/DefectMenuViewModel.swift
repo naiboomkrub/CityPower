@@ -13,34 +13,50 @@ import RxCocoa
 
 
 struct DefectGroup: Codable {
-    let defectTitle : String
-    let defectDes: String
+    let planTitle : String
     let timeStamp: String
-    let url: URL?
+    let planUrl: String
     
-    init(defectTitle: String, defectDes: String, timeStamp: String, url: URL? = nil) {
-        self.defectTitle = defectTitle
-        self.defectDes = defectDes
+    var dictionary: [String: Any] {
+      return [
+        "planTitle": planTitle,
+        "timeStamp": timeStamp,
+        "planUrl": planUrl,
+      ]
+    }
+    
+    init(planTitle: String, timeStamp: String, planUrl: String) {
+        self.planTitle = planTitle
         self.timeStamp = timeStamp
-        self.url = url
+        self.planUrl = planUrl
+    }
+    
+    init?(dictionary: [String : Any]) {
+        guard let planTitle = dictionary["planTitle"] as? String,
+            let timeStamp = dictionary["timeStamp"] as? String,
+            let planUrl = dictionary["planUrl"] as? String else { return nil }
+        
+        self.planTitle = planTitle
+        self.timeStamp = timeStamp
+        self.planUrl = planUrl
     }
 }
 
 extension DefectGroup: Hashable {
     static func == (lhs: DefectGroup, rhs: DefectGroup) -> Bool {
-        return lhs.defectDes == rhs.defectDes &&
-            lhs.defectTitle == rhs.defectTitle
+        return lhs.planTitle == rhs.planTitle &&
+            lhs.timeStamp == rhs.timeStamp
     }
     
     func hash(into hasher: inout Hasher) {
-        hasher.combine(defectTitle)
-        hasher.combine(defectDes)
+        hasher.combine(planTitle)
+        hasher.combine(timeStamp)
     }
 }
 
 extension DefectGroup: IdentifiableType {
     var identity: String {
-        return self.defectTitle + self.timeStamp
+        return self.planTitle + self.timeStamp
     }
     
     typealias Identity = String
@@ -68,21 +84,22 @@ class DefectMenuViewModel {
     
     init() {
         
-        photos = demoPhotosURLs
+        DefectDetails.shared.updateGroup = reloadData
     }
     
     func reloadData() {
         
         tempData.removeAll()
-            
-        //for url_ in photos {
-       //     let allDefect: [DefectGroup] = [DefectGroup(defectTitle: "awdawd", defectDes: "wafawf", timeStamp: formatterHour.string(from: Date()))]
-            
-        for url_ in photos {
-            tempData.append(DefectGroup(defectTitle: "awdawd", defectDes: "wafawf", timeStamp: formatterHour.string(from: Date()), url: url_))
+        
+        let defectGroup = DefectDetails.shared.savedGroup
+        
+        for item in defectGroup {
+            if let item = item {
+                tempData.append(item)
+            }
         }
         
-        //tempData =  tempData.unique(for:  \.self)
+        tempData = tempData.unique(for:  \.self)
         dataSource.accept(tempData)
     }
     

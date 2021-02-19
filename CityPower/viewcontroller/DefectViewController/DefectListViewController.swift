@@ -164,6 +164,11 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
         setUpFilterView()
     }
     
+    deinit {
+        DefectDetails.shared.stopListening()
+        DefectDetails.shared.loadDefect()
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
