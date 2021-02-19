@@ -32,6 +32,7 @@ class DefectDetailViewModel {
     let createDate = BehaviorRelay(value: "Create: Today")
     let title = BehaviorRelay(value: "Defect Title")
     let state = BehaviorRelay(value: CardState.hasData)
+    let photoState = BehaviorRelay(value: CardState.hasData)
     let positionDefect = BehaviorRelay(value: [CGPoint]())
     
     let events = PublishSubject<Event>()
@@ -80,6 +81,12 @@ class DefectDetailViewModel {
         }
         tempPhoto = tempPhoto.unique(for:  \.self)
         photoData.accept(tempPhoto)
+        
+        if tempPhoto.isEmpty {
+            photoState.accept(.empty)
+        } else {
+            photoState.accept(.hasData)
+        }
     }
     
     func photoEdit() {

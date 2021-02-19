@@ -131,14 +131,23 @@ class RootDefectViewModel {
         
         Observable.combineLatest(defectListViewModel.defectDetailModel, defectListViewModel.indexRow)
             .subscribe(onNext: { [weak self] model, index in
+                
                 if !model.isEmpty {
+                    
                     if !model[0].defectComment.isEmpty {
                         self?.defectDetailViewModel.commentData.accept(model[0].defectComment)
                         self?.defectDetailViewModel.state.accept(.hasData)
                     } else {
                         self?.defectDetailViewModel.state.accept(.empty)
                     }
-                    self?.defectDetailViewModel.photoData.accept(model[0].defectImage)
+                    
+                    if !model[0].defectImage.isEmpty {
+                        self?.defectDetailViewModel.photoData.accept(model[0].defectImage)
+                        self?.defectDetailViewModel.photoState.accept(.hasData)
+                    } else {
+                        self?.defectDetailViewModel.photoState.accept(.empty)
+                    }
+                    
                     self?.defectDetailViewModel.dueDate.accept("Create :  \(model[0].timeStamp)")
                     self?.defectDetailViewModel.createDate.accept("Due     :  \(model[0].dueDate)")
                     self?.defectDetailViewModel.title.accept(model[0].defectTitle)

@@ -46,6 +46,13 @@ class DefectDetailViewController: CardsViewController {
         let photoController = HeadController()
         photoController.setText("Photo")
                 
+        viewModel.photoState.asObservable().bind(onNext: { [unowned self] state in
+            if state == .empty {
+                photoController.editButton.setTitle("Edit", for: .normal)
+                self.photoTable.photoTable.tableView.setEditing(false, animated: true)
+            }
+        }).disposed(by: disposeBag)
+        
         photoController.editButton.rx.tap
             .map { [unowned self] in self.photoTable.photoTable.tableView.isEditing }
             .bind(onNext: { [unowned self] result in
@@ -389,6 +396,8 @@ class CommentTable: CardPartsViewController, CardPartTableViewDelegate, CustomMa
     
     let commentTable = CardPartTableView()
     let emptyText = CardPartTextView(type: .normal)
+    let emptyView = UIView()
+    let messageLabel = UILabel()
     
     typealias CommentSection = AnimatableSectionModel<String, CommentStruct>
     
@@ -410,6 +419,16 @@ class CommentTable: CardPartsViewController, CardPartTableViewDelegate, CustomMa
         commentTable.backgroundColor = .clear
         commentTable.tableView.register(CommentCell.self, forCellReuseIdentifier: "CommentCell")
         
+        messageLabel.text = "Please Add Comment Data"
+        messageLabel.textColor = .black
+        messageLabel.numberOfLines = 0
+        messageLabel.textAlignment = .center
+        messageLabel.font = UIFont(name: "SukhumvitSet-Bold", size: CGFloat(18))!
+        messageLabel.alpha = 0.5
+        messageLabel.sizeToFit()
+        emptyView.clipsToBounds = true
+        emptyView.addSubview(messageLabel)
+        
         let dataSource = RxTableViewSectionedAnimatedDataSource<CommentSection>(
             animationConfiguration: AnimationConfiguration(insertAnimation: .right,
                                                            reloadAnimation: .fade,
@@ -423,7 +442,22 @@ class CommentTable: CardPartsViewController, CardPartTableViewDelegate, CustomMa
             .bind(to: commentTable.tableView.rx.items(dataSource: dataSource))
         .disposed(by: bag)
         
-        viewModel.state.asObservable().bind(to: self.rx.state).disposed(by: bag)
+        viewModel.state.asObservable().bind(onNext: { [weak self] state in
+            
+            let width = UIScreen.main.bounds.size.width - 48
+            
+            if state == .empty {
+                self?.emptyView.frame = CGRect(x: 0, y: 0, width: width, height: 138.5)
+                self?.commentTable.tableView.tableFooterView = self?.emptyView
+            } else {
+                self?.emptyView.frame = CGRect(x: 0, y: 0, width: width, height: 1)
+                self?.commentTable.tableView.tableFooterView = self?.emptyView
+            }
+            if let center = self?.emptyView.center {
+                self?.messageLabel.center =  center
+            }
+    
+        }).disposed(by: bag)
         
         commentTable.tableView.rx.itemDeleted.subscribe ( onNext: { [unowned self] indexPath in
             
@@ -439,9 +473,12 @@ class CommentTable: CardPartsViewController, CardPartTableViewDelegate, CustomMa
             })
             .disposed(by: bag)
         
-        setupCardParts([commentTable], forState: .hasData)
-        setupCardParts([emptyText], forState: .empty)
+        setupCardParts([commentTable])
+    }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        messageLabel.center =  emptyView.center
     }
 }
 
@@ -559,6 +596,8 @@ class PhotoTable: CardPartsViewController, CardPartTableViewDelegate, CustomMarg
     var viewModel: DefectDetailViewModel!
     
     let photoTable = CardPartTableView()
+    let emptyView = UIView()
+    let messageLabel = UILabel()
     
     typealias PhotoSection = AnimatableSectionModel<String, ImageStruct>
     
@@ -573,6 +612,16 @@ class PhotoTable: CardPartsViewController, CardPartTableViewDelegate, CustomMarg
         photoTable.backgroundColor = .clear
         photoTable.tableView.register(PhotoCell.self, forCellReuseIdentifier: "PhotoCell")
         
+        messageLabel.text = "Please Add Photo Data"
+        messageLabel.textColor = .black
+        messageLabel.numberOfLines = 0
+        messageLabel.textAlignment = .center
+        messageLabel.font = UIFont(name: "SukhumvitSet-Bold", size: CGFloat(18))!
+        messageLabel.alpha = 0.5
+        messageLabel.sizeToFit()
+        emptyView.clipsToBounds = true
+        emptyView.addSubview(messageLabel)
+        
         let dataSource = RxTableViewSectionedAnimatedDataSource<PhotoSection>(
             animationConfiguration: AnimationConfiguration(insertAnimation: .right,
                                                            reloadAnimation: .fade,
@@ -580,6 +629,23 @@ class PhotoTable: CardPartsViewController, CardPartTableViewDelegate, CustomMarg
             configureCell: configureCell,
             canEditRowAtIndexPath: canEditRowAtIndexPath,
             canMoveRowAtIndexPath: canMoveRowAtIndexPath)
+        
+        viewModel.photoState.asObservable().bind(onNext: { [weak self] state in
+            
+            let width = UIScreen.main.bounds.size.width - 48
+            
+            if state == .empty {
+                self?.emptyView.frame = CGRect(x: 0, y: 0, width: width, height: 138.5)
+                self?.photoTable.tableView.tableFooterView = self?.emptyView
+            } else {
+                self?.emptyView.frame = CGRect(x: 0, y: 0, width: width, height: 1)
+                self?.photoTable.tableView.tableFooterView = self?.emptyView
+            }
+            if let center = self?.emptyView.center {
+                self?.messageLabel.center =  center
+            }
+    
+        }).disposed(by: bag)
         
         viewModel.photoData
             .map { [PhotoSection(model: "", items: $0)] }
@@ -589,12 +655,7 @@ class PhotoTable: CardPartsViewController, CardPartTableViewDelegate, CustomMarg
         photoTable.tableView.rx.itemDeleted.subscribe ( onNext: { [unowned self] indexPath in
             
             guard let model = try? self.photoTable.tableView.rx.model(at: indexPath) as ImageStruct? else { return }
-      
             self.viewModel.removePhoto(model)
-
-            //if EventTasks.shared.savedTask.count == 0 {
-            //    self.menuTable.setEmptyMessage("Please Insert Task")
-            //}
                         
         }).disposed(by: bag)
                 
@@ -603,10 +664,8 @@ class PhotoTable: CardPartsViewController, CardPartTableViewDelegate, CustomMarg
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        
+        messageLabel.center =  emptyView.center
     }
-    
     
     @objc func imageTapped(_ sender: UITapGestureRecognizer) {
         
