@@ -112,9 +112,9 @@ class DefectDetailController: CardPartsViewController, CustomMarginCardTrait {
     
     let doneLayer = CAGradientLayer()
     let doneBorder = UIView()
-    let imageHolder = UIImageView()
         
     private var completion = { }
+    private var imageRequest: [ImageRequestId: UIImageView] = [:]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -153,14 +153,30 @@ class DefectDetailController: CardPartsViewController, CustomMarginCardTrait {
         viewModel.dueDate.asObservable().bind(to: defectDue.rx.text).disposed(by: bag)
         
         viewModel.photos.asObservable().bind(onNext: { [weak self] photo in
+                                       
+            guard !photo.isEmpty else { return }
+            
             for image in photo {
-                self?.imageHolder.setImage(fromSource: image)
                 
-                if let imageToUpload = self?.imageHolder.image {
-                    self?.uploadFile(imageToUpload)
+                let imageHolder = UIImageView()
+                imageHolder.contentMode = .scaleAspectFit
+                imageHolder.bounds.size = CGSize(width: 750, height: 1334)
+                
+                let id = imageHolder.setImage(fromSource: image,
+                placeholderDeferred: true,
+                adjustOptions: { option in
+                        option.deliveryMode = .best
+                }, resultHandler: { (result: ImageRequestResult<UIImage>) in
+                
+                    if let imageToUpload = result.image, let imageRequest = self?.imageRequest {
+                        self?.imageRequest = imageRequest.filter { $0.key != result.requestId }
+                        self?.uploadFile(imageToUpload)
+                    }
+                })
+                if let id = id {
+                    self?.imageRequest[id] = imageHolder
                 }
             }
-
         }).disposed(by: bag)
         
         Observable.combineLatest(viewModel.imageName, viewModel.positionDefect)

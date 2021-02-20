@@ -172,6 +172,7 @@ class RootDefectViewModel {
                     self?.defectDetailViewModel.createDate.accept("Due     :  \(model[0].dueDate)")
                     self?.defectDetailViewModel.title.accept(model[0].defectTitle)
                     self?.defectDetailViewModel.positionDefect.accept([model[0].defectPosition])
+                    self?.defectDetailViewModel.photos.accept([])
                     DefectDetails.shared.currentIndex = index
                 }
             }).disposed(by: disposeBag)

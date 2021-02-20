@@ -882,8 +882,8 @@
                                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Gde-n5-UrY">
                                                             <rect key="frame" x="41.5" y="15" width="331" height="120"/>
                                                             <subviews>
-                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Lbp-dn-8kM">
-                                                                    <rect key="frame" x="201" y="49.5" width="110" height="21"/>
+                                                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Lbp-dn-8kM">
+                                                                    <rect key="frame" x="171" y="49.5" width="140" height="21"/>
                                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                                     <nil key="textColor"/>
                                                                     <nil key="highlightedColor"/>
@@ -899,7 +899,7 @@
                                                                 <constraint firstAttribute="trailing" secondItem="PtK-7W-Uuw" secondAttribute="trailing" constant="180" id="gSF-CC-PFT"/>
                                                                 <constraint firstItem="PtK-7W-Uuw" firstAttribute="height" secondItem="Gde-n5-UrY" secondAttribute="height" multiplier="0.95" id="lF8-vV-T7V"/>
                                                                 <constraint firstItem="Lbp-dn-8kM" firstAttribute="centerY" secondItem="Gde-n5-UrY" secondAttribute="centerY" id="o6Z-Cw-j6q"/>
-                                                                <constraint firstItem="Lbp-dn-8kM" firstAttribute="leading" secondItem="PtK-7W-Uuw" secondAttribute="trailing" constant="50" id="qec-km-6L8"/>
+                                                                <constraint firstItem="Lbp-dn-8kM" firstAttribute="leading" secondItem="PtK-7W-Uuw" secondAttribute="trailing" constant="20" id="qec-km-6L8"/>
                                                                 <constraint firstAttribute="trailing" relation="lessThanOrEqual" secondItem="Lbp-dn-8kM" secondAttribute="trailing" constant="20" symbolic="YES" id="x4J-Kd-3VM"/>
                                                             </constraints>
                                                         </view>

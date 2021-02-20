@@ -92,7 +92,7 @@ public final class PHAssetImageSource: ImageSource {
         
         let id = imageManager.requestImage(for: asset, targetSize: size, contentMode: contentMode, options: phOptions) {
             image, info in
-            
+      
             let requestId = (info?[PHImageResultRequestIDKey] as? NSNumber)?.intValue ?? 0
             let degraded = (info?[PHImageResultIsDegradedKey] as? NSNumber)?.boolValue ?? false
             let cancelled = (info?[PHImageCancelledKey] as? NSNumber)?.boolValue ?? false || self.cancelledRequestIds.contains(requestId.toImageRequestId()) == true
