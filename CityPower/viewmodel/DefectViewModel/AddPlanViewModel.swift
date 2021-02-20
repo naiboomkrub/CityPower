@@ -46,7 +46,7 @@ class AddPlanViewModel {
             
             guard let dictionary = json as? [String : Any] else { return }
   
-            db.collection("plan").document(planName.value).collection("defect").addDocument(data: dictionary) { [weak self] err in
+            db.collection("plan").document("site").collection("currentSite").addDocument(data: dictionary) { [weak self] err in
                 if let err = err {
                     print("Error adding document: \(err)")
                 } else {

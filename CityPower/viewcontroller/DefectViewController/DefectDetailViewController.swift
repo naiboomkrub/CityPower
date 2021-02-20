@@ -259,7 +259,7 @@ class DefectDetailController: CardPartsViewController, CustomMarginCardTrait {
     }
     
     private func uploadFile(_ image: UIImage) {
-        guard let imageData = image.jpegData(compressionQuality: 1.0) else { return }
+        guard let imageData = image.jpegData(compressionQuality: 0.5) else { return }
         let fileName = Int(Date.timeIntervalSinceReferenceDate * 1000)
         let imagePath = "DefectPicture" + "/\(fileName).jpg"
         

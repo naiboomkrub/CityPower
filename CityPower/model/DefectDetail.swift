@@ -348,7 +348,7 @@ class DefectDetails {
 
         guard listener == nil else { return }
         
-        listener = db.collection("plan").addSnapshotListener { [unowned self] querySnapshot, error in
+        listener = db.collection("plan").document("site").collection("currentSite").addSnapshotListener { [unowned self] querySnapshot, error in
             
             guard let snapshot = querySnapshot else {
               print("Error fetching snapshot results: \(error!)")

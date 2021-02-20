@@ -183,32 +183,9 @@ class DefectMenuCell: UITableViewCell {
     
     private var task: DataTask?
     
-    override func draw(_ rect: CGRect) {
-        //thumbnailView.thumbnailSize = CGSize(width: 70, height: 70)
-        //thumbnailView.layoutMode = .horizontal
-        //thumbnailView.pdfView = pdfView
-    }
-    
     override func awakeFromNib() {
         super.awakeFromNib()
-        
-        //guard let path = URL(string: "http://www.africau.edu/images/default/sample.pdf") else { return }
-        //if let document = PDFDocument(url: path) {
-        //    pdfView.document = document
-        //}
-        
-        //thumbnailView.translatesAutoresizingMaskIntoConstraints = false
-        //pdfThumbnail.addSubview(thumbnailView)
-
-        //thumbnailView.leadingAnchor.constraint(equalTo: pdfThumbnail.safeAreaLayoutGuide.leadingAnchor).isActive = true
-        //thumbnailView.trailingAnchor.constraint(equalTo: pdfThumbnail.safeAreaLayoutGuide.trailingAnchor).isActive = true
-        //thumbnailView.bottomAnchor.constraint(equalTo: pdfThumbnail.safeAreaLayoutGuide.bottomAnchor).isActive = true
-        //thumbnailView.heightAnchor.constraint(equalTo: pdfThumbnail.heightAnchor).isActive = true
-        
-        //thumbnailView.thumbnailSize = CGSize(width: 70, height: 70)
-        //thumbnailView.layoutMode = .horizontal
-        //thumbnailView.pdfView = pdfView
-        
+                
         self.planView.backgroundColor = . blueCity
         self.planView.layer.cornerRadius = 10.0
         
@@ -220,7 +197,7 @@ class DefectMenuCell: UITableViewCell {
         
         let pipeline = DataPipeLine.shared
         
-        guard let url = URL(string: data.planUrl) else { return }
+        guard let url = URL(string: data.planUrl), pdfImage.image == nil else { return }
         
         let request = DataRequest(url: url, processors: [ImageProcessors.Resize(size: pdfImage.bounds.size)])
         
