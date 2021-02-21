@@ -310,13 +310,11 @@ extension DefectDetailController {
         buttonPart.setTitleColor(color, for: .normal)
         buttonPart.titleLabel?.font = UIFont(name: "SukhumvitSet-Bold", size: CGFloat(18))!
         buttonPart.contentHorizontalAlignment = .center
-        buttonPart.contentEdgeInsets = UIEdgeInsets(top: 5, left: 10, bottom: 5, right: 10)
+        buttonPart.contentEdgeInsets = UIEdgeInsets(top: 15, left: 40, bottom: 15, right: 40)
         
         setGradient(stack: stackView, colours: colours, gradient: gradient, borderView: borderView, radius: 10)
         stackView.pinBackground(stackView.backgroundView, to: stackView)
         stackView.addArrangedSubview(buttonPart)
-        stackView.isLayoutMarginsRelativeArrangement = true
-        stackView.layoutMargins = UIEdgeInsets(top: 10, left: 30, bottom: 10, right: 30)
         stackView.margins = UIEdgeInsets(top: 20, left: 60, bottom: 30, right: 60)
     }
     
