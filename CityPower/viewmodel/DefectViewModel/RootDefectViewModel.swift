@@ -212,7 +212,7 @@ class RootDefectViewModel {
             case .photoEdit:
                 self?.presentImageEditor()
             case .doneDefect:
-                return
+                self?.doneDefect()
             case .addComment:
                 self?.addComment()
             }
@@ -263,6 +263,10 @@ class RootDefectViewModel {
     
     private func addPlan() {
         self.defectStackActions.onNext(.present(viewModel: self.addPlanViewModel, animated: true))
+    }
+    
+    private func doneDefect() {
+        self.defectStackActions.onNext(.pop(animated: true))
     }
     
     private func addComment() {

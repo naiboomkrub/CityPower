@@ -94,6 +94,7 @@ class DefectDetailViewModel {
     }
     
     func doneDefect() {
+        DefectDetails.shared.editData(true)
         events.onNext(.doneDefect)
     }
     

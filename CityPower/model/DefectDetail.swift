@@ -284,7 +284,7 @@ class DefectDetails {
             }
         })
         
-//        Auth.auth().addStateDidChangeListener { auth, listenerUser in
+//        Auth.auth().addStateDidChangeListener { (auth, listenerUser) in
 //            if let user = listenerUser {
 //                print("SIGN IN: \(user.email ?? user.uid)")
 //                self.myUID = user.uid
@@ -375,7 +375,7 @@ class DefectDetails {
         
         guard listener == nil else { return }
                 
-        listener = db.collection("plan").document(planName).collection("defect").addSnapshotListener { [unowned self] querySnapshot, error in
+        listener = db.collection("plan").document(planName).collection("defect").addSnapshotListener(includeMetadataChanges: true) { [unowned self] querySnapshot, error in
             
             guard let snapshot = querySnapshot else {
               print("Error fetching snapshot results: \(error!)")
@@ -446,6 +446,24 @@ class DefectDetails {
     
     func stopListening() {
         listener = nil
+    }
+    
+    func editData<T: Hashable>(_ data: T) {
+
+        guard let index = currentIndex,
+              let id = documentID?[index],
+              let ref = ref else { return }
+        
+        if let data = data as? Bool {
+            
+            ref.document(id).updateData(["finish": data]) { err in
+                if let err = err {
+                    print(err.localizedDescription)
+                } else {
+                    print("Document successfully updated")
+                }
+            }
+        }
     }
     
     func remove<T: Hashable>(_ data: T) {

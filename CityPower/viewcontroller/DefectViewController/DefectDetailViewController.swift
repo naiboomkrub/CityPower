@@ -179,6 +179,18 @@ class DefectDetailController: CardPartsViewController, CustomMarginCardTrait {
             }
         }).disposed(by: bag)
         
+        done.rx.tap.bind(onNext: { [weak self] in
+
+            let alert = UIAlertController(title: "Defect Done", message: "Please Confirm", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Confirm", style: UIAlertAction.Style.default, handler: { action in
+                self?.viewModel.doneDefect()
+            }))
+            alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel, handler: nil))
+
+            self?.present(alert, animated: true, completion: nil)
+            
+        }).disposed(by: bag)
+        
         Observable.combineLatest(viewModel.imageName, viewModel.positionDefect)
             .subscribe(onNext: { [weak self] image, position in
             
