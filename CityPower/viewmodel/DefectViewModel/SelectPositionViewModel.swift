@@ -21,7 +21,7 @@ class SelectPositionViewModel {
     let imageName = BehaviorRelay(value: "")
     let positionDefect = BehaviorRelay<[String: CGPoint]>(value: [:])
     
-    let positionSelected = BehaviorRelay(value: CGPoint())
+    let positionSelected = BehaviorRelay(value: [CGPoint(), ""])
     
     func savePosition() {
         events.onNext(.SavePosition)

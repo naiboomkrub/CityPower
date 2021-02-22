@@ -60,7 +60,6 @@ extension CommentStruct: Hashable {
 }
 
 
-
 struct ImageStruct: Codable {
     var image: String
     var timeStamp: String
@@ -220,10 +219,19 @@ class DefectDetails {
     static let shared = DefectDetails()
     static let fileManager = FileManager.default
     
+    var currentGroup: Int?
     var currentIndex: Int?
     var documentID: [String]?
     var groupDocumentID: [String]?
     var ref: CollectionReference?
+        
+    var savedPosition: [ImagePosition?] = [] {
+        didSet {
+            if let layoutPoint = layoutPoint {
+                layoutPoint()
+            }
+        }
+    }
     
     var savedGroup: [DefectGroup?] = [] {
         didSet {
@@ -257,6 +265,7 @@ class DefectDetails {
         }
     }
     
+    var layoutPoint: (() -> Void)?
     var updateCell: (() -> Void)?
     var updatePicture: (() -> Void)?
     var updateComment: (() -> Void)?
@@ -275,14 +284,6 @@ class DefectDetails {
     private let db = Firestore.firestore()
     
     fileprivate init() {
-        
-        Auth.auth().signInAnonymously(completion: { (authResult, error) in
-            if let error = error {
-                print(error.localizedDescription)
-            } else {
-                print("Anonymously Signed In")
-            }
-        })
         
 //        Auth.auth().addStateDidChangeListener { (auth, listenerUser) in
 //            if let user = listenerUser {
@@ -304,6 +305,17 @@ class DefectDetails {
 //                })
 //            }
 //        }
+    }
+    
+    func signIn() {
+        
+        Auth.auth().signInAnonymously(completion: { (authResult, error) in
+            if let error = error {
+                print(error.localizedDescription)
+            } else {
+                print("Anonymously Signed In")
+            }
+        })
     }
     
     func userExists(_ user: User, completionHandler: @escaping (Bool) -> ()) {
@@ -344,7 +356,7 @@ class DefectDetails {
         }
     }
 
-    func loadDefect()  {
+    func loadDefect() {
 
         guard listener == nil else { return }
         
@@ -368,12 +380,17 @@ class DefectDetails {
             self.savedGroup = models
             self.groupDocumentID = ids
             self.groupReference = snapshot.documents
+            
         }
     }
     
     func loadList(_ planName: String) {
         
         guard listener == nil else { return }
+        
+        if let currentIndex = currentGroup, let pos = savedGroup[currentIndex] {
+            self.savedPosition = pos.defectPosition
+        }
                 
         listener = db.collection("plan").document(planName).collection("defect").addSnapshotListener(includeMetadataChanges: true) { [unowned self] querySnapshot, error in
             
@@ -463,6 +480,78 @@ class DefectDetails {
                     print("Document successfully updated")
                 }
             }
+        }
+    }
+    
+    func addPoint<T: Hashable>(_ data: T) {
+
+        guard let index = currentGroup,
+              let currentData = DefectDetails.shared.savedGroup[index],
+              let id = groupDocumentID?[index]  else { return }
+        
+        if let data = data as? ImagePosition, !currentData.defectPosition.contains(data) {
+            let field = "defectPosition"
+            let newValue = FieldValue.arrayUnion([["x": data.x,
+                                                   "y": data.y]])
+            
+            db.collection("plan").document("site").collection("currentSite").document(id).updateData([field: newValue]) { err in
+                if let err = err {
+                    print(err.localizedDescription)
+                } else {
+                    print("Document successfully updated")
+                }
+            }
+        }
+    }
+    
+    func removePoint<T: Hashable>(_ data: T) {
+
+        guard let index = currentGroup,
+              let currentData = DefectDetails.shared.savedGroup[index],
+              let id = groupDocumentID?[index]  else { return }
+        
+        if let data = data as? ImagePosition, currentData.defectPosition.contains(data) {
+            let field = "defectPosition"
+            let newValue = FieldValue.arrayRemove([["x": data.x,
+                                                   "y": data.y]])
+            
+            db.collection("plan").document("site").collection("currentSite").document(id).updateData([field: newValue]) { err in
+                if let err = err {
+                    print(err.localizedDescription)
+                } else {
+                    print("Document successfully updated")
+                }
+            }
+        }
+    }
+    
+    func movePoint<T: Hashable>(_ data: T, _ newData: T) {
+
+        guard let index = currentGroup,
+              let currentData = DefectDetails.shared.savedGroup[index],
+              let id = groupDocumentID?[index]  else { return }
+        
+        if let data = data as? ImagePosition, let newData = newData as? ImagePosition, currentData.defectPosition.contains(data) {
+            
+            let field = "defectPosition"
+            let newValue = FieldValue.arrayUnion([["x": newData.x,
+                                                   "y": newData.y]])
+            
+            let batch = db.batch()
+            let docuRef = db.collection("plan").document("site").collection("currentSite").document(id)
+            let removeValue = FieldValue.arrayRemove([["x": data.x,
+                                                   "y": data.y]])
+                
+            batch.updateData([field: removeValue], forDocument: docuRef)
+            batch.updateData([field: newValue], forDocument: docuRef)
+            batch.commit() { err in
+                if let err = err {
+                    print(err.localizedDescription)
+                } else {
+                    print("Document successfully updated")
+                }
+            }
+            
         }
     }
     

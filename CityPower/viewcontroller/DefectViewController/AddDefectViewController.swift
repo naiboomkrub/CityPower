@@ -175,7 +175,7 @@ class AddDefectController: CardPartsViewController, UITextFieldDelegate, UIPicke
         }).disposed(by: bag)
         
         viewModel.defectDate.asObservable().bind(to: defectDate.rx.text).disposed(by: bag)
-        viewModel.resultPosition.map { "\($0.x) \($0.y)" }
+        viewModel.resultPosition.map { "\($0[1])" }
             .asObservable().bind(to: positionTag.rx.text).disposed(by: bag)
         selectPos.rx.tap.bind(onNext: viewModel.addLocation).disposed(by: bag)
         

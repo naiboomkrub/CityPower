@@ -24,7 +24,6 @@ class SelectPositionViewController: UIViewController, UIGestureRecognizerDelegat
     
     private let disposeBag = DisposeBag()
     
-    //private var tempPosition = [CGPoint]()
     private var completion = { }
     private var annotationsToSelect = [UIView]()
     private var positionKey: [UIView: CGPoint] = [:]
@@ -41,32 +40,13 @@ class SelectPositionViewController: UIViewController, UIGestureRecognizerDelegat
         
         confirmButton.rx.tap.bind(onNext: { [weak self] in
             
-            guard let selectedPos = self?.annotationsToSelect.first,
+            guard let selectedPos = self?.annotationsToSelect.first as? TemView,
+                  let text = selectedPos.labelNum.text,
                   let dicResult = self?.positionKey[selectedPos] else { return }
             self?.viewModel.savePosition()
-            self?.viewModel.positionSelected.accept(dicResult)
-            
+            self?.viewModel.positionSelected.accept([dicResult, text])
+
         }).disposed(by: disposeBag)
-        
-//        viewModel.positionDefect.subscribe(onNext: { [weak self] position in
-//
-//            self?.tempPosition = position
-//
-//            if !position.isEmpty {
-//
-//                var count = 0
-//
-//                for pos in position {
-//                    let tempView = TemView()
-//                    tempView.setText("\(count)")
-//                    tempView.bounds.size = CGSize(width: 50, height: 70)
-//                    tempView.frame.origin = pos
-//                    tempView.backgroundColor = .clear
-//                    count += 1
-//                    self?.planPicture.addSubview(tempView)
-//                }
-//            }
-//        }).disposed(by: disposeBag)
         
         Observable.combineLatest(viewModel.imageName, viewModel.positionDefect)
             .subscribe(onNext: { [weak self] image, position in

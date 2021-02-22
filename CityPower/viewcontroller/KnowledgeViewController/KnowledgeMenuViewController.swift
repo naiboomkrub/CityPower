@@ -58,8 +58,8 @@ class KnowledgeMenuController: CardPartsViewController {
         menuDes.margins = UIEdgeInsets(top: 20, left: 20, bottom: 10, right: 20)
         menuDes.font = UIFont(name: "SukhumvitSet-Bold", size: CGFloat(24))!
         
-        setUpButton(lessonButton, "Engineering Lesson", UIColor.white, "icon020", lessonStack, [UIColor.start1, UIColor.start2], lessonLayer, lessonBorder)
-        setUpButton(quizButton, "Engineering Quiz", UIColor.white, "icon020", quizStack, [UIColor.start1, UIColor.start2], quizLayer, quizBorder)
+        setUpButton(lessonButton, "Lesson", UIColor.white, "icon020", lessonStack, [UIColor.start1, UIColor.start2], lessonLayer, lessonBorder)
+        setUpButton(quizButton, "Quiz", UIColor.white, "icon020", quizStack, [UIColor.start1, UIColor.start2], quizLayer, quizBorder)
         setUpButton(videoButton, "Video", UIColor.white, "icon020", videoStack, [UIColor.start1, UIColor.start2], videoLayer, videoBorder)
         
         lessonButton.rx.tap.bind(onNext: viewModel.startLesson).disposed(by: bag)

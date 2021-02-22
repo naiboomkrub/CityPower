@@ -122,6 +122,7 @@ class LayerMove: UIGestureRecognizer  {
             DispatchQueue.main.async {
                 
                 let center = CGPoint(x: center.x - view.bounds.width / 2, y: center.y - view.bounds.height / 2)
+                DefectDetails.shared.movePoint(ImagePosition(x: Double(view.frame.origin.x), y: Double(view.frame.origin.y)), ImagePosition(x: Double(center.x), y: Double(center.y)))
                 view.frame = CGRect(origin: center, size: view.bounds.size)
                 self.pdfView.addSubview(view)
                 self.annotationBeingDragged = nil

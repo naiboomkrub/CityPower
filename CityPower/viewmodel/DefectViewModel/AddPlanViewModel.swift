@@ -38,7 +38,7 @@ class AddPlanViewModel {
     
     func savePlan() {
         
-        let planStruct = DefectGroup(planTitle: planName.value, timeStamp: formatterDay.string(from: Date()), planUrl: imageLink.value)
+        let planStruct = DefectGroup(planTitle: planName.value, timeStamp: formatterDay.string(from: Date()), planUrl: imageLink.value, defectPosition: [])
                 
         do {
             let jsonData = try planStruct.jsonData()

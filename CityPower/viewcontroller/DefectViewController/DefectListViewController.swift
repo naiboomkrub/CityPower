@@ -47,7 +47,7 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
     func setUpTable() {
         
         let dataSource = RxTableViewSectionedAnimatedDataSource<DefectListSection>(
-            animationConfiguration: AnimationConfiguration(insertAnimation: .right,
+            animationConfiguration: AnimationConfiguration(insertAnimation: .top,
                                                            reloadAnimation: .fade,
                                                            deleteAnimation: .left),
             configureCell: configureCell,
@@ -83,7 +83,6 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
                 self.viewModel.selectedDefect(model, index)
             })
             .disposed(by: disposeBag)
-    
     }
     
     override func viewDidLoad() {
@@ -124,11 +123,26 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
         
         let tap = UITapGestureRecognizer(target: self, action: #selector(self.imageTapped))
         
-        let tempView = TemView(frame: CGRect(x: 50, y: 50, width: 50, height: 70))
-        tempView.backgroundColor = .clear
-        planPicture.addSubview(tempView)
         planPicture.isUserInteractionEnabled = true
         planPicture.addGestureRecognizer(tap)
+        
+        viewModel.imagePoint.subscribe(onNext: { [weak self] point in
+            
+            var count = 1
+            
+            for subPoint in point {
+                let tempView = TemView()
+                tempView.setText("\(count)")
+                tempView.bounds.size = CGSize(width: 50, height: 70)
+                tempView.frame.origin = CGPoint(x: subPoint.x, y: subPoint.y)
+                tempView.backgroundColor = .clear
+                count += 1
+                self?.planPicture.addSubview(tempView)
+            }
+            
+            self?.count = count
+
+        }).disposed(by: disposeBag)
         
         viewModel.imageName.subscribe(onNext: { [weak self] image in
             
@@ -505,6 +519,7 @@ extension DefectListViewController {
         tempView.bounds.size = CGSize(width: 50, height: 70)
         tempView.frame.origin = CGPoint(x: position.x - 25, y: position.y - 35)
         tempView.backgroundColor = .clear
+        DefectDetails.shared.addPoint(ImagePosition(x: Double(tempView.frame.origin.x), y: Double(tempView.frame.origin.y)))
         count += 1
         planPicture.addSubview(tempView)
     }
@@ -514,6 +529,7 @@ extension DefectListViewController {
         if !annotationsToDelete.isEmpty {
             for view in annotationsToDelete {
                 view.removeFromSuperview()
+                DefectDetails.shared.removePoint(ImagePosition(x: Double(view.frame.origin.x), y: Double(view.frame.origin.y)))
             }
         }
     }

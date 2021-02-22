@@ -22,7 +22,7 @@ class AddDefectViewModel {
     let defectDate = BehaviorRelay(value: "")
     let dueDate = BehaviorRelay(value: "")
     let defectTitle = BehaviorRelay(value: "")
-    let resultPosition = BehaviorRelay(value: CGPoint())
+    let resultPosition = BehaviorRelay(value: [CGPoint(), ""])
     
     let db = Firestore.firestore()
     
@@ -38,24 +38,27 @@ class AddDefectViewModel {
     
     func saveDefect() {
         
-        let dataStruct = DefectDetail(defectNumber: "BOOM", defectTitle: defectTitle.value, defectImage: [], defectComment: [], finish: false, system: "General", timeStamp: defectDate.value, dueDate: dueDate.value, positionX: Double(resultPosition.value.x), positionY: Double(resultPosition.value.y))
+        if let position = resultPosition.value[0] as? CGPoint {
         
-        do {
-            let jsonData = try dataStruct.jsonData()
-            let json = try JSONSerialization.jsonObject(with: jsonData, options: [])
+            let dataStruct = DefectDetail(defectNumber: "BOOM", defectTitle: defectTitle.value, defectImage: [], defectComment: [], finish: false, system: "General", timeStamp: defectDate.value, dueDate: dueDate.value, positionX: Double(position.x), positionY: Double(position.y))
             
-            guard let dictionary = json as? [String : Any], let ref = DefectDetails.shared.ref else { return }
-            
-            ref.addDocument(data: dictionary) { [weak self] err in
-                if let err = err {
-                    print("Error adding document: \(err)")
-                } else {
-                    self?.events.onNext(.Save)
+            do {
+                let jsonData = try dataStruct.jsonData()
+                let json = try JSONSerialization.jsonObject(with: jsonData, options: [])
+                
+                guard let dictionary = json as? [String : Any], let ref = DefectDetails.shared.ref else { return }
+                
+                ref.addDocument(data: dictionary) { [weak self] err in
+                    if let err = err {
+                        print("Error adding document: \(err)")
+                    } else {
+                        self?.events.onNext(.Save)
+                    }
                 }
-            }
 
-        } catch {
-            print("Failed to write JSON data: \(error.localizedDescription)")
+            } catch {
+                print("Failed to write JSON data: \(error.localizedDescription)")
+            }
         }
     }
     

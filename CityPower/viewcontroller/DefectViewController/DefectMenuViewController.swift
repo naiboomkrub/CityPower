@@ -28,11 +28,7 @@ class DefectMenuViewController: UIViewController, UITableViewDelegate {
     private let disposeBag = DisposeBag()
     
     private var tapBag = DisposeBag()
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
-    }
-    
+
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 150
     }
@@ -69,13 +65,15 @@ class DefectMenuViewController: UIViewController, UITableViewDelegate {
             })
             .disposed(by: disposeBag)
         
-        menuTable.rx.modelSelected(DefectGroup.self)
-            .subscribe(onNext: { [unowned self] data in
+        Observable.zip(menuTable.rx.itemSelected, menuTable.rx.modelSelected(DefectGroup.self))
+            .subscribe(onNext: { [unowned self] index, model in
                 DefectDetails.shared.stopListening()
-                DefectDetails.shared.loadList(data.planTitle)
-                self.viewModel.planDetail.accept(data.planUrl)
-                self.viewModel.selectedArea()
-            })
+                DefectDetails.shared.loadList(model.planTitle)
+                
+                self.menuTable.deselectRow(at: index, animated: true)
+                self.viewModel.planDetail.accept(model.planUrl)
+                self.viewModel.selectedArea(index.row)
+       })
             .disposed(by: disposeBag)
     }
 
