@@ -125,9 +125,12 @@ class LayerMove: UIGestureRecognizer  {
                 
                 if let convertedPoint = convertViewToImagePoint(self.pdfView, view.frame.origin),
                    let centerConverted = convertViewToImagePoint(self.pdfView, centerEnd) {
-                    DefectDetails.shared.movePoint(ImagePosition(x: Double(convertedPoint.x), y: Double(convertedPoint.y), pointNum: text), ImagePosition(x: Double(centerConverted.x), y: Double(centerConverted.y), pointNum: text))
+                    DefectDetails.shared
+                        .movePoint(ImagePosition(x: round(Double(convertedPoint.x) * 1000) / 1000,
+                                                 y: round(Double(convertedPoint.y) * 1000) / 1000, pointNum: text),
+                                   ImagePosition(x: round(Double(centerConverted.x) * 1000) / 1000,
+                                                 y: round(Double(centerConverted.y) * 1000) / 1000, pointNum: text))
                 }
-                
                 view.frame = CGRect(origin: centerEnd, size: view.bounds.size)
                 self.pdfView.addSubview(view)
                 self.drawVeil.removeFromSuperview()

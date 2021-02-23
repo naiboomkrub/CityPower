@@ -388,14 +388,23 @@ func convertViewToImagePoint(_ imageView: UIImageView, _ position: CGPoint) -> C
     
     if let image = imageView.image {
 
-        let aspectWidth  = imageView.bounds.width / image.size.width
-        let aspectHeight = imageView.bounds.height / image.size.height
+        var newSize = CGSize()
+        
+        if UIScreen.main.scale == 3 {
+            newSize.width = image.size.width * 1.5
+            newSize.height = image.size.height * 1.5
+        } else {
+            newSize = image.size
+        }
+        
+        let aspectWidth  = imageView.bounds.width / newSize.width
+        let aspectHeight = imageView.bounds.height / newSize.height
         let f = min(aspectWidth, aspectHeight)
         
         var imagePoint = position
         
-        imagePoint.y -= (imageView.bounds.height - image.size.height * f) / 2.0
-        imagePoint.x -= (imageView.bounds.width - image.size.width * f) / 2.0
+        imagePoint.y -= (imageView.bounds.height - newSize.height * f) / 2.0
+        imagePoint.x -= (imageView.bounds.width - newSize.width * f) / 2.0
         imagePoint.x /= f
         imagePoint.y /= f
         

@@ -380,7 +380,6 @@ class DefectDetails {
             self.savedGroup = models
             self.groupDocumentID = ids
             self.groupReference = snapshot.documents
-            
         }
     }
     

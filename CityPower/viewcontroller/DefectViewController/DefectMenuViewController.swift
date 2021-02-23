@@ -62,8 +62,7 @@ class DefectMenuViewController: UIViewController, UITableViewDelegate {
                 guard source != destination else { return }
                 let item = self.viewModel.dataSource.value[source.row]
                 self.viewModel.swapData(index: source, insertIndex: destination, element: item)
-            })
-            .disposed(by: disposeBag)
+        }).disposed(by: disposeBag)
         
         Observable.zip(menuTable.rx.itemSelected, menuTable.rx.modelSelected(DefectGroup.self))
             .subscribe(onNext: { [unowned self] index, model in
@@ -73,8 +72,7 @@ class DefectMenuViewController: UIViewController, UITableViewDelegate {
                 self.menuTable.deselectRow(at: index, animated: true)
                 self.viewModel.planDetail.accept(model.planUrl)
                 self.viewModel.selectedArea(index.row)
-       })
-            .disposed(by: disposeBag)
+        }).disposed(by: disposeBag)
     }
 
     override func viewDidLoad() {

@@ -137,13 +137,22 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
             if let container = pipeline.cachedImage(for: request) {
                 
                 DispatchQueue.main.async {
-    
+                    
                     self?.planPicture.image = container.image
+                    
+                    var newSize = CGSize()
+                    
+                    if UIScreen.main.scale == 3 {
+                        newSize.width = container.image.size.width * 1.5
+                        newSize.height = container.image.size.height * 1.5
+                    } else {
+                        newSize = container.image.size
+                    }
 
                     if let viewSize = self?.planPicture.bounds.size {
                         
-                        let newAspectWidth  = viewSize.width / container.image.size.width
-                        let newAspectHeight = viewSize.height / container.image.size.height
+                        let newAspectWidth  = viewSize.width / newSize.width
+                        let newAspectHeight = viewSize.height / newSize.height
                         let fNew = min(newAspectWidth, newAspectHeight)
                         
                         for (tag, subPoint) in point {
@@ -152,8 +161,8 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
 
                             refPoint.y *= fNew
                             refPoint.x *= fNew
-                            refPoint.x += (viewSize.width - container.image.size.width * fNew) / 2.0
-                            refPoint.y += (viewSize.height - container.image.size.height * fNew) / 2.0
+                            refPoint.x += (viewSize.width - newSize.width * fNew) / 2.0
+                            refPoint.y += (viewSize.height - newSize.height * fNew) / 2.0
                             
                             let tempView = TemView()
                             tempView.setText("\(tag)")
@@ -173,12 +182,21 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
             
             pipeline.loadImage(with: request) { [weak self] result in
                 if case let .success(response) = result {
-                    
+          
                     self?.planPicture.image = response.image
                     
+                    var newSize = CGSize()
+                    
+                    if UIScreen.main.scale == 3 {
+                        newSize.width = response.image.size.width * 1.5
+                        newSize.height = response.image.size.height * 1.5
+                    } else {
+                        newSize = response.image.size
+                    }
+                    
                     if let viewSize = self?.planPicture.bounds.size {
-                        let newAspectWidth  = viewSize.width / response.image.size.width
-                        let newAspectHeight = viewSize.height / response.image.size.height
+                        let newAspectWidth  = viewSize.width / newSize.width
+                        let newAspectHeight = viewSize.height / newSize.height
                         let fNew = min(newAspectWidth, newAspectHeight)
                         
                         for (tag, subPoint) in point {
@@ -187,8 +205,8 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
                             
                             refPoint.y *= fNew
                             refPoint.x *= fNew
-                            refPoint.x += (viewSize.width - response.image.size.width * fNew) / 2.0
-                            refPoint.y += (viewSize.height - response.image.size.height * fNew) / 2.0
+                            refPoint.x += (viewSize.width - newSize.width * fNew) / 2.0
+                            refPoint.y += (viewSize.height - newSize.height * fNew) / 2.0
                             
                             let tempView = TemView()
                             tempView.setText("\(tag)")
@@ -584,7 +602,8 @@ extension DefectListViewController {
         tempView.backgroundColor = .clear
         
         if let convertedPoint = convertViewToImagePoint(planPicture, newPosition) {
-            DefectDetails.shared.addPoint(ImagePosition(x: Double(convertedPoint.x), y: Double(convertedPoint.y), pointNum: "\(numToUpdate)"))
+            DefectDetails.shared.addPoint(ImagePosition(x: round(Double(convertedPoint.x) * 1000) / 1000,
+                                                        y: round(Double(convertedPoint.y) * 1000) / 1000, pointNum: "\(numToUpdate)"))
         }
         
         numList.append(numToUpdate)
@@ -603,19 +622,30 @@ extension DefectListViewController {
                     temView.removeFromSuperview()
                     
                     if let image = planPicture.image {
-                        let aspectWidth  = planPicture.bounds.width / image.size.width
-                        let aspectHeight = planPicture.bounds.height / image.size.height
+                        
+                        var newSize = CGSize()
+                        
+                        if UIScreen.main.scale == 3 {
+                            newSize.width = image.size.width * 1.5
+                            newSize.height = image.size.height * 1.5
+                        } else {
+                            newSize = image.size
+                        }
+                        
+                        let aspectWidth  = planPicture.bounds.width / newSize.width
+                        let aspectHeight = planPicture.bounds.height / newSize.height
                         let f = min(aspectWidth, aspectHeight)
                         
                         var imagePoint = view.frame.origin
                         
-                        imagePoint.y -= (planPicture.bounds.height - image.size.height * f) / 2.0
-                        imagePoint.x -= (planPicture.bounds.width - image.size.width * f) / 2.0
+                        imagePoint.y -= (planPicture.bounds.height - newSize.height * f) / 2.0
+                        imagePoint.x -= (planPicture.bounds.width - newSize.width * f) / 2.0
                         imagePoint.x /= f
                         imagePoint.y /= f
                         
                         numList = numList.filter { $0 != Int(text) }
-                        removeSet.append(ImagePosition(x: Double(imagePoint.x), y: Double(imagePoint.y), pointNum: text))
+                        removeSet.append(ImagePosition(x: round(Double(imagePoint.x) * 1000) / 1000,
+                                                       y: round(Double(imagePoint.y) * 1000) / 1000, pointNum: text))
                     }
                 }
             }
