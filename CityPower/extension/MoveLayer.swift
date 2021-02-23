@@ -10,7 +10,7 @@ import Foundation
 
 class LayerMove: UIGestureRecognizer  {
         
-    private var annotationBeingDragged: UIView?
+    private var annotationBeingDragged: TemView?
     private var pdfView : UIImageView!
     private var drawVeil = UIView()
     private var moveView = TemView()
@@ -118,15 +118,20 @@ class LayerMove: UIGestureRecognizer  {
         
         if annotationBeingDragged == nil { return }
         
-        if let view = self.annotationBeingDragged, let center = self.centerEnd {
+        if let view = self.annotationBeingDragged, let centerEnd = self.centerEnd, let text = view.labelNum.text {
             DispatchQueue.main.async {
                 
-                let center = CGPoint(x: center.x - view.bounds.width / 2, y: center.y - view.bounds.height / 2)
-                DefectDetails.shared.movePoint(ImagePosition(x: Double(view.frame.origin.x), y: Double(view.frame.origin.y)), ImagePosition(x: Double(center.x), y: Double(center.y)))
-                view.frame = CGRect(origin: center, size: view.bounds.size)
+                let centerEnd = CGPoint(x: centerEnd.x - view.bounds.width / 2, y: centerEnd.y - view.bounds.height / 2)
+                
+                if let convertedPoint = convertViewToImagePoint(self.pdfView, view.frame.origin),
+                   let centerConverted = convertViewToImagePoint(self.pdfView, centerEnd) {
+                    DefectDetails.shared.movePoint(ImagePosition(x: Double(convertedPoint.x), y: Double(convertedPoint.y), pointNum: text), ImagePosition(x: Double(centerConverted.x), y: Double(centerConverted.y), pointNum: text))
+                }
+                
+                view.frame = CGRect(origin: centerEnd, size: view.bounds.size)
                 self.pdfView.addSubview(view)
-                self.annotationBeingDragged = nil
                 self.drawVeil.removeFromSuperview()
+                self.annotationBeingDragged = nil
                 self.centerEnd = nil
             }
         }

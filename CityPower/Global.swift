@@ -383,3 +383,24 @@ func setGradient(stack: CardPartStackView, colours: [UIColor], gradient: CAGradi
     
     stack.backgroundView.addSubview(borderView)
 }
+
+func convertViewToImagePoint(_ imageView: UIImageView, _ position: CGPoint) -> CGPoint? {
+    
+    if let image = imageView.image {
+
+        let aspectWidth  = imageView.bounds.width / image.size.width
+        let aspectHeight = imageView.bounds.height / image.size.height
+        let f = min(aspectWidth, aspectHeight)
+        
+        var imagePoint = position
+        
+        imagePoint.y -= (imageView.bounds.height - image.size.height * f) / 2.0
+        imagePoint.x -= (imageView.bounds.width - image.size.width * f) / 2.0
+        imagePoint.x /= f
+        imagePoint.y /= f
+        
+        return imagePoint
+    }
+    return nil
+}
+

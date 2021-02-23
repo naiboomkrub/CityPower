@@ -92,6 +92,7 @@
 		1A37CC6D25D4036B00D6F0AD /* RootAddDefectViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A37CC6C25D4036B00D6F0AD /* RootAddDefectViewModel.swift */; };
 		1A37CC7225D4050200D6F0AD /* SelectPositionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A37CC7125D4050200D6F0AD /* SelectPositionViewController.swift */; };
 		1A37CC7D25D4051000D6F0AD /* SelectPositionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A37CC7C25D4051000D6F0AD /* SelectPositionViewModel.swift */; };
+		1A39569225E4FA4300E51AEE /* DefectGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A39569125E4FA4300E51AEE /* DefectGroup.swift */; };
 		1A61C16925E3642F003F1C8F /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1A61C16825E3642F003F1C8F /* GoogleService-Info.plist */; };
 		1A843BF225DA5E0000D120F9 /* AddCommentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A843BF125DA5E0000D120F9 /* AddCommentViewModel.swift */; };
 		1A843BF725DA5E4600D120F9 /* AddCommentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A843BF625DA5E4600D120F9 /* AddCommentViewController.swift */; };
@@ -290,6 +291,7 @@
 		1A37CC6C25D4036B00D6F0AD /* RootAddDefectViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootAddDefectViewModel.swift; sourceTree = "<group>"; };
 		1A37CC7125D4050200D6F0AD /* SelectPositionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectPositionViewController.swift; sourceTree = "<group>"; };
 		1A37CC7C25D4051000D6F0AD /* SelectPositionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectPositionViewModel.swift; sourceTree = "<group>"; };
+		1A39569125E4FA4300E51AEE /* DefectGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefectGroup.swift; sourceTree = "<group>"; };
 		1A61C16825E3642F003F1C8F /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		1A843BF125DA5E0000D120F9 /* AddCommentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCommentViewModel.swift; sourceTree = "<group>"; };
 		1A843BF625DA5E4600D120F9 /* AddCommentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCommentViewController.swift; sourceTree = "<group>"; };
@@ -814,6 +816,7 @@
 				31D546BD25774D48001908FB /* EventTasks.swift */,
 				31B7EF7F25ADA5FA00CC2C44 /* InstallHistories.swift */,
 				1A37CC1025D392D900D6F0AD /* DefectDetail.swift */,
+				1A39569125E4FA4300E51AEE /* DefectGroup.swift */,
 			);
 			path = model;
 			sourceTree = "<group>";
@@ -1119,6 +1122,7 @@
 				1A25CB0325CE6EFF00A7EC93 /* LocalImageSource.swift in Sources */,
 				31BC826325808054000156B1 /* ChooseLessonViewModel.swift in Sources */,
 				31AAE9362574C657003EAAC8 /* InstallationViewController.swift in Sources */,
+				1A39569225E4FA4300E51AEE /* DefectGroup.swift in Sources */,
 				1A23E62425C26DA900382B8A /* Generate.swift in Sources */,
 				1A25CB3725CE6F1400A7EC93 /* PhotoLibraryItemService.swift in Sources */,
 				1A275EA825C7DA8900805C7C /* ExpandButton.swift in Sources */,

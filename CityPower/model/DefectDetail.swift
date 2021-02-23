@@ -492,7 +492,8 @@ class DefectDetails {
         if let data = data as? ImagePosition, !currentData.defectPosition.contains(data) {
             let field = "defectPosition"
             let newValue = FieldValue.arrayUnion([["x": data.x,
-                                                   "y": data.y]])
+                                                   "y": data.y,
+                                                   "pointNum": data.pointNum]])
             
             db.collection("plan").document("site").collection("currentSite").document(id).updateData([field: newValue]) { err in
                 if let err = err {
@@ -504,18 +505,24 @@ class DefectDetails {
         }
     }
     
-    func removePoint<T: Hashable>(_ data: T) {
+    func removePoint<T: Hashable>(_ data: [T]) {
 
         guard let index = currentGroup,
               let currentData = DefectDetails.shared.savedGroup[index],
               let id = groupDocumentID?[index]  else { return }
         
-        if let data = data as? ImagePosition, currentData.defectPosition.contains(data) {
+        if let data = data as? [ImagePosition], currentData.defectPosition.contains(where: data.contains) {
             let field = "defectPosition"
-            let newValue = FieldValue.arrayRemove([["x": data.x,
-                                                   "y": data.y]])
+            let batch = db.batch()
+            let docuRef = db.collection("plan").document("site").collection("currentSite").document(id)
             
-            db.collection("plan").document("site").collection("currentSite").document(id).updateData([field: newValue]) { err in
+            for subData in data {
+                let removeValue = FieldValue.arrayRemove([["x": subData.x,
+                                                    "y": subData.y,
+                                                    "pointNum": subData.pointNum]])
+                batch.updateData([field: removeValue], forDocument: docuRef)
+            }
+            batch.commit() { err in
                 if let err = err {
                     print(err.localizedDescription)
                 } else {
@@ -535,12 +542,14 @@ class DefectDetails {
             
             let field = "defectPosition"
             let newValue = FieldValue.arrayUnion([["x": newData.x,
-                                                   "y": newData.y]])
+                                                   "y": newData.y,
+                                                   "pointNum": newData.pointNum]])
             
             let batch = db.batch()
             let docuRef = db.collection("plan").document("site").collection("currentSite").document(id)
             let removeValue = FieldValue.arrayRemove([["x": data.x,
-                                                   "y": data.y]])
+                                                       "y": data.y,
+                                                       "pointNum": data.pointNum]])
                 
             batch.updateData([field: removeValue], forDocument: docuRef)
             batch.updateData([field: newValue], forDocument: docuRef)

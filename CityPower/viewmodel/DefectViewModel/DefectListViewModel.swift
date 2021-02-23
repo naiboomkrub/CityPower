@@ -19,7 +19,7 @@ class DefectListViewModel {
      }
     
     var tempData = [DefectDetail]()
-    var tempImagePoint = [CGPoint]()
+    var tempImagePoint = [String: CGPoint]()
     var filter = "General"
     
     let imageName = BehaviorRelay(value: "")
@@ -28,7 +28,7 @@ class DefectListViewModel {
     let positionTag = BehaviorRelay<[String: CGPoint]>(value: [:])
     let defectDetailModel = BehaviorRelay(value: [DefectDetail]())
     let dataSource = BehaviorRelay(value: [DefectDetail]())
-    let imagePoint = BehaviorRelay(value: [CGPoint]())
+    let imagePoint = BehaviorRelay<[String: CGPoint]>(value: [:])
     
     let events = PublishSubject<Event>()
     
@@ -67,8 +67,8 @@ class DefectListViewModel {
         let imagePointAll = DefectDetails.shared.savedPosition
         
         for item in imagePointAll {
-            if let item = item?.defectPosition {
-                tempImagePoint.append(item)
+            if let pos = item?.defectPosition, let numTag = item?.pointNum {
+                tempImagePoint[numTag] = pos
             }
         }
         imagePoint.accept(tempImagePoint)

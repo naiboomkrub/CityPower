@@ -31,7 +31,7 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
     
     private var load: Bool = false
     private var annotationsToDelete = [UIView]()
-    private var count = 1
+    private var numList = [Int]()
     private var tapBag = DisposeBag()
     
     private let pan = LayerMove()
@@ -125,40 +125,83 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
         
         planPicture.isUserInteractionEnabled = true
         planPicture.addGestureRecognizer(tap)
-        
-        viewModel.imagePoint.subscribe(onNext: { [weak self] point in
+                
+        Observable.combineLatest(viewModel.imagePoint, viewModel.imageName)
+        .subscribe(onNext: { [weak self] point, image in
             
-            var count = 1
-            
-            for subPoint in point {
-                let tempView = TemView()
-                tempView.setText("\(count)")
-                tempView.bounds.size = CGSize(width: 50, height: 70)
-                tempView.frame.origin = CGPoint(x: subPoint.x, y: subPoint.y)
-                tempView.backgroundColor = .clear
-                count += 1
-                self?.planPicture.addSubview(tempView)
-            }
-            
-            self?.count = count
-
-        }).disposed(by: disposeBag)
-        
-        viewModel.imageName.subscribe(onNext: { [weak self] image in
-            
-            guard let url = URL(string: image) else { return }
+            guard let url = URL(string: image), self?.planPicture.image == nil else { return }
 
             let pipeline = DataPipeLine.shared
             let request = DataRequest(url: url, processors: [])
-
+            
             if let container = pipeline.cachedImage(for: request) {
-                self?.planPicture.image = container.image
+                
+                DispatchQueue.main.async {
+    
+                    self?.planPicture.image = container.image
+
+                    if let viewSize = self?.planPicture.bounds.size {
+                        
+                        let newAspectWidth  = viewSize.width / container.image.size.width
+                        let newAspectHeight = viewSize.height / container.image.size.height
+                        let fNew = min(newAspectWidth, newAspectHeight)
+                        
+                        for (tag, subPoint) in point {
+                            
+                            var refPoint = subPoint
+
+                            refPoint.y *= fNew
+                            refPoint.x *= fNew
+                            refPoint.x += (viewSize.width - container.image.size.width * fNew) / 2.0
+                            refPoint.y += (viewSize.height - container.image.size.height * fNew) / 2.0
+                            
+                            let tempView = TemView()
+                            tempView.setText("\(tag)")
+                            tempView.bounds.size = CGSize(width: 50, height: 70)
+                            tempView.frame.origin = refPoint
+                            tempView.backgroundColor = .clear
+                            
+                            if let tag = Int(tag) {
+                                self?.numList.append(tag)
+                            }
+                            self?.planPicture.addSubview(tempView)
+                        }
+                    }
+                }
                 return
             }
             
             pipeline.loadImage(with: request) { [weak self] result in
                 if case let .success(response) = result {
+                    
                     self?.planPicture.image = response.image
+                    
+                    if let viewSize = self?.planPicture.bounds.size {
+                        let newAspectWidth  = viewSize.width / response.image.size.width
+                        let newAspectHeight = viewSize.height / response.image.size.height
+                        let fNew = min(newAspectWidth, newAspectHeight)
+                        
+                        for (tag, subPoint) in point {
+                            
+                            var refPoint = subPoint
+                            
+                            refPoint.y *= fNew
+                            refPoint.x *= fNew
+                            refPoint.x += (viewSize.width - response.image.size.width * fNew) / 2.0
+                            refPoint.y += (viewSize.height - response.image.size.height * fNew) / 2.0
+                            
+                            let tempView = TemView()
+                            tempView.setText("\(tag)")
+                            tempView.bounds.size = CGSize(width: 50, height: 70)
+                            tempView.frame.origin = refPoint
+                            tempView.backgroundColor = .clear
+                            
+                            if let tag = Int(tag) {
+                                self?.numList.append(tag)
+                            }
+                            self?.planPicture.addSubview(tempView)
+                        }
+                    }
                 }
             }
 
@@ -187,7 +230,6 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
         super.viewWillAppear(animated)
         
         DefectDetails.shared.currentIndex = nil
-        
         progressIndicator.center = view.center
         
         if !load {
@@ -513,24 +555,71 @@ extension DefectListViewController {
     @objc func addAnnotation(_ sender: UITapGestureRecognizer) {
 
         let position = sender.location(in: planPicture)
-        
+        let newPosition = CGPoint(x: position.x - 25, y: position.y - 35)
         let tempView = TemView()
-        tempView.setText("\(count)")
+        let count = numList.count
+
+        var emptyNum = [Int]()
+        var numToUpdate = 0
+        
+        if count > 0, let max = numList.max() {
+            let range = 1...max
+            
+            for i in range {
+                if !numList.contains(i) {
+                    emptyNum.append(i)
+                }
+            }
+        }
+        
+        if !emptyNum.isEmpty {
+            numToUpdate = emptyNum[0]
+            tempView.setText("\(numToUpdate)")
+        } else {
+            numToUpdate = count + 1
+            tempView.setText("\(numToUpdate)")
+        }
         tempView.bounds.size = CGSize(width: 50, height: 70)
-        tempView.frame.origin = CGPoint(x: position.x - 25, y: position.y - 35)
+        tempView.frame.origin = newPosition
         tempView.backgroundColor = .clear
-        DefectDetails.shared.addPoint(ImagePosition(x: Double(tempView.frame.origin.x), y: Double(tempView.frame.origin.y)))
-        count += 1
+        
+        if let convertedPoint = convertViewToImagePoint(planPicture, newPosition) {
+            DefectDetails.shared.addPoint(ImagePosition(x: Double(convertedPoint.x), y: Double(convertedPoint.y), pointNum: "\(numToUpdate)"))
+        }
+        
+        numList.append(numToUpdate)
         planPicture.addSubview(tempView)
     }
     
     @objc func completeTask() {
         
         if !annotationsToDelete.isEmpty {
+            
+            var removeSet = [ImagePosition]()
+            
             for view in annotationsToDelete {
-                view.removeFromSuperview()
-                DefectDetails.shared.removePoint(ImagePosition(x: Double(view.frame.origin.x), y: Double(view.frame.origin.y)))
+                
+                if let temView = view as? TemView, let text = temView.labelNum.text {
+                    temView.removeFromSuperview()
+                    
+                    if let image = planPicture.image {
+                        let aspectWidth  = planPicture.bounds.width / image.size.width
+                        let aspectHeight = planPicture.bounds.height / image.size.height
+                        let f = min(aspectWidth, aspectHeight)
+                        
+                        var imagePoint = view.frame.origin
+                        
+                        imagePoint.y -= (planPicture.bounds.height - image.size.height * f) / 2.0
+                        imagePoint.x -= (planPicture.bounds.width - image.size.width * f) / 2.0
+                        imagePoint.x /= f
+                        imagePoint.y /= f
+                        
+                        numList = numList.filter { $0 != Int(text) }
+                        removeSet.append(ImagePosition(x: Double(imagePoint.x), y: Double(imagePoint.y), pointNum: text))
+                    }
+                }
             }
+            DefectDetails.shared.removePoint(removeSet)
         }
     }
 }
