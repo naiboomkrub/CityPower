@@ -22,10 +22,12 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
     @IBOutlet weak var confirmButton: UIButton!
     @IBOutlet weak var editButton: UIButton!
     @IBOutlet weak var listTable: UITableView!
-    @IBOutlet weak var planLabel: UILabel!
     @IBOutlet weak var planPicture: UIImageView!
     @IBOutlet weak var expandButtonView: UIView!
     @IBOutlet weak var filterView: UIView!
+    @IBOutlet weak var planFilter: UIView!
+    @IBOutlet weak var filterScroll: UIScrollView!
+    @IBOutlet weak var heightScroll: NSLayoutConstraint!
     
     var viewModel: DefectListViewModel!
     
@@ -41,7 +43,7 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
     typealias DefectListSection = AnimatableSectionModel<String, DefectDetail>
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 150
+        return 170
     }
     
     func setUpTable() {
@@ -68,19 +70,11 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
                         
         }).disposed(by: disposeBag)
         
-        listTable.rx.itemMoved
-            .subscribe(onNext: { [unowned self] source, destination in
-                guard source != destination else { return }
-                let item = self.viewModel.dataSource.value[source.row]
-                self.viewModel.swapData(index: source, insertIndex: destination, element: item)
-            })
-            .disposed(by: disposeBag)
-        
         Observable.zip(listTable.rx.itemSelected, listTable.rx.modelSelected(DefectDetail.self))
             .subscribe(onNext: { [unowned self] index, model in
                 
                 self.listTable.deselectRow(at: index, animated: true)
-                self.viewModel.selectedDefect(model, index)
+                self.viewModel.selectedDefect(model)
             })
             .disposed(by: disposeBag)
     }
@@ -100,9 +94,6 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
         
         listLabel.text = "Defect Selection"
         listLabel.font = UIFont(name: "SukhumvitSet-Bold", size: CGFloat(25))!
-        
-        planLabel.text = "Plan Label"
-        planLabel.font = UIFont(name: "SukhumvitSet-Bold", size: CGFloat(25))!
         
         progressIndicator.hidesWhenStopped = true
         progressIndicator.color = UIColor(red: 162.0 / 255, green: 162.0 / 255, blue: 162.0 / 255, alpha: 1)
@@ -237,6 +228,7 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
             .disposed(by: disposeBag)
     
         setUpFilterView()
+        setUpPlanFilter()
     }
     
     deinit {
@@ -305,6 +297,55 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
             }).disposed(by: disposeBag)
             
             filterView.addSubview(labelText)
+        }
+    }
+    
+    private func setUpPlanFilter() {
+        
+        let filterText = ["All", "Not Chose", "General","Electrical", "Sanitary", "Mechanical"]
+        
+        var xIncrement = CGFloat(15.0)
+        var lastButton: UIButton?
+        
+        for text in filterText {
+            let labelText = UIButton()
+            labelText.setTitle(text, for: .normal)
+            labelText.titleLabel?.font = UIFont(name: "SukhumvitSet-Bold", size: CGFloat(14))
+            labelText.layer.cornerRadius = 15.0
+            
+            if text == viewModel.filter {
+                labelText.backgroundColor = .Gray6
+                lastButton = labelText
+            } else {
+                labelText.backgroundColor = .clear
+            }
+            
+            labelText.setTitleColor(.black, for: .normal)
+            labelText.contentEdgeInsets = UIEdgeInsets(top: 5, left: 15, bottom: 5, right: 15)
+            labelText.sizeToFit()
+            labelText.frame.origin = CGPoint(x: xIncrement, y: 10)
+            xIncrement += labelText.bounds.size.width
+            
+            labelText.rx.tap.bind(onNext: { [weak self] in
+                guard let text = labelText.titleLabel?.text else { return }
+                
+                labelText.backgroundColor = .Gray6
+                if let button = lastButton, button != labelText {
+                    button.backgroundColor = .clear
+                    lastButton = labelText
+                }
+//                if text != self?.viewModel.filter {
+//                    self?.viewModel.filter = text
+//                    self?.viewModel.reloadData()
+//                }
+
+            }).disposed(by: disposeBag)
+            
+            planFilter.addSubview(labelText)
+        }
+        
+        if UIDevice.current.userInterfaceIdiom == .phone {
+            heightScroll.constant = xIncrement + 70 - filterScroll.bounds.width
         }
     }
     
@@ -546,7 +587,7 @@ extension DefectListViewController {
     
     private var canMoveRowAtIndexPath: RxTableViewSectionedAnimatedDataSource<DefectListSection>.CanMoveRowAtIndexPath {
         return { _, _ in
-            return true
+            return false
         }
     }
     
@@ -694,8 +735,8 @@ class DefectListCell: UITableViewCell {
         
         let largeConfig = UIImage.SymbolConfiguration(pointSize: 20, weight: .bold, scale: .large)
         
-        defectDes.text = data.defectNumber
-        defectLabel.text = data.defectTitle
+        defectDes.text = data.defectTitle
+        defectLabel.text = data.defectNumber
         dueDate.text = "Due : \(data.timeStamp)"
         
         if data.finish {
@@ -709,10 +750,14 @@ class DefectListCell: UITableViewCell {
         switch data.system {
         case "General":
             defectListCell.backgroundColor = .general
+        case "Sanitary":
+            defectListCell.backgroundColor = .sanitary
+        case "Mechanical":
+            defectListCell.backgroundColor = .mechincal
+        case "Electrical":
+            defectListCell.backgroundColor = .electrical
         default:
             defectListCell.backgroundColor = .blueCity
         }
-    
     }
-    
 }

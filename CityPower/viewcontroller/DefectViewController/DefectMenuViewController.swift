@@ -20,13 +20,13 @@ class DefectMenuViewController: UIViewController, UITableViewDelegate {
     @IBOutlet weak var tableButton: UIButton!
     
     var viewModel: DefectMenuViewModel!
-    var load: Bool!
     
     typealias DefectAllSection = AnimatableSectionModel<String, DefectGroup>
     
     private let logo = UIButton()
     private let disposeBag = DisposeBag()
     
+    private var load: Bool!
     private var tapBag = DisposeBag()
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -55,13 +55,6 @@ class DefectMenuViewController: UIViewController, UITableViewDelegate {
             //    self.menuTable.setEmptyMessage("Please Insert Task")
             //}
                         
-        }).disposed(by: disposeBag)
-        
-        menuTable.rx.itemMoved
-            .subscribe(onNext: { [unowned self] source, destination in
-                guard source != destination else { return }
-                let item = self.viewModel.dataSource.value[source.row]
-                self.viewModel.swapData(index: source, insertIndex: destination, element: item)
         }).disposed(by: disposeBag)
         
         Observable.zip(menuTable.rx.itemSelected, menuTable.rx.modelSelected(DefectGroup.self))
@@ -165,7 +158,7 @@ extension DefectMenuViewController {
     
     private var canMoveRowAtIndexPath: RxTableViewSectionedAnimatedDataSource<DefectAllSection>.CanMoveRowAtIndexPath {
         return { _, _ in
-            return true
+            return false
         }
     }
 }

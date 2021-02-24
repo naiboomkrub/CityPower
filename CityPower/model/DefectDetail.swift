@@ -181,11 +181,6 @@ struct DefectDetail: Codable {
             positionY = Double(newValue.y)
         }
     }
-    
-    var defectPosition: CGPoint {
-        get { return CGPoint(x: position.x * UIScreen.main.bounds.width, y: position.y * UIScreen.main.bounds.height) }
-        set { self.position = CGPoint(x: newValue.x / UIScreen.main.bounds.width, y: newValue.y / UIScreen.main.bounds.height) }
-    }
 }
 
 extension DefectDetail: Hashable {
@@ -221,7 +216,7 @@ class DefectDetails {
     
     var currentGroup: Int?
     var currentIndex: Int?
-    var documentID: [String]?
+    var documentID: [String : String]?
     var groupDocumentID: [String]?
     var ref: CollectionReference?
         
@@ -241,7 +236,7 @@ class DefectDetails {
         }
     }
     
-    var savedDefect: [DefectDetail?] = [] {
+    var savedDefect: [String: DefectDetail?] = [:] {
         didSet {
             if let updateCell = updateCell {
                 updateCell()
@@ -398,13 +393,13 @@ class DefectDetails {
               return
             }
                         
-            var models: [DefectDetail] = []
-            var ids: [String] = []
+            var models: [String: DefectDetail] = [:]
+            var ids: [String: String] = [:]
             
             for document in snapshot.documents {
                 if let model = DefectDetail(dictionary: document.data()) {
-                    models.append(model)
-                    ids.append(document.documentID)
+                    models[model.defectNumber] = model
+                    ids[model.defectNumber] = document.documentID
                 }
             }
             
@@ -412,9 +407,9 @@ class DefectDetails {
             self.documentID = ids
             self.defectReference = snapshot.documents
             
-            if let currentIndex = currentIndex {
-                self.savedComment = models[currentIndex].defectComment
-                self.savedPicture = models[currentIndex].defectImage
+            if let currentIndex = currentIndex, let filterModel = models["\(currentIndex)"] {
+                self.savedComment = filterModel.defectComment
+                self.savedPicture = filterModel.defectImage
             }
         }
         ref = db.collection("plan").document(planName).collection("defect")
@@ -427,11 +422,11 @@ class DefectDetails {
     func add<T: Hashable>(_ data: T) {
 
         guard let index = currentIndex,
-              let currentData = DefectDetails.shared.savedDefect[index],
-              let id = documentID?[index],
+              let currentData = DefectDetails.shared.savedDefect["\(index)"],
+              let id = documentID?["\(index)"],
               let ref = ref else { return }
         
-        if let data = data as? CommentStruct, !currentData.defectComment.contains(data) {
+        if let data = data as? CommentStruct, let currentData = currentData, !currentData.defectComment.contains(data) {
             let field = "defectComment"
             let newValue = FieldValue.arrayUnion([["title": data.title,
                                                    "timeStamp": data.timeStamp, "value": data.value]])
@@ -444,7 +439,7 @@ class DefectDetails {
                 }
             }
             
-        } else if let data = data as? ImageStruct, !currentData.defectImage.contains(data) {
+        } else if let data = data as? ImageStruct, let currentData = currentData, !currentData.defectImage.contains(data) {
             let field = "defectImage"
             let newValue = FieldValue.arrayUnion([["image": data.image,
                                                    "timeStamp": data.timeStamp,
@@ -467,7 +462,7 @@ class DefectDetails {
     func editData<T: Hashable>(_ data: T) {
 
         guard let index = currentIndex,
-              let id = documentID?[index],
+              let id = documentID?["\(index)"],
               let ref = ref else { return }
         
         if let data = data as? Bool {
@@ -566,11 +561,11 @@ class DefectDetails {
     func remove<T: Hashable>(_ data: T) {
 
         guard let index = currentIndex,
-              let currentData = DefectDetails.shared.savedDefect[index],
-              let id = documentID?[index],
+              let currentData = DefectDetails.shared.savedDefect["\(index)"],
+              let id = documentID?["\(index)"],
               let ref = ref else { return }
         
-        if let data = data as? CommentStruct, currentData.defectComment.contains(data) {
+        if let data = data as? CommentStruct, let currentData = currentData, currentData.defectComment.contains(data) {
             let field = "defectComment"
             let newValue = FieldValue.arrayRemove([["title": data.title,
                                                    "timeStamp": data.timeStamp, "value": data.value]])
@@ -583,7 +578,7 @@ class DefectDetails {
                 }
             }
             
-        } else if let data = data as? ImageStruct, currentData.defectImage.contains(data) {
+        } else if let data = data as? ImageStruct, let currentData = currentData, currentData.defectImage.contains(data) {
             let field = "defectImage"
             
             let imagePath = "DefectPicture" + "/\(data.fileName).jpg"
@@ -616,8 +611,7 @@ class DefectDetails {
     func update<T: Hashable>(_ data: T, _ newData: T) {
         
         guard let index = currentIndex,
-              let id = documentID?[index],
-              index < DefectDetails.shared.savedDefect.count,
+              let id = documentID?["\(index)"],
               let ref = ref else { return }
         
         if let data = data as? CommentStruct, let newData = newData as? CommentStruct {
@@ -664,43 +658,6 @@ class DefectDetails {
                 }
             }
         }
-    }
-    
-    @discardableResult func swap(index: Int, target: Int, item: DefectDetail) -> Bool {
-        
-        guard target < DefectDetails.shared.savedDefect.count else { return false }
-        
-        let fileName = "defectdetails.json"
-        DefectDetails.shared.savedDefect.remove(at: index)
-        DefectDetails.shared.savedDefect.insert(item, at: target)
-  
-        if let documentsURL = DefectDetails.fileManager.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent(fileName) {
-            if let data = try? JSONEncoder().encode(DefectDetails.shared.savedDefect) {
-                try? data.write(to: documentsURL)
-                return true
-            }
-        }
-        return false
-    }
-        
-    
-    @discardableResult func edit(newTask: DefectDetail, task: DefectDetail) -> Bool {
-    
-        guard DefectDetails.shared.savedDefect.contains(task) else { return false }
-        
-        let fileName = "defectdetails.json"
-        
-        if let replace = DefectDetails.shared.savedDefect.firstIndex(of: task) {
-            DefectDetails.shared.savedDefect[replace] = newTask
-                        
-        if let documentsURL = DefectDetails.fileManager.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent(fileName) {
-            if let data = try? JSONEncoder().encode(DefectDetails.shared.savedDefect) {
-                try? data.write(to: documentsURL)
-                return true
-                }
-            }
-        }
-        return false
     }
     
     private func loadFromJSONFilesOfDirectory(url contentURL: URL?) -> Any {

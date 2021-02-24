@@ -80,6 +80,7 @@ class AddDefectController: CardPartsViewController, UITextFieldDelegate, UIPicke
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         sectionField.text = sectionList[row]
+        viewModel.systemChose.accept(sectionList[row])
     }
                 
     override func viewDidLoad() {
@@ -121,6 +122,7 @@ class AddDefectController: CardPartsViewController, UITextFieldDelegate, UIPicke
         pickerView.dataSource = self
         pickerView.autoresizingMask = .flexibleWidth
         pickerView.contentMode = .center
+        pickerView(pickerView, didSelectRow: 0, inComponent: 0)
         
         let toolBar =  UIToolbar(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 35))
         toolBar.barStyle = UIBarStyle.default

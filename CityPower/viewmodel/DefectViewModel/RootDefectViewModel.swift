@@ -149,20 +149,20 @@ class RootDefectViewModel {
     
         let defectListViewModel = DefectListViewModel()
         
-        Observable.combineLatest(defectListViewModel.defectDetailModel, defectListViewModel.indexRow)
-            .subscribe(onNext: { [weak self] model, index in
+        defectListViewModel.defectDetailModel.subscribe(onNext: { [weak self] model in
                 
                 if !model.isEmpty {
                     
+                    self?.defectDetailViewModel.photoData.accept(model[0].defectImage)
+                    self?.defectDetailViewModel.commentData.accept(model[0].defectComment)
+                    
                     if !model[0].defectComment.isEmpty {
-                        self?.defectDetailViewModel.commentData.accept(model[0].defectComment)
                         self?.defectDetailViewModel.state.accept(.hasData)
                     } else {
                         self?.defectDetailViewModel.state.accept(.empty)
                     }
                     
                     if !model[0].defectImage.isEmpty {
-                        self?.defectDetailViewModel.photoData.accept(model[0].defectImage)
                         self?.defectDetailViewModel.photoState.accept(.hasData)
                     } else {
                         self?.defectDetailViewModel.photoState.accept(.empty)
@@ -171,9 +171,9 @@ class RootDefectViewModel {
                     self?.defectDetailViewModel.dueDate.accept("Create :  \(model[0].timeStamp)")
                     self?.defectDetailViewModel.createDate.accept("Due     :  \(model[0].dueDate)")
                     self?.defectDetailViewModel.title.accept(model[0].defectTitle)
-                    self?.defectDetailViewModel.positionDefect.accept([model[0].defectPosition])
+                    self?.defectDetailViewModel.positionDefect.accept([model[0].position])
                     self?.defectDetailViewModel.photos.accept([])
-                    DefectDetails.shared.currentIndex = index
+                    DefectDetails.shared.currentIndex = Int(model[0].defectNumber)
                 }
             }).disposed(by: disposeBag)
         
@@ -195,7 +195,6 @@ class RootDefectViewModel {
         
         return defectListViewModel
     }
-    
     
     func createDefectDetailViewModel() -> DefectDetailViewModel {
     

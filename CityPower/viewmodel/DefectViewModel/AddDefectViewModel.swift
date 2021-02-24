@@ -23,6 +23,7 @@ class AddDefectViewModel {
     let dueDate = BehaviorRelay(value: "")
     let defectTitle = BehaviorRelay(value: "")
     let resultPosition = BehaviorRelay(value: [CGPoint(), ""])
+    let systemChose = BehaviorRelay(value: "")
     
     let db = Firestore.firestore()
     
@@ -38,9 +39,9 @@ class AddDefectViewModel {
     
     func saveDefect() {
         
-        if let position = resultPosition.value[0] as? CGPoint {
+        if let position = resultPosition.value[0] as? CGPoint, let numberTag = resultPosition.value[1] as? String {
         
-            let dataStruct = DefectDetail(defectNumber: "BOOM", defectTitle: defectTitle.value, defectImage: [], defectComment: [], finish: false, system: "General", timeStamp: defectDate.value, dueDate: dueDate.value, positionX: Double(position.x), positionY: Double(position.y))
+            let dataStruct = DefectDetail(defectNumber: numberTag, defectTitle: defectTitle.value, defectImage: [], defectComment: [], finish: false, system: systemChose.value, timeStamp: defectDate.value, dueDate: dueDate.value, positionX: Double(position.x), positionY: Double(position.y))
             
             do {
                 let jsonData = try dataStruct.jsonData()

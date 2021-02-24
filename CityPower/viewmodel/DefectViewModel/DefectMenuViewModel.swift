@@ -52,14 +52,6 @@ class DefectMenuViewModel {
         dataSource.accept(tempData)
     }
     
-    func swapData(index: IndexPath, insertIndex: IndexPath, element: DefectGroup) {
-          
-        var newValue = dataSource.value
-        newValue.remove(at: index.row)
-        newValue.insert(element, at: insertIndex.row)
-        dataSource.accept(newValue)
-    }
-    
     func removeData(index: IndexPath) {
         
         var newValue = dataSource.value

@@ -91,9 +91,7 @@ class DefectDetailController: CardPartsViewController, CustomMarginCardTrait {
     }
         
     var viewModel: DefectDetailViewModel!
-    
-    let defectStack = CardPartStackView()
-    let buttonStack = CardPartStackView()
+
     let defectView = CardPartImageView()
     let defectTitle = CardPartTextView(type: .normal)
     let defectCreate = CardPartTextView(type: .normal)
@@ -106,6 +104,9 @@ class DefectDetailController: CardPartsViewController, CustomMarginCardTrait {
     let doneStack = CardPartStackView()
     
     let dateStack = CardPartStackView()
+    let defectStack = CardPartStackView()
+    let buttonStack = CardPartStackView()
+    let imageStack = CardPartStackView()
     
     let addImageDes = CardPartTextView(type: .normal)
     let addCommentDes = CardPartTextView(type: .normal)
@@ -125,6 +126,14 @@ class DefectDetailController: CardPartsViewController, CustomMarginCardTrait {
         defectStack.isLayoutMarginsRelativeArrangement = true
         defectStack.layoutMargins = UIEdgeInsets.zero
         defectStack.margins = UIEdgeInsets(top: 10, left: 0, bottom: 20, right: 0)
+        
+        imageStack.axis = .vertical
+        imageStack.alignment = .center
+        imageStack.spacing = 0
+        imageStack.isLayoutMarginsRelativeArrangement = true
+        imageStack.layoutMargins = UIEdgeInsets.zero
+        imageStack.margins = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+        imageStack.clipsToBounds = true
         
         dateStack.axis = .vertical
         dateStack.spacing = 10
@@ -201,7 +210,8 @@ class DefectDetailController: CardPartsViewController, CustomMarginCardTrait {
                     if !position.isEmpty,
                        let width = self?.defectView.frame.width,
                        let height = self?.defectView.frame.height,
-                       let imgSize = self?.defectView.image?.size {
+                       let imgSize = self?.defectView.image?.size,
+                       let tr = self?.defectView.transform.scaledBy(x: 1.25, y: 1.25) {
 
                         let aspectWidth  = width / imgSize.width
                         let aspectHeight = height / imgSize.height
@@ -221,7 +231,12 @@ class DefectDetailController: CardPartsViewController, CustomMarginCardTrait {
                         tempView.frame.origin = imagePoint
                         tempView.layer.borderColor = UIColor.blueCity.cgColor
                         tempView.backgroundColor = .clear
+                        
                         self?.defectView.addSubview(tempView)
+                        self?.defectView.layer.anchorPoint = CGPoint(x: (imagePoint.x + 25) / width,
+                                                                     y: (imagePoint.y + 35) / height)
+                        self?.defectView.layer.transform = CATransform3DMakeAffineTransform(tr)
+                        
                     }
                 }
             }
@@ -247,16 +262,18 @@ class DefectDetailController: CardPartsViewController, CustomMarginCardTrait {
         [createStack(addImageDes, addImage), createStack(addCommentDes, addComment)].forEach { label in
             buttonStack.addArrangedSubview(label)
         }
-        
+
+        imageStack.addArrangedSubview(defectView)
+
         [defectCreate, defectDue].forEach { label in
             dateStack.addArrangedSubview(label)
         }
         
-        [defectView, defectTitle, buttonStack].forEach { label in
+        [defectTitle, buttonStack].forEach { label in
             defectStack.addArrangedSubview(label)
         }
         
-        setupCardParts([defectStack, CardPartSeparatorView(), dateStack, CardPartSeparatorView(), doneStack])
+        setupCardParts([imageStack, defectStack, CardPartSeparatorView(), dateStack, CardPartSeparatorView(), doneStack])
     }
     
     override func viewWillAppear(_ animated: Bool) {

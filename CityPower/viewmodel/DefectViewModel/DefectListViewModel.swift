@@ -24,7 +24,6 @@ class DefectListViewModel {
     
     let imageName = BehaviorRelay(value: "")
     let progressSpin = BehaviorRelay(value: true)
-    let indexRow = BehaviorRelay(value: 0)
     let positionTag = BehaviorRelay<[String: CGPoint]>(value: [:])
     let defectDetailModel = BehaviorRelay(value: [DefectDetail]())
     let dataSource = BehaviorRelay(value: [DefectDetail]())
@@ -49,7 +48,7 @@ class DefectListViewModel {
         
         let defectList = DefectDetails.shared.savedDefect
         
-        for item in defectList {
+        for item in defectList.values {
             if let item = item, item.system == filter {
                 tempData.append(item)
             }
@@ -74,15 +73,6 @@ class DefectListViewModel {
         imagePoint.accept(tempImagePoint)
     }
     
-    
-    func swapData(index: IndexPath, insertIndex: IndexPath, element: DefectDetail) {
-          
-        var newValue = dataSource.value
-        newValue.remove(at: index.row)
-        newValue.insert(element, at: insertIndex.row)
-        dataSource.accept(newValue)
-    }
-    
     func removeData(index: IndexPath) {
         
         var newValue = dataSource.value
@@ -90,9 +80,8 @@ class DefectListViewModel {
         dataSource.accept(newValue)
     }
     
-    func selectedDefect(_ model: DefectDetail, _ index: IndexPath) {
+    func selectedDefect(_ model: DefectDetail) {
         defectDetailModel.accept([model])
-        indexRow.accept(index.row)
         events.onNext(.SelectDefect)
     }
     
