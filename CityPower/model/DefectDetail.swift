@@ -220,6 +220,8 @@ class DefectDetails {
     var groupDocumentID: [String]?
     var ref: CollectionReference?
     var siteLoaded: Bool?
+    
+    var selectedSite: String?
         
     var savedPosition: [ImagePosition?] = [] {
         didSet {
@@ -386,9 +388,9 @@ class DefectDetails {
 
     func loadDefect() {
 
-        guard listener == nil else { return }
+        guard listener == nil, let currentSite = selectedSite else { return }
         
-        listener = db.collection("plan").document("site").collection("currentSite").addSnapshotListener { [unowned self] querySnapshot, error in
+        listener = db.collection("plan").document("site").collection(currentSite).addSnapshotListener { [unowned self] querySnapshot, error in
             
             guard let snapshot = querySnapshot else {
               print("Error fetching snapshot results: \(error!)")
@@ -514,7 +516,8 @@ class DefectDetails {
 
         guard let index = currentGroup,
               let currentData = DefectDetails.shared.savedGroup[index],
-              let id = groupDocumentID?[index]  else { return }
+              let id = groupDocumentID?[index],
+              let currentSite = selectedSite else { return }
         
         if let data = data as? ImagePosition, !currentData.defectPosition.contains(data) {
             let field = "defectPosition"
@@ -524,7 +527,7 @@ class DefectDetails {
                                                    "system": data.system,
                                                    "selected": data.selected]])
             
-            db.collection("plan").document("site").collection("currentSite").document(id).updateData([field: newValue]) { err in
+            db.collection("plan").document("site").collection(currentSite).document(id).updateData([field: newValue]) { err in
                 if let err = err {
                     print(err.localizedDescription)
                 } else {
@@ -538,12 +541,13 @@ class DefectDetails {
 
         guard let index = currentGroup,
               let currentData = DefectDetails.shared.savedGroup[index],
-              let id = groupDocumentID?[index]  else { return }
+              let id = groupDocumentID?[index],
+              let currentSite = selectedSite  else { return }
         
         if let data = data as? [ImagePosition], currentData.defectPosition.contains(where: data.contains) {
             let field = "defectPosition"
             let batch = db.batch()
-            let docuRef = db.collection("plan").document("site").collection("currentSite").document(id)
+            let docuRef = db.collection("plan").document("site").collection(currentSite).document(id)
             
             for subData in data {
                 let removeValue = FieldValue.arrayRemove([["x": subData.x,
@@ -567,7 +571,8 @@ class DefectDetails {
 
         guard let index = currentGroup,
               let currentData = DefectDetails.shared.savedGroup[index],
-              let id = groupDocumentID?[index]  else { return }
+              let id = groupDocumentID?[index],
+              let currentSite = selectedSite  else { return }
         
         if let data = data as? ImagePosition, let newData = newData as? ImagePosition, currentData.defectPosition.contains(data) {
             
@@ -579,7 +584,7 @@ class DefectDetails {
                                                    "selected": newData.selected]])
             
             let batch = db.batch()
-            let docuRef = db.collection("plan").document("site").collection("currentSite").document(id)
+            let docuRef = db.collection("plan").document("site").collection(currentSite).document(id)
             let removeValue = FieldValue.arrayRemove([["x": data.x,
                                                        "y": data.y,
                                                        "pointNum": data.pointNum,

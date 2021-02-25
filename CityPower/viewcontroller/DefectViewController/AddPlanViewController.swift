@@ -174,7 +174,6 @@ class AddPlanController: CardPartsViewController {
                 if let error = error {
                     print(error)
                 } else {
-                    print(downloadURL)
                     self?.viewModel.imageLink.accept(downloadURL.absoluteString)
                     completionHandler()
                 }

@@ -43,7 +43,8 @@ class SiteListViewModel {
     }
 
     
-    func selectedSite() {
+    func selectedSite(_ model: SiteGroup) {
+        DefectDetails.shared.selectedSite = model.name
         events.onNext(.SelectSite)
     }
 }

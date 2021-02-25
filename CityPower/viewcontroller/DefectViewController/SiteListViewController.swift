@@ -46,7 +46,7 @@ class SiteListViewController: UIViewController, UITableViewDelegate {
             .subscribe(onNext: { [unowned self] index, model in
                 
                 self.allSiteTable.deselectRow(at: index, animated: true)
-                self.viewModel.selectedSite()
+                self.viewModel.selectedSite(model)
 
         }).disposed(by: disposeBag)
     }

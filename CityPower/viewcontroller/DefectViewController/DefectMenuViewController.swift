@@ -116,6 +116,10 @@ class DefectMenuViewController: UIViewController, UITableViewDelegate {
         tapBag = DisposeBag()
     }
     
+    deinit {
+        DefectDetails.shared.stopListening()
+    }
+    
     private func setUpHeaderButton() {
         
         let largeConfig = UIImage.SymbolConfiguration(pointSize: 20, weight: .bold, scale: .large)

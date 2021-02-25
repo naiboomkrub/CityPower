@@ -44,9 +44,9 @@ class AddPlanViewModel {
             let jsonData = try planStruct.jsonData()
             let json = try JSONSerialization.jsonObject(with: jsonData, options: [])
             
-            guard let dictionary = json as? [String : Any] else { return }
+            guard let dictionary = json as? [String : Any], let currentSite = DefectDetails.shared.selectedSite else { return }
   
-            db.collection("plan").document("site").collection("currentSite").addDocument(data: dictionary) { [weak self] err in
+            db.collection("plan").document("site").collection(currentSite).addDocument(data: dictionary) { [weak self] err in
                 if let err = err {
                     print("Error adding document: \(err)")
                 } else {
