@@ -118,7 +118,7 @@ class LayerMove: UIGestureRecognizer  {
         
         if annotationBeingDragged == nil { return }
         
-        if let view = self.annotationBeingDragged, let centerEnd = self.centerEnd, let text = view.labelNum.text {
+        if let view = self.annotationBeingDragged, let centerEnd = self.centerEnd, let text = view.labelNum.text, let model = view.imageModel {
             DispatchQueue.main.async {
                 
                 let centerEnd = CGPoint(x: centerEnd.x - view.bounds.width / 2, y: centerEnd.y - view.bounds.height / 2)
@@ -127,9 +127,11 @@ class LayerMove: UIGestureRecognizer  {
                    let centerConverted = convertViewToImagePoint(self.pdfView, centerEnd) {
                     DefectDetails.shared
                         .movePoint(ImagePosition(x: round(Double(convertedPoint.x) * 1000) / 1000,
-                                                 y: round(Double(convertedPoint.y) * 1000) / 1000, pointNum: text),
+                                                 y: round(Double(convertedPoint.y) * 1000) / 1000, pointNum: text,
+                                                 system: model.system, selected: model.selected),
                                    ImagePosition(x: round(Double(centerConverted.x) * 1000) / 1000,
-                                                 y: round(Double(centerConverted.y) * 1000) / 1000, pointNum: text))
+                                                 y: round(Double(centerConverted.y) * 1000) / 1000, pointNum: text,
+                                                 system: model.system, selected: model.selected))
                 }
                 view.frame = CGRect(origin: centerEnd, size: view.bounds.size)
                 self.pdfView.addSubview(view)
@@ -144,6 +146,12 @@ class LayerMove: UIGestureRecognizer  {
 class TemView : UIView {
     
     let labelNum = UILabel()
+    
+    var imageModel: ImagePosition? {
+        didSet {
+            labelNum.text = imageModel?.pointNum
+        }
+    }
     
     override class var layerClass : AnyClass {
         return TemLayer.self
@@ -170,6 +178,10 @@ class TemView : UIView {
     
     func setText(_ text: String) {
         labelNum.text = text
+    }
+    
+    func setModel(_ model: ImagePosition) {
+        imageModel = model
     }
     
     required init?(coder: NSCoder) {

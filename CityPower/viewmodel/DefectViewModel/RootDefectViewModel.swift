@@ -26,6 +26,15 @@ class RootDefectViewModel {
         return self.createDefectViewModel()
     }()
     
+    lazy private(set) var siteDetailViewModel: SiteDetailViewModel = {
+        return self.createSiteDetailViewModel()
+    }()
+    
+    lazy private(set) var siteListViewModel: SiteListViewModel = {
+        DefectDetails.shared.loadSite()
+        return self.createSiteListViewModel()
+    }()
+    
     lazy private(set) var defectMenuViewModel: DefectMenuViewModel = {
         DefectDetails.shared.loadDefect()
         return self.createDefectMenuViewModel()
@@ -80,7 +89,7 @@ class RootDefectViewModel {
     }()
     
     lazy private(set) var defectStackActions: BehaviorSubject<DefectStackActions> = {
-        return BehaviorSubject(value: .set(viewModels: [self.defectMenuViewModel], animated: false))
+        return BehaviorSubject(value: .set(viewModels: [self.siteListViewModel], animated: false))
     }()
     
     private let disposeBag = DisposeBag()
@@ -98,6 +107,40 @@ class RootDefectViewModel {
         let defectViewModel = DefectViewModel()
         
         return defectViewModel
+    }
+    
+    func createSiteListViewModel() -> SiteListViewModel {
+    
+        let siteListViewModel = SiteListViewModel()
+        
+        siteListViewModel.events
+            .subscribe(onNext: { [weak self] event in
+            switch event {
+            case .SelectSite:
+                self?.siteSelected()
+            }
+            }).disposed(by: disposeBag)
+        
+        return siteListViewModel
+    }
+    
+    func createSiteDetailViewModel() -> SiteDetailViewModel {
+    
+        let siteDetailViewModel = SiteDetailViewModel()
+        
+        siteDetailViewModel.events
+            .subscribe(onNext: { [weak self] event in
+            switch event {
+            case .selectArea:
+                return
+            case .selectDefect:
+                self?.startDefectMenu()
+            case .selectUnit:
+                return
+            }
+            }).disposed(by: disposeBag)
+        
+        return siteDetailViewModel
     }
     
     func createAddPlanViewModel() -> AddPlanViewModel {
@@ -251,6 +294,14 @@ class RootDefectViewModel {
     
     private func defectSelected() {
         self.defectStackActions.onNext(.push(viewModel: self.defectDetailViewModel, animated: true))
+    }
+    
+    private func startDefectMenu() {
+        self.defectStackActions.onNext(.push(viewModel: self.defectMenuViewModel, animated: true))
+    }
+    
+    private func siteSelected() {
+        self.defectStackActions.onNext(.push(viewModel: self.siteDetailViewModel, animated: true))
     }
     
     private func presentImageEditor() {

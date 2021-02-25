@@ -40,8 +40,18 @@ class AddDefectViewModel {
     func saveDefect() {
         
         if let position = resultPosition.value[0] as? CGPoint, let numberTag = resultPosition.value[1] as? String {
-        
-            let dataStruct = DefectDetail(defectNumber: numberTag, defectTitle: defectTitle.value, defectImage: [], defectComment: [], finish: false, system: systemChose.value, timeStamp: defectDate.value, dueDate: dueDate.value, positionX: Double(position.x), positionY: Double(position.y))
+                        
+            let dataStruct = DefectDetail(defectNumber: numberTag, defectTitle: defectTitle.value, defectImage: [], defectComment: [], finish: false, system: systemChose.value, timeStamp: defectDate.value, dueDate: dueDate.value, positionX: round(Double(position.x) * 1000) / 1000, positionY: round(Double(position.y) * 1000) / 1000)
+            
+
+            DefectDetails.shared
+                .movePoint(ImagePosition(x: dataStruct.positionX,
+                                         y: dataStruct.positionY, pointNum: dataStruct.defectNumber,
+                                         system: "", selected: false),
+                            ImagePosition(x: dataStruct.positionX,
+                                          y: dataStruct.positionY, pointNum: dataStruct.defectNumber,
+                                          system: dataStruct.system, selected: true))
+            
             
             do {
                 let jsonData = try dataStruct.jsonData()

@@ -22,6 +22,8 @@ struct ImagePosition: Codable {
     }
     
     var pointNum: String
+    var system: String
+    var selected: Bool
     
     var defectPosition: CGPoint? {
         if let x = positionFloatX, let y = positionFloatY {
@@ -33,12 +35,14 @@ struct ImagePosition: Codable {
     var positionFloatX: CGFloat?
     var positionFloatY: CGFloat?
     
-    init(x: Double, y: Double, pointNum: String) {
+    init(x: Double, y: Double, pointNum: String, system: String, selected: Bool) {
         self.x = x
         self.y = y
         self.pointNum = pointNum
         self.positionFloatX = CGFloat(x)
         self.positionFloatY = CGFloat(y)
+        self.system = system
+        self.selected = selected
     }
     
     var dictionary: [String: Any] {
@@ -46,15 +50,19 @@ struct ImagePosition: Codable {
         "x": x,
         "y": y,
         "pointNum": pointNum,
+        "system": system,
+        "selected": selected,
       ]
     }
     
     init?(dictionary: [String : Any]) {
         guard let x = dictionary["x"] as? Double,
               let y = dictionary["y"] as? Double,
-              let pointNum = dictionary["pointNum"] as? String else { return nil }
+              let pointNum = dictionary["pointNum"] as? String,
+              let system = dictionary["system"] as? String,
+              let selected = dictionary["selected"] as? Bool else { return nil }
         
-        self.init(x: x, y: y, pointNum: pointNum)
+        self.init(x: x, y: y, pointNum: pointNum, system: system, selected: selected)
     }
 }
 
@@ -102,7 +110,7 @@ struct DefectGroup: Codable {
         self.planTitle = planTitle
         self.timeStamp = timeStamp
         self.planUrl = planUrl
-        self.defectPosition = defectPosition.map( {ImagePosition(x: $0["x"] as! Double, y: $0["y"] as! Double, pointNum: $0["pointNum"] as! String) } )
+        self.defectPosition = defectPosition.map( {ImagePosition(x: $0["x"] as! Double, y: $0["y"] as! Double, pointNum: $0["pointNum"] as! String , system: $0["system"] as! String , selected: $0["selected"] as! Bool) } )
     }
 }
 

@@ -219,6 +219,7 @@ class DefectDetails {
     var documentID: [String : String]?
     var groupDocumentID: [String]?
     var ref: CollectionReference?
+    var siteLoaded: Bool?
         
     var savedPosition: [ImagePosition?] = [] {
         didSet {
@@ -260,6 +261,15 @@ class DefectDetails {
         }
     }
     
+    var savedSite: [SiteGroup?] = [] {
+        didSet {
+            if let updateSite = updateSite {
+                updateSite()
+            }
+        }
+    }
+    
+    var updateSite: (() -> Void)?
     var layoutPoint: (() -> Void)?
     var updateCell: (() -> Void)?
     var updatePicture: (() -> Void)?
@@ -349,6 +359,29 @@ class DefectDetails {
                 }
             }
         }
+    }
+    
+    func loadSite() {
+        
+        guard siteLoaded == nil else { return }
+        
+         db.collection("site").getDocuments { [unowned self] querySnapshot, error in
+            
+            guard let snapshot = querySnapshot else {
+              print("Error fetching snapshot results: \(error!)")
+              return
+            }
+                        
+            var models: [SiteGroup] = []
+            
+            for document in snapshot.documents {
+                if let model = SiteGroup(dictionary: document.data()) {
+                    models.append(model)
+                }
+            }
+            self.savedSite = models
+        }
+        siteLoaded = true
     }
 
     func loadDefect() {
@@ -487,7 +520,9 @@ class DefectDetails {
             let field = "defectPosition"
             let newValue = FieldValue.arrayUnion([["x": data.x,
                                                    "y": data.y,
-                                                   "pointNum": data.pointNum]])
+                                                   "pointNum": data.pointNum,
+                                                   "system": data.system,
+                                                   "selected": data.selected]])
             
             db.collection("plan").document("site").collection("currentSite").document(id).updateData([field: newValue]) { err in
                 if let err = err {
@@ -512,8 +547,10 @@ class DefectDetails {
             
             for subData in data {
                 let removeValue = FieldValue.arrayRemove([["x": subData.x,
-                                                    "y": subData.y,
-                                                    "pointNum": subData.pointNum]])
+                                                           "y": subData.y,
+                                                           "pointNum": subData.pointNum,
+                                                           "system": subData.system,
+                                                           "selected": subData.selected]])
                 batch.updateData([field: removeValue], forDocument: docuRef)
             }
             batch.commit() { err in
@@ -525,7 +562,7 @@ class DefectDetails {
             }
         }
     }
-    
+        
     func movePoint<T: Hashable>(_ data: T, _ newData: T) {
 
         guard let index = currentGroup,
@@ -537,13 +574,17 @@ class DefectDetails {
             let field = "defectPosition"
             let newValue = FieldValue.arrayUnion([["x": newData.x,
                                                    "y": newData.y,
-                                                   "pointNum": newData.pointNum]])
+                                                   "pointNum": newData.pointNum,
+                                                   "system": newData.system,
+                                                   "selected": newData.selected]])
             
             let batch = db.batch()
             let docuRef = db.collection("plan").document("site").collection("currentSite").document(id)
             let removeValue = FieldValue.arrayRemove([["x": data.x,
                                                        "y": data.y,
-                                                       "pointNum": data.pointNum]])
+                                                       "pointNum": data.pointNum,
+                                                       "system": data.system,
+                                                       "selected": data.selected]])
                 
             batch.updateData([field: removeValue], forDocument: docuRef)
             batch.updateData([field: newValue], forDocument: docuRef)
@@ -554,7 +595,6 @@ class DefectDetails {
                     print("Document successfully updated")
                 }
             }
-            
         }
     }
     

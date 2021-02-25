@@ -216,6 +216,32 @@ func viewController(forViewModel viewModel: Any) -> UIViewController? {
     viewController?.viewModel = viewModel
     return viewController
     
+  // MARK: - SiteListViewModel
+  
+  case let viewModel as SiteListViewModel:
+    let viewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "SiteListViewController") as? SiteListViewController
+    viewController?.viewModel = viewModel
+    return viewController
+    
+  // MARK: - SiteDetailViewModel
+  
+  case let viewModel as SiteDetailViewModel:
+    let viewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "SiteDetailViewController") as? SiteDetailViewController
+    let siteDetailController = SiteDetailController()
+    let statusTable = StatusTable()
+    let durationTable = DurationTable()
+    
+    siteDetailController.viewModel = viewModel
+    statusTable.viewModel = viewModel
+    durationTable.viewModel = viewModel
+    
+    viewController?.durationTable = durationTable
+    viewController?.statusTable = statusTable
+    viewController?.siteDetailController = siteDetailController
+    viewController?.viewModel = viewModel
+    viewController?.title = "Defect"
+    return viewController
+    
   // MARK: - DefectListViewModel
   
   case let viewModel as DefectListViewModel:

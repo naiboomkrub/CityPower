@@ -146,25 +146,25 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
                         let newAspectHeight = viewSize.height / newSize.height
                         let fNew = min(newAspectWidth, newAspectHeight)
                         
-                        for (tag, subPoint) in point {
+                        for subPoint in point {
                             
-                            var refPoint = subPoint
-
-                            refPoint.y *= fNew
-                            refPoint.x *= fNew
-                            refPoint.x += (viewSize.width - newSize.width * fNew) / 2.0
-                            refPoint.y += (viewSize.height - newSize.height * fNew) / 2.0
-                            
-                            let tempView = TemView()
-                            tempView.setText("\(tag)")
-                            tempView.bounds.size = CGSize(width: 50, height: 70)
-                            tempView.frame.origin = refPoint
-                            tempView.backgroundColor = .clear
-                            
-                            if let tag = Int(tag) {
-                                self?.numList.append(tag)
+                            if var refPoint = subPoint.defectPosition {
+                                refPoint.y *= fNew
+                                refPoint.x *= fNew
+                                refPoint.x += (viewSize.width - newSize.width * fNew) / 2.0
+                                refPoint.y += (viewSize.height - newSize.height * fNew) / 2.0
+                                
+                                let tempView = TemView()
+                                tempView.setModel(subPoint)
+                                tempView.bounds.size = CGSize(width: 50, height: 70)
+                                tempView.frame.origin = refPoint
+                                tempView.backgroundColor = .clear
+                                
+                                if let tag = Int(subPoint.pointNum) {
+                                    self?.numList.append(tag)
+                                }
+                                self?.planPicture.addSubview(tempView)
                             }
-                            self?.planPicture.addSubview(tempView)
                         }
                     }
                 }
@@ -190,25 +190,25 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
                         let newAspectHeight = viewSize.height / newSize.height
                         let fNew = min(newAspectWidth, newAspectHeight)
                         
-                        for (tag, subPoint) in point {
+                        for subPoint in point {
                             
-                            var refPoint = subPoint
-                            
-                            refPoint.y *= fNew
-                            refPoint.x *= fNew
-                            refPoint.x += (viewSize.width - newSize.width * fNew) / 2.0
-                            refPoint.y += (viewSize.height - newSize.height * fNew) / 2.0
-                            
-                            let tempView = TemView()
-                            tempView.setText("\(tag)")
-                            tempView.bounds.size = CGSize(width: 50, height: 70)
-                            tempView.frame.origin = refPoint
-                            tempView.backgroundColor = .clear
-                            
-                            if let tag = Int(tag) {
-                                self?.numList.append(tag)
+                            if var refPoint = subPoint.defectPosition {
+                                refPoint.y *= fNew
+                                refPoint.x *= fNew
+                                refPoint.x += (viewSize.width - newSize.width * fNew) / 2.0
+                                refPoint.y += (viewSize.height - newSize.height * fNew) / 2.0
+                                
+                                let tempView = TemView()
+                                tempView.setModel(subPoint)
+                                tempView.bounds.size = CGSize(width: 50, height: 70)
+                                tempView.frame.origin = refPoint
+                                tempView.backgroundColor = .clear
+                                
+                                if let tag = Int(subPoint.pointNum) {
+                                    self?.numList.append(tag)
+                                }
+                                self?.planPicture.addSubview(tempView)
                             }
-                            self?.planPicture.addSubview(tempView)
                         }
                     }
                 }
@@ -644,7 +644,8 @@ extension DefectListViewController {
         
         if let convertedPoint = convertViewToImagePoint(planPicture, newPosition) {
             DefectDetails.shared.addPoint(ImagePosition(x: round(Double(convertedPoint.x) * 1000) / 1000,
-                                                        y: round(Double(convertedPoint.y) * 1000) / 1000, pointNum: "\(numToUpdate)"))
+                                                        y: round(Double(convertedPoint.y) * 1000) / 1000, pointNum: "\(numToUpdate)",
+                                                        system: "" , selected: false ))
         }
         
         numList.append(numToUpdate)
@@ -659,7 +660,7 @@ extension DefectListViewController {
             
             for view in annotationsToDelete {
                 
-                if let temView = view as? TemView, let text = temView.labelNum.text {
+                if let temView = view as? TemView, let text = temView.labelNum.text, let model = temView.imageModel {
                     temView.removeFromSuperview()
                     
                     if let image = planPicture.image {
@@ -686,7 +687,8 @@ extension DefectListViewController {
                         
                         numList = numList.filter { $0 != Int(text) }
                         removeSet.append(ImagePosition(x: round(Double(imagePoint.x) * 1000) / 1000,
-                                                       y: round(Double(imagePoint.y) * 1000) / 1000, pointNum: text))
+                                                       y: round(Double(imagePoint.y) * 1000) / 1000, pointNum: text,
+                                                       system: model.system, selected: model.selected))
                     }
                 }
             }
