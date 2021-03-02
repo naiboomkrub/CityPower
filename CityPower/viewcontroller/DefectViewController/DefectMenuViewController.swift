@@ -187,9 +187,11 @@ class DefectMenuCell: UITableViewCell {
     
     func setData (_ data: DefectGroup) {
         
-        let pipeline = DataPipeLine.shared
+        defectPlanLabel.text = data.planTitle
         
         guard let url = URL(string: data.planUrl), pdfImage.image == nil else { return }
+        
+        let pipeline = DataPipeLine.shared
         
         let request = DataRequest(url: url, processors: [ImageProcessors.Resize(size: pdfImage.bounds.size)])
         
@@ -203,7 +205,6 @@ class DefectMenuCell: UITableViewCell {
                 self?.animateFadeIn()
             }
         }
-        defectPlanLabel.text = data.planTitle
     }
     
     private func display(_ container: ImageContainer) {

@@ -68,8 +68,8 @@ struct ImagePosition: Codable {
 
 extension ImagePosition: Hashable {
     static func == (lhs: ImagePosition, rhs: ImagePosition) -> Bool {
-        return lhs.x == rhs.x &&
-            lhs.y == rhs.y
+        return abs(lhs.x - rhs.x) < 1 &&
+            abs(lhs.y - rhs.y) < 1
     }
     
     func hash(into hasher: inout Hasher) {

@@ -11,6 +11,16 @@ import RxCocoa
 import RxSwift
 import RxDataSources
 
+enum PointState {
+    case All
+    case Empty
+    case NotChose
+    case General
+    case Electrical
+    case Sanitary
+    case Mechanical
+ }
+
 class DefectListViewModel {
     
     enum Event {
@@ -24,10 +34,11 @@ class DefectListViewModel {
     
     let imageName = BehaviorRelay(value: "")
     let progressSpin = BehaviorRelay(value: true)
-    let positionTag = BehaviorRelay<[String: CGPoint]>(value: [:])
+    let positionTag = BehaviorRelay(value: [ImagePosition]())
     let defectDetailModel = BehaviorRelay(value: [DefectDetail]())
     let dataSource = BehaviorRelay(value: [DefectDetail]())
     let imagePoint = BehaviorRelay(value: [ImagePosition]())
+    let temFilter = BehaviorRelay(value: PointState.All)
     
     let events = PublishSubject<Event>()
     

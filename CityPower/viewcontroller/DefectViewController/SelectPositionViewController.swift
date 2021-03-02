@@ -26,7 +26,6 @@ class SelectPositionViewController: UIViewController, UIGestureRecognizerDelegat
     
     private var completion = { }
     private var annotationsToSelect = [UIView]()
-    private var positionKey: [UIView: CGPoint] = [:]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,10 +40,9 @@ class SelectPositionViewController: UIViewController, UIGestureRecognizerDelegat
         confirmButton.rx.tap.bind(onNext: { [weak self] in
             
             guard let selectedPos = self?.annotationsToSelect.first as? TemView,
-                  let text = selectedPos.labelNum.text,
-                  let dicResult = self?.positionKey[selectedPos] else { return }
+                  let model = selectedPos.imageModel else { return }
             self?.viewModel.savePosition()
-            self?.viewModel.positionSelected.accept([dicResult, text])
+            self?.viewModel.positionSelected.accept([model])
 
         }).disposed(by: disposeBag)
         
@@ -65,23 +63,25 @@ class SelectPositionViewController: UIViewController, UIGestureRecognizerDelegat
                         let f = min(aspectWidth, aspectHeight)
 
                         for pos in position {
-
-                            var imagePoint = pos.value
-
-                            imagePoint.y *= f
-                            imagePoint.x *= f
-                            imagePoint.x += (width - imgSize.width * f) / 2.0
-                            imagePoint.y += (height - imgSize.height * f) / 2.0
-
-                            let tempView = TemView()
-                            tempView.setText("\(pos.key)")
-                            tempView.bounds.size = CGSize(width: 50, height: 70)
-                            tempView.frame.origin = imagePoint
-                            tempView.layer.borderColor = UIColor.blueCity.cgColor
-                            tempView.backgroundColor = .clear
-                            self?.planPicture.addSubview(tempView)
-                            self?.positionKey[tempView] = pos.value
                             
+                            if let imagePoint = pos.defectPosition {
+                                
+                                var imagePoint = imagePoint
+
+                                imagePoint.y *= f
+                                imagePoint.x *= f
+                                imagePoint.x += (width - imgSize.width * f) / 2.0
+                                imagePoint.y += (height - imgSize.height * f) / 2.0
+
+                                let tempView = TemView()
+                                tempView.setModel(pos)
+                                tempView.bounds.size = CGSize(width: 50, height: 70)
+                                tempView.frame.origin = imagePoint
+                                tempView.layer.borderColor = UIColor.blueCity.cgColor
+                                tempView.backgroundColor = .clear
+                                //tempView.isHidden = pos.selected
+                                self?.planPicture.addSubview(tempView)
+                            }
                         }
                     }
                 }

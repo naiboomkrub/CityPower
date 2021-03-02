@@ -34,9 +34,9 @@ class RootAddDefectViewModel {
     
     let events = PublishSubject<Event>()
     let imageLocation = BehaviorRelay(value: "")
-    let tagPosition = BehaviorRelay<[String: CGPoint]>(value: [:])
+    let tagPosition = BehaviorRelay(value: [ImagePosition]())
     
-    init(_ imageLoc: String, _ pos: [String: CGPoint]) {
+    init(_ imageLoc: String, _ pos: [ImagePosition]) {
         imageLocation.accept(imageLoc)
         tagPosition.accept(pos)
     }

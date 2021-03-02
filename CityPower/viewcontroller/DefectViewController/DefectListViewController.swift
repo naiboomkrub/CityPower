@@ -35,6 +35,7 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
     private var annotationsToDelete = [UIView]()
     private var numList = [Int]()
     private var tapBag = DisposeBag()
+    private var allTem: [TemView]? = []
     
     private let pan = LayerMove()
     private let disposeBag = DisposeBag()
@@ -89,6 +90,11 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
         parentSwapView.addSubview(segmented)
         
         confirmButton.addTarget(self, action: #selector(completeTask), for: .touchUpInside)
+        confirmButton.alpha = 0.0
+        confirmButton.setTitle("Delete", for: .normal)
+        confirmButton.setTitleColor(.blueCity, for: .normal)
+        confirmButton.titleLabel?.font = UIFont(name: "SukhumvitSet-Bold", size: CGFloat(18))!
+        
         listTable.separatorStyle = .none
         listTable.rx.setDelegate(self).disposed(by: disposeBag)
         
@@ -146,6 +152,8 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
                         let newAspectHeight = viewSize.height / newSize.height
                         let fNew = min(newAspectWidth, newAspectHeight)
                         
+                        self?.allTem?.removeAll()
+                        
                         for subPoint in point {
                             
                             if var refPoint = subPoint.defectPosition {
@@ -164,6 +172,7 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
                                     self?.numList.append(tag)
                                 }
                                 self?.planPicture.addSubview(tempView)
+                                self?.allTem?.append(tempView)
                             }
                         }
                     }
@@ -190,6 +199,8 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
                         let newAspectHeight = viewSize.height / newSize.height
                         let fNew = min(newAspectWidth, newAspectHeight)
                         
+                        self?.allTem?.removeAll()
+                        
                         for subPoint in point {
                             
                             if var refPoint = subPoint.defectPosition {
@@ -208,6 +219,7 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
                                     self?.numList.append(tag)
                                 }
                                 self?.planPicture.addSubview(tempView)
+                                self?.allTem?.append(tempView)
                             }
                         }
                     }
@@ -217,6 +229,33 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
         }).disposed(by: disposeBag)
         
         listTable.dataSource = nil
+        
+        viewModel.temFilter.subscribe(onNext: { [weak self] state in
+            
+            guard let allTem = self?.allTem else { return }
+            
+            switch state {
+            case .All:
+                allTem.forEach { $0.isHidden = false }
+            case .Empty:
+                allTem.forEach { $0.isHidden = true }
+            case .NotChose:
+                allTem.forEach {
+                    if let model = $0.imageModel , model.selected { $0.isHidden = true } else { $0.isHidden = false }}
+            case .General:
+                allTem.forEach {
+                    if let model = $0.imageModel , model.system == "General" { $0.isHidden = false } else { $0.isHidden = true }}
+            case .Electrical:
+                allTem.forEach {
+                    if let model = $0.imageModel , model.system == "Electrical" { $0.isHidden = false } else { $0.isHidden = true }}
+            case .Sanitary:
+                allTem.forEach {
+                    if let model = $0.imageModel , model.system == "Sanitary" { $0.isHidden = false } else { $0.isHidden = true }}
+            case .Mechanical:
+                allTem.forEach {
+                    if let model = $0.imageModel , model.system == "Mechanical" { $0.isHidden = false } else { $0.isHidden = true }}
+            }
+        }).disposed(by: disposeBag)
         
         editButton.rx.tap
             .map { [unowned self] in self.listTable.isEditing }
@@ -302,7 +341,7 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
     
     private func setUpPlanFilter() {
         
-        let filterText = ["All", "Not Chose", "General","Electrical", "Sanitary", "Mechanical"]
+        let filterText = ["All", "Empty", "Not Chose", "General","Electrical", "Sanitary", "Mechanical"]
         
         var xIncrement = CGFloat(15.0)
         var lastButton: UIButton?
@@ -313,7 +352,7 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
             labelText.titleLabel?.font = UIFont(name: "SukhumvitSet-Bold", size: CGFloat(14))
             labelText.layer.cornerRadius = 15.0
             
-            if text == viewModel.filter {
+            if text == "All" {
                 labelText.backgroundColor = .Gray6
                 lastButton = labelText
             } else {
@@ -334,11 +373,25 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
                     button.backgroundColor = .clear
                     lastButton = labelText
                 }
-//                if text != self?.viewModel.filter {
-//                    self?.viewModel.filter = text
-//                    self?.viewModel.reloadData()
-//                }
-
+                
+                switch text {
+                case "All":
+                    self?.viewModel.temFilter.accept(PointState.All)
+                case "Empty":
+                    self?.viewModel.temFilter.accept(PointState.Empty)
+                case "Not Chose":
+                    self?.viewModel.temFilter.accept(PointState.NotChose)
+                case "General":
+                    self?.viewModel.temFilter.accept(PointState.General)
+                case "Electrical":
+                    self?.viewModel.temFilter.accept(PointState.Electrical)
+                case "Sanitary":
+                    self?.viewModel.temFilter.accept(PointState.Sanitary)
+                case "Mechanical":
+                    self?.viewModel.temFilter.accept(PointState.Mechanical)
+                default:
+                    self?.viewModel.temFilter.accept(PointState.All)
+                }
             }).disposed(by: disposeBag)
             
             planFilter.addSubview(labelText)
@@ -364,7 +417,7 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
         
                 logo.rx.tap.bind(onNext: { [weak self] in
                     
-                    var positionTag: [String: CGPoint] = [:]
+                    var positionModel: [ImagePosition] = []
                     
                     guard let subViews = self?.planPicture.subviews,
                           let imageSize = self?.planPicture.image?.size,
@@ -375,7 +428,7 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
                     let f = min(aspectWidth, aspectHeight)
                     
                     for view in subViews {
-                        if let tem = view as? TemView, let label = tem.labelNum.text {
+                        if let tem = view as? TemView, let model = tem.imageModel {
                             
                             var imagePoint = tem.frame.origin
                             
@@ -383,10 +436,10 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
                             imagePoint.x -= (width - imageSize.width * f) / 2.0
                             imagePoint.x /= f
                             imagePoint.y /= f
-                            positionTag[label] = imagePoint
+                            positionModel.append(model)
                         }
                     }
-                    self?.viewModel.positionTag.accept(positionTag)
+                    self?.viewModel.positionTag.accept(positionModel)
                     self?.viewModel.addDefect()
                     
                 }).disposed(by: tapBag)
@@ -514,11 +567,31 @@ extension DefectListViewController: ButtonPanelDelegate {
     
     func didTapEditWithLoc(_ center: CGPoint) {
         planPicture.removeGesture()
+        
+        UIView.animate(withDuration: 0.2, animations: { [weak self] in
+            self?.confirmButton.alpha = 0.0
+        })
+        
+        for view in annotationsToDelete {
+            view.layer.borderWidth = 0.0
+        }
+        annotationsToDelete.removeAll()
+        
         planPicture.addGestureRecognizer(pan)
     }
         
     func didTapButtonWithLoc(_ center: CGPoint) {
         planPicture.removeGesture()
+        
+        UIView.animate(withDuration: 0.2, animations: { [weak self] in
+            self?.confirmButton.alpha = 0.0
+        })
+        
+        for view in annotationsToDelete {
+            view.layer.borderWidth = 0.0
+        }
+        annotationsToDelete.removeAll()
+        
         let tap = UITapGestureRecognizer(target: self, action: #selector(addAnnotation))
         tap.delegate = self
         planPicture.addGestureRecognizer(tap)
@@ -526,6 +599,11 @@ extension DefectListViewController: ButtonPanelDelegate {
     
     func didTapDeleteWithLoc(_ center: CGPoint) {
         planPicture.removeGesture()
+        
+        UIView.animate(withDuration: 0.2, animations: { [weak self] in
+            self?.confirmButton.alpha = 1.0
+        })
+        
         let tap = UITapGestureRecognizer(target: self, action: #selector(deleteAnnotation))
         tap.delegate = self
         planPicture.addGestureRecognizer(tap)
@@ -534,6 +612,15 @@ extension DefectListViewController: ButtonPanelDelegate {
     func didCollapse(_ willCollapse: Bool) {
         if !willCollapse {
             planPicture.removeGesture()
+            
+            UIView.animate(withDuration: 0.2, animations: { [weak self] in
+                self?.confirmButton.alpha = 0.0
+            })
+            
+            for view in annotationsToDelete {
+                view.layer.borderWidth = 0.0
+            }
+            annotationsToDelete.removeAll()
             
             let tap = UITapGestureRecognizer(target: self, action: #selector(self.imageTapped))
             planPicture.addGestureRecognizer(tap)
@@ -633,23 +720,24 @@ extension DefectListViewController {
         
         if !emptyNum.isEmpty {
             numToUpdate = emptyNum[0]
-            tempView.setText("\(numToUpdate)")
         } else {
             numToUpdate = count + 1
-            tempView.setText("\(numToUpdate)")
         }
         tempView.bounds.size = CGSize(width: 50, height: 70)
         tempView.frame.origin = newPosition
         tempView.backgroundColor = .clear
         
         if let convertedPoint = convertViewToImagePoint(planPicture, newPosition) {
-            DefectDetails.shared.addPoint(ImagePosition(x: round(Double(convertedPoint.x) * 1000) / 1000,
-                                                        y: round(Double(convertedPoint.y) * 1000) / 1000, pointNum: "\(numToUpdate)",
-                                                        system: "" , selected: false ))
+            let doubleX = round(Double(convertedPoint.x) * 1000) / 1000
+            let doubleY = round(Double(convertedPoint.y) * 1000) / 1000
+            let model = ImagePosition(x: doubleX, y: doubleY, pointNum: "\(numToUpdate)", system: "", selected: false)
+            tempView.setModel(model)
+            DefectDetails.shared.addPoint(model)
         }
         
         numList.append(numToUpdate)
         planPicture.addSubview(tempView)
+        allTem?.append(tempView)
     }
     
     @objc func completeTask() {

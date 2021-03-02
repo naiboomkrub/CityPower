@@ -94,7 +94,7 @@ class RootDefectViewModel {
     
     private let disposeBag = DisposeBag()
     private let imageName = BehaviorRelay(value: "")
-    private let tagPosition = BehaviorRelay<[String: CGPoint]>(value: [:])
+    private let tagPosition = BehaviorRelay(value: [ImagePosition]())
     
     private let formatterDay: DateFormatter = {
          let formatter = DateFormatter()

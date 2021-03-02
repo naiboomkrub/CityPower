@@ -73,6 +73,16 @@ class SiteListViewController: UIViewController, UITableViewDelegate {
             load = true
         }
         
+        if let navViews = navigationController?.navigationBar.subviews {
+            for logo in navViews {
+                if let logo = logo as? UIButton {
+                    UIView.animate(withDuration: 0.2) {
+                        logo.alpha = 0.0
+                    }
+                }
+            }
+        }
+        
         viewModel.reloadData()
     }
 }

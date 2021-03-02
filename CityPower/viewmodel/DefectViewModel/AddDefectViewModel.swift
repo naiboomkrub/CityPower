@@ -22,7 +22,7 @@ class AddDefectViewModel {
     let defectDate = BehaviorRelay(value: "")
     let dueDate = BehaviorRelay(value: "")
     let defectTitle = BehaviorRelay(value: "")
-    let resultPosition = BehaviorRelay(value: [CGPoint(), ""])
+    let resultPosition = BehaviorRelay(value: [ImagePosition]())
     let systemChose = BehaviorRelay(value: "")
     
     let db = Firestore.firestore()
@@ -39,11 +39,10 @@ class AddDefectViewModel {
     
     func saveDefect() {
         
-        if let position = resultPosition.value[0] as? CGPoint, let numberTag = resultPosition.value[1] as? String {
+        if let imageModel = resultPosition.value.first, let position = imageModel.defectPosition {
                         
-            let dataStruct = DefectDetail(defectNumber: numberTag, defectTitle: defectTitle.value, defectImage: [], defectComment: [], finish: false, system: systemChose.value, timeStamp: defectDate.value, dueDate: dueDate.value, positionX: round(Double(position.x) * 1000) / 1000, positionY: round(Double(position.y) * 1000) / 1000)
+            let dataStruct = DefectDetail(defectNumber: imageModel.pointNum, defectTitle: defectTitle.value, defectImage: [], defectComment: [], finish: false, system: systemChose.value, timeStamp: defectDate.value, dueDate: dueDate.value, positionX: round(Double(position.x) * 1000) / 1000, positionY: round(Double(position.y) * 1000) / 1000)
             
-
             DefectDetails.shared
                 .movePoint(ImagePosition(x: dataStruct.positionX,
                                          y: dataStruct.positionY, pointNum: dataStruct.defectNumber,
@@ -51,7 +50,6 @@ class AddDefectViewModel {
                             ImagePosition(x: dataStruct.positionX,
                                           y: dataStruct.positionY, pointNum: dataStruct.defectNumber,
                                           system: dataStruct.system, selected: true))
-            
             
             do {
                 let jsonData = try dataStruct.jsonData()

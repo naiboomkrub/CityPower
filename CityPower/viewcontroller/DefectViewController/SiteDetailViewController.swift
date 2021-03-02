@@ -34,6 +34,20 @@ class SiteDetailViewController: CardsViewController {
         let cards: [CardController] = [siteDetailController, statusHead, statusTable, durationHead, durationTable]
         loadCards(cards: cards)
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        if let navViews = navigationController?.navigationBar.subviews {
+            for logo in navViews {
+                if let logo = logo as? UIButton {
+                    UIView.animate(withDuration: 0.2) {
+                        logo.alpha = 0.0
+                    }
+                }
+            }
+        }
+    }
 }
 
 

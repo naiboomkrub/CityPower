@@ -210,8 +210,8 @@ class DefectDetailController: CardPartsViewController, CustomMarginCardTrait {
                     if !position.isEmpty,
                        let width = self?.defectView.frame.width,
                        let height = self?.defectView.frame.height,
-                       let imgSize = self?.defectView.image?.size,
-                       let tr = self?.defectView.transform.scaledBy(x: 1.25, y: 1.25) {
+                       let imgSize = self?.defectView.image?.size {
+//                       let tr = self?.defectView.transform.scaledBy(x: 1.25, y: 1.25) {
 
                         let aspectWidth  = width / imgSize.width
                         let aspectHeight = height / imgSize.height
@@ -233,9 +233,10 @@ class DefectDetailController: CardPartsViewController, CustomMarginCardTrait {
                         tempView.backgroundColor = .clear
                         
                         self?.defectView.addSubview(tempView)
-                        self?.defectView.layer.anchorPoint = CGPoint(x: (imagePoint.x + 25) / width,
-                                                                     y: (imagePoint.y + 35) / height)
-                        self?.defectView.layer.transform = CATransform3DMakeAffineTransform(tr)
+                        
+//                        self?.defectView.layer.anchorPoint = CGPoint(x: (imagePoint.x + 25) / width,
+//                                                                     y: (imagePoint.y + 35) / height)
+//                        self?.defectView.layer.transform = CATransform3DMakeAffineTransform(tr)
                         
                     }
                 }
@@ -412,7 +413,6 @@ class HeadController: CardPartsViewController, TransparentCardTrait {
         [commentHead, editButton].forEach { label in
             stackView.addArrangedSubview(label)
         }
-        
         setupCardParts([stackView])
     }
     

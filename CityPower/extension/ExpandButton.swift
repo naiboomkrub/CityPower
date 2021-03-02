@@ -99,6 +99,7 @@ class ButtonPanelView: UIView {
         layer.shadowOffset = .zero
         
         selectorView.alpha = 0.0
+        selectorView.layer.cornerRadius = buttonSize / 2
         
         addSubview(selectorView)
         addSubview(containerStackView)

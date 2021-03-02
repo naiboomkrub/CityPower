@@ -19,9 +19,8 @@ class SelectPositionViewModel {
     let events = PublishSubject<Event>()
     
     let imageName = BehaviorRelay(value: "")
-    let positionDefect = BehaviorRelay<[String: CGPoint]>(value: [:])
-    
-    let positionSelected = BehaviorRelay(value: [CGPoint(), ""])
+    let positionDefect = BehaviorRelay(value: [ImagePosition]())
+    let positionSelected = BehaviorRelay(value: [ImagePosition]())
     
     func savePosition() {
         events.onNext(.SavePosition)
