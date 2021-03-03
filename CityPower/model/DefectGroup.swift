@@ -83,6 +83,9 @@ struct DefectGroup: Codable {
     let planTitle : String
     let timeStamp: String
     let planUrl: String
+    let numberOfStart: Int64
+    let numberOfOnGoing: Int64
+    let numberOfFinish: Int64
     let defectPosition: [ImagePosition]
         
     var dictionary: [String: Any] {
@@ -90,14 +93,20 @@ struct DefectGroup: Codable {
         "planTitle": planTitle,
         "timeStamp": timeStamp,
         "planUrl": planUrl,
+        "numberOfStart": numberOfStart,
+        "numberOfOnGoing": numberOfOnGoing,
+        "numberOfFinish": numberOfFinish,
         "defectPosition": defectPosition,
       ]
     }
     
-    init(planTitle: String, timeStamp: String, planUrl: String, defectPosition: [ImagePosition]) {
+    init(planTitle: String, timeStamp: String, planUrl: String, numberOfStart: Int64, numberOfOnGoing: Int64, numberOfFinish: Int64, defectPosition: [ImagePosition]) {
         self.planTitle = planTitle
         self.timeStamp = timeStamp
         self.planUrl = planUrl
+        self.numberOfStart = numberOfStart
+        self.numberOfFinish = numberOfFinish
+        self.numberOfOnGoing = numberOfOnGoing
         self.defectPosition = defectPosition
     }
     
@@ -105,11 +114,17 @@ struct DefectGroup: Codable {
         guard let planTitle = dictionary["planTitle"] as? String,
             let timeStamp = dictionary["timeStamp"] as? String,
             let planUrl = dictionary["planUrl"] as? String,
+            let numberOfStart = dictionary["numberOfStart"] as? Int64,
+            let numberOfOnGoing = dictionary["numberOfOnGoing"] as? Int64,
+            let numberOfFinish = dictionary["numberOfFinish"] as? Int64,
             let defectPosition = dictionary["defectPosition"] as? [[String: Any]] else { return nil }
         
         self.planTitle = planTitle
         self.timeStamp = timeStamp
         self.planUrl = planUrl
+        self.numberOfStart = numberOfStart
+        self.numberOfFinish = numberOfFinish
+        self.numberOfOnGoing = numberOfOnGoing
         self.defectPosition = defectPosition.map( {ImagePosition(x: $0["x"] as! Double, y: $0["y"] as! Double, pointNum: $0["pointNum"] as! String , system: $0["system"] as! String , selected: $0["selected"] as! Bool) } )
     }
 }

@@ -64,7 +64,7 @@ class DefectListViewModel {
                 tempData.append(item)
             }
         }
-        
+        tempData.sort(by: { $0.defectNumber < $1.defectNumber })
         tempData = tempData.unique(for:  \.self)
         dataSource.accept(tempData)
         progressSpin.accept(false)

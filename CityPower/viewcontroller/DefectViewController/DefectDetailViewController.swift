@@ -13,6 +13,12 @@ import CardParts
 import Firebase
 import RxDataSources
 
+enum statusDefect: String {
+    case Start
+    case Ongoing
+    case Finish
+}
+
 class DefectDetailViewController: CardsViewController {
     
     var viewModel: DefectDetailViewModel!
@@ -24,10 +30,6 @@ class DefectDetailViewController: CardsViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
-        navigationController?.navigationBar.shadowImage = UIImage()
-        navigationController?.navigationBar.isTranslucent = true
         
         if let navViews = navigationController?.navigationBar.subviews {
             for logo in navViews {
@@ -150,8 +152,19 @@ class DefectDetailController: CardPartsViewController, CustomMarginCardTrait {
         buttonStack.spacing = 50
         buttonStack.isLayoutMarginsRelativeArrangement = true
         buttonStack.layoutMargins = UIEdgeInsets(top: 10, left: 0, bottom: 0, right: 0)
-
-        setUpButton(done, "Done", UIColor.white, "icon020", doneStack, [UIColor.start1, UIColor.start2], doneLayer, doneBorder)
+        
+        viewModel.status.asObservable().bind(onNext: { [weak self] status in
+            if status == statusDefect.Start.rawValue {
+                self?.done.setTitle(statusDefect.Start.rawValue, for: .normal)
+            } else if status == statusDefect.Ongoing.rawValue {
+                self?.done.setTitle(statusDefect.Finish.rawValue, for: .normal)
+            } else {
+                self?.done.setTitle("The Defect is Done", for: .normal)
+                self?.done.isUserInteractionEnabled = false
+            }
+        }).disposed(by: bag)
+        
+        setUpButton(done, UIColor.white, "icon020", doneStack, [UIColor.start1, UIColor.start2], doneLayer, doneBorder)
         
         defectTitle.font = UIFont(name: "SukhumvitSet-Text", size: CGFloat(24))!
         defectCreate.font = UIFont(name: "SukhumvitSet-Text", size: CGFloat(16))!
@@ -189,10 +202,16 @@ class DefectDetailController: CardPartsViewController, CustomMarginCardTrait {
         }).disposed(by: bag)
         
         done.rx.tap.bind(onNext: { [weak self] in
-
+            
             let alert = UIAlertController(title: "Defect Done", message: "Please Confirm", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "Confirm", style: UIAlertAction.Style.default, handler: { action in
-                self?.viewModel.doneDefect()
+                if let text = self?.done.titleLabel?.text {
+                    if text == statusDefect.Start.rawValue {
+                        self?.viewModel.doneDefect(statusDefect.Ongoing.rawValue)
+                    } else {
+                        self?.viewModel.doneDefect(statusDefect.Finish.rawValue)
+                    }
+                }
             }))
             alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel, handler: nil))
 
@@ -322,9 +341,8 @@ class DefectDetailController: CardPartsViewController, CustomMarginCardTrait {
 
 extension DefectDetailController {
     
-    private func setUpButton(_ buttonPart: CardPartButtonView, _ text: String, _ color: UIColor, _ icon: String, _ stackView: CardPartStackView, _ colours: [UIColor], _ gradient: CAGradientLayer, _ borderView: UIView) {
+    private func setUpButton(_ buttonPart: CardPartButtonView,  _ color: UIColor, _ icon: String, _ stackView: CardPartStackView, _ colours: [UIColor], _ gradient: CAGradientLayer, _ borderView: UIView) {
         
-        buttonPart.setTitle(text, for: .normal)
         buttonPart.setTitleColor(color, for: .normal)
         buttonPart.titleLabel?.font = UIFont(name: "SukhumvitSet-Bold", size: CGFloat(18))!
         buttonPart.contentHorizontalAlignment = .center

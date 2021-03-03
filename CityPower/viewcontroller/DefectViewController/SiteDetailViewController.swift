@@ -26,6 +26,10 @@ class SiteDetailViewController: CardsViewController {
         viewModel.reloadStatus()
         viewModel.reloadDuration()
         
+        navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+        navigationController?.navigationBar.shadowImage = UIImage()
+        navigationController?.navigationBar.isTranslucent = true
+        
         let statusHead = TableHeadController()
         statusHead.tableHead.text = "Defect Status"
         let durationHead = TableHeadController()

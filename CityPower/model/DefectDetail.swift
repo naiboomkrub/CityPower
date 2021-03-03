@@ -114,7 +114,7 @@ struct DefectDetail: Codable {
     let defectTitle: String
     let timeStamp: String
     let dueDate: String
-    let finish: Bool
+    let status: String
     let system: String
     
     var defectComment: [CommentStruct]
@@ -128,7 +128,7 @@ struct DefectDetail: Codable {
         "defectTitle": defectTitle,
         "defectImage": defectImage,
         "defectComment": defectComment,
-        "finish": finish,
+        "status": status,
         "system": system,
         "timeStamp": timeStamp,
         "dueDate": dueDate,
@@ -137,12 +137,12 @@ struct DefectDetail: Codable {
       ]
     }
     
-    init(defectNumber: String, defectTitle: String, defectImage: [ImageStruct], defectComment: [CommentStruct], finish: Bool, system: String, timeStamp: String, dueDate: String, positionX: Double, positionY: Double) {
+    init(defectNumber: String, defectTitle: String, defectImage: [ImageStruct], defectComment: [CommentStruct], status: String, system: String, timeStamp: String, dueDate: String, positionX: Double, positionY: Double) {
         self.defectNumber = defectNumber
         self.defectTitle = defectTitle
         self.defectImage = defectImage
         self.defectComment = defectComment
-        self.finish = finish
+        self.status = status
         self.system = system
         self.timeStamp = timeStamp
         self.dueDate = dueDate
@@ -155,7 +155,7 @@ struct DefectDetail: Codable {
             let defectTitle = dictionary["defectTitle"] as? String,
             let defectImage = dictionary["defectImage"] as? [[String: Any]],
             let defectComment = dictionary["defectComment"] as? [[String: Any]],
-            let finish = dictionary["finish"] as? Bool,
+            let status = dictionary["status"] as? String,
             let system = dictionary["system"] as? String,
             let timeStamp = dictionary["timeStamp"] as? String,
             let dueDate = dictionary["dueDate"] as? String,
@@ -166,7 +166,7 @@ struct DefectDetail: Codable {
         self.defectTitle = defectTitle
         self.defectImage = defectImage.map( {ImageStruct(image: $0["image"] as! String, timeStamp: $0["timeStamp"] as! String, fileName: $0["fileName"] as! String) } )
         self.defectComment = defectComment.map( {CommentStruct(title: $0["title"] as! String, timeStamp: $0["timeStamp"] as! String, value: $0["value"] as! String) } )
-        self.finish = finish
+        self.status = status
         self.timeStamp = timeStamp
         self.system = system
         self.dueDate = dueDate
@@ -497,12 +497,32 @@ class DefectDetails {
     func editData<T: Hashable>(_ data: T) {
 
         guard let index = currentIndex,
+              let indexGroup = currentGroup,
+              let idGroup = groupDocumentID?[indexGroup],
               let id = documentID?["\(index)"],
-              let ref = ref else { return }
+              let ref = ref,
+              let currentSite = selectedSite else { return }
         
-        if let data = data as? Bool {
+        if let data = data as? String {
             
-            ref.document(id).updateData(["finish": data]) { err in
+            let batch = db.batch()
+            let groupRef = db.collection("plan").document("site").collection(currentSite).document(idGroup)
+            
+            if data == statusDefect.Ongoing.rawValue {
+                batch.updateData(["numberOfStart": FieldValue.increment(Int64(-1))], forDocument: groupRef)
+                batch.updateData(["numberOfOnGoing": FieldValue.increment(Int64(1))], forDocument: groupRef)
+            } else if data == statusDefect.Finish.rawValue {
+                batch.updateData(["numberOfOnGoing": FieldValue.increment(Int64(-1))], forDocument: groupRef)
+                batch.updateData(["numberOfOnFinish": FieldValue.increment(Int64(1))], forDocument: groupRef)
+            } else {
+                return
+            }
+            
+            let docuRef = ref.document(id)
+            
+            batch.updateData(["status": data], forDocument: docuRef)
+            
+            batch.commit() { err in
                 if let err = err {
                     print(err.localizedDescription)
                 } else {
@@ -591,6 +611,43 @@ class DefectDetails {
                                                        "system": data.system,
                                                        "selected": data.selected]])
                 
+            batch.updateData([field: removeValue], forDocument: docuRef)
+            batch.updateData([field: newValue], forDocument: docuRef)
+            batch.commit() { err in
+                if let err = err {
+                    print(err.localizedDescription)
+                } else {
+                    print("Document successfully updated")
+                }
+            }
+        }
+    }
+    
+    func selectPoint<T: Hashable>(_ data: T, _ newData: T) {
+
+        guard let index = currentGroup,
+              let currentData = DefectDetails.shared.savedGroup[index],
+              let id = groupDocumentID?[index],
+              let currentSite = selectedSite  else { return }
+        
+        if let data = data as? ImagePosition, let newData = newData as? ImagePosition, currentData.defectPosition.contains(data) {
+            
+            let field = "defectPosition"
+            let newValue = FieldValue.arrayUnion([["x": newData.x,
+                                                   "y": newData.y,
+                                                   "pointNum": newData.pointNum,
+                                                   "system": newData.system,
+                                                   "selected": newData.selected]])
+            
+            let batch = db.batch()
+            let docuRef = db.collection("plan").document("site").collection(currentSite).document(id)
+            let removeValue = FieldValue.arrayRemove([["x": data.x,
+                                                       "y": data.y,
+                                                       "pointNum": data.pointNum,
+                                                       "system": data.system,
+                                                       "selected": data.selected]])
+            
+            batch.updateData(["numberOfStart": FieldValue.increment(Int64(1))], forDocument: docuRef)
             batch.updateData([field: removeValue], forDocument: docuRef)
             batch.updateData([field: newValue], forDocument: docuRef)
             batch.commit() { err in

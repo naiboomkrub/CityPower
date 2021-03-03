@@ -211,6 +211,7 @@ class RootDefectViewModel {
                         self?.defectDetailViewModel.photoState.accept(.empty)
                     }
                     
+                    self?.defectDetailViewModel.status.accept(model[0].status)
                     self?.defectDetailViewModel.dueDate.accept("Create :  \(model[0].timeStamp)")
                     self?.defectDetailViewModel.createDate.accept("Due     :  \(model[0].dueDate)")
                     self?.defectDetailViewModel.title.accept(model[0].defectTitle)

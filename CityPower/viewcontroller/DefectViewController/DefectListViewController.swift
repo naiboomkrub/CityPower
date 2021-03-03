@@ -89,6 +89,8 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
 
         parentSwapView.addSubview(segmented)
         
+        navigationItem.largeTitleDisplayMode = .never
+        
         confirmButton.addTarget(self, action: #selector(completeTask), for: .touchUpInside)
         confirmButton.alpha = 0.0
         confirmButton.setTitle("Delete", for: .normal)
@@ -236,24 +238,30 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
             
             switch state {
             case .All:
-                allTem.forEach { $0.isHidden = false }
+                UIView.animate(withDuration: 0.2, animations: { allTem.forEach { $0.alpha = 1.0 } })
             case .Empty:
-                allTem.forEach { $0.isHidden = true }
+                UIView.animate(withDuration: 0.2, animations: { allTem.forEach { $0.alpha = 0.0 } })
             case .NotChose:
-                allTem.forEach {
-                    if let model = $0.imageModel , model.selected { $0.isHidden = true } else { $0.isHidden = false }}
+                UIView.animate(withDuration: 0.2, animations:
+                                {allTem.forEach {
+                                    if let model = $0.imageModel , model.selected { $0.alpha = 0.0 }
+                                    else { $0.alpha = 1.0 }}})
             case .General:
-                allTem.forEach {
-                    if let model = $0.imageModel , model.system == "General" { $0.isHidden = false } else { $0.isHidden = true }}
+                UIView.animate(withDuration: 0.2, animations:
+                                {allTem.forEach {
+                                    if let model = $0.imageModel , model.system == "General" { $0.alpha = 1.0 } else { $0.alpha = 0.0 }}})
             case .Electrical:
-                allTem.forEach {
-                    if let model = $0.imageModel , model.system == "Electrical" { $0.isHidden = false } else { $0.isHidden = true }}
+                UIView.animate(withDuration: 0.2, animations:
+                                {allTem.forEach {
+                                    if let model = $0.imageModel , model.system == "Electrical" { $0.alpha = 1.0 } else { $0.alpha = 0.0 }}})
             case .Sanitary:
-                allTem.forEach {
-                    if let model = $0.imageModel , model.system == "Sanitary" { $0.isHidden = false } else { $0.isHidden = true }}
+                UIView.animate(withDuration: 0.2, animations:
+                                {allTem.forEach {
+                                    if let model = $0.imageModel , model.system == "Sanitary" { $0.alpha = 1.0 } else { $0.alpha = 0.0 }}})
             case .Mechanical:
-                allTem.forEach {
-                    if let model = $0.imageModel , model.system == "Mechanical" { $0.isHidden = false } else { $0.isHidden = true }}
+                UIView.animate(withDuration: 0.2, animations:
+                                {allTem.forEach {
+                                    if let model = $0.imageModel , model.system == "Mechanical" { $0.alpha = 1.0 } else { $0.alpha = 0.0 }}})
             }
         }).disposed(by: disposeBag)
         
@@ -829,7 +837,7 @@ class DefectListCell: UITableViewCell {
         defectLabel.text = data.defectNumber
         dueDate.text = "Due : \(data.timeStamp)"
         
-        if data.finish {
+        if data.status == statusDefect.Finish.rawValue {
             doneState.setImage(UIImage(systemName: "checkmark", withConfiguration: largeConfig), for: .normal)
             doneState.tintColor = .green
         }

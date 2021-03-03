@@ -41,10 +41,10 @@ class AddDefectViewModel {
         
         if let imageModel = resultPosition.value.first, let position = imageModel.defectPosition {
                         
-            let dataStruct = DefectDetail(defectNumber: imageModel.pointNum, defectTitle: defectTitle.value, defectImage: [], defectComment: [], finish: false, system: systemChose.value, timeStamp: defectDate.value, dueDate: dueDate.value, positionX: round(Double(position.x) * 1000) / 1000, positionY: round(Double(position.y) * 1000) / 1000)
+            let dataStruct = DefectDetail(defectNumber: imageModel.pointNum, defectTitle: defectTitle.value, defectImage: [], defectComment: [], status: "Start", system: systemChose.value, timeStamp: defectDate.value, dueDate: dueDate.value, positionX: round(Double(position.x) * 1000) / 1000, positionY: round(Double(position.y) * 1000) / 1000)
             
             DefectDetails.shared
-                .movePoint(ImagePosition(x: dataStruct.positionX,
+                .selectPoint(ImagePosition(x: dataStruct.positionX,
                                          y: dataStruct.positionY, pointNum: dataStruct.defectNumber,
                                          system: "", selected: false),
                             ImagePosition(x: dataStruct.positionX,

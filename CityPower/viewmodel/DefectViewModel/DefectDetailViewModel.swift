@@ -27,6 +27,7 @@ class DefectDetailViewModel {
     let photoData = BehaviorRelay(value: [ImageStruct]())
     let editComment = BehaviorRelay(value: [CommentStruct]())
     
+    let status = BehaviorRelay(value: "Start")
     let imageName = BehaviorRelay(value: "")
     let dueDate = BehaviorRelay(value: "Due : Today")
     let createDate = BehaviorRelay(value: "Create: Today")
@@ -93,8 +94,8 @@ class DefectDetailViewModel {
         events.onNext(.photoEdit)
     }
     
-    func doneDefect() {
-        DefectDetails.shared.editData(true)
+    func doneDefect(_ status: String) {
+        DefectDetails.shared.editData(status)
         events.onNext(.doneDefect)
     }
     

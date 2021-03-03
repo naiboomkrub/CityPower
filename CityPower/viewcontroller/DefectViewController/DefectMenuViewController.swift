@@ -130,7 +130,7 @@ class DefectMenuViewController: UIViewController, UITableViewDelegate {
         logo.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             logo.rightAnchor.constraint(equalTo: navigationBar.rightAnchor, constant: -25),
-                                        logo.bottomAnchor.constraint(equalTo: navigationBar.bottomAnchor, constant: -12.5),
+                                        logo.bottomAnchor.constraint(equalTo: navigationBar.bottomAnchor, constant: -7.5),
             logo.heightAnchor.constraint(equalToConstant: 30),
             logo.widthAnchor.constraint(equalToConstant: 30)])
     }

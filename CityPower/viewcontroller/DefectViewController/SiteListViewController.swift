@@ -32,7 +32,7 @@ class SiteListViewController: UIViewController, UITableViewDelegate {
     func setUpTable() {
         
         let dataSource = RxTableViewSectionedAnimatedDataSource<SiteAllSection>(
-            animationConfiguration: AnimationConfiguration(insertAnimation: .right,
+            animationConfiguration: AnimationConfiguration(insertAnimation: .fade,
                                                            reloadAnimation: .fade,
                                                            deleteAnimation: .left),
             configureCell: configureCell)
@@ -56,7 +56,7 @@ class SiteListViewController: UIViewController, UITableViewDelegate {
         
         allSiteTable.separatorStyle = .none
         allSiteTable.rx.setDelegate(self).disposed(by: disposeBag)
-        
+                
         siteMenuLabel.text = "Site List"
         siteMenuLabel.font = UIFont(name: "SukhumvitSet-Bold", size: CGFloat(25))!
         
@@ -67,7 +67,9 @@ class SiteListViewController: UIViewController, UITableViewDelegate {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-                
+        
+        navigationController?.navigationBar.sizeToFit()
+
         if !load {
             setUpTable()
             load = true

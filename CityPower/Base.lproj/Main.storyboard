@@ -957,7 +957,7 @@
                             <constraint firstItem="Ehu-vr-PDO" firstAttribute="centerY" secondItem="FJd-ag-Ijl" secondAttribute="centerY" id="tKf-TY-po7"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="City Power Defect" id="udr-6P-lPt"/>
+                    <navigationItem key="navigationItem" title="City Power Defect" largeTitleDisplayMode="always" id="udr-6P-lPt"/>
                     <connections>
                         <outlet property="allSiteTable" destination="TnU-3W-DYo" id="bbY-sV-eg2"/>
                         <outlet property="siteMenuLabel" destination="u5I-Fx-zqN" id="4Er-4h-xC7"/>
@@ -1082,7 +1082,7 @@
                             <constraint firstItem="YO1-Tj-t5A" firstAttribute="centerX" secondItem="zjk-6J-FRx" secondAttribute="centerX" id="zRd-gN-8ez"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="Defect Menu" id="Io9-mb-jVw"/>
+                    <navigationItem key="navigationItem" title="Defect Menu" largeTitleDisplayMode="always" id="Io9-mb-jVw"/>
                     <connections>
                         <outlet property="menuTable" destination="RtC-9u-KSo" id="0Mg-c4-GfO"/>
                         <outlet property="tableButton" destination="fFd-om-pog" id="v3X-jt-wdr"/>
