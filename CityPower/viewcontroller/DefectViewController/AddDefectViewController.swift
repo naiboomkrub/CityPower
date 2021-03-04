@@ -111,6 +111,7 @@ class AddDefectController: CardPartsViewController, UITextFieldDelegate, UIPicke
         datePicker.date = Date()
         datePicker.locale = .current
         datePicker.datePickerMode = .date
+        datePicker.sizeToFit()
         datePicker.addTarget(self, action: #selector(dateChanged(_:)), for: .valueChanged)
         
         sectionField.font = UIFont(name: "SukhumvitSet-Bold", size: CGFloat(18))!
@@ -183,7 +184,7 @@ class AddDefectController: CardPartsViewController, UITextFieldDelegate, UIPicke
         
         saveButton.rx.tap.bind(onNext: { [weak self] in
             
-            let alert = UIAlertController(title: "Alert", message: "Message", preferredStyle: .alert)
+            let alert = UIAlertController(title: "Are you Sure ?", message: "", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "Confirm", style: UIAlertAction.Style.default, handler: { action in
                 self?.viewModel.saveDefect()
             }))
@@ -198,13 +199,17 @@ class AddDefectController: CardPartsViewController, UITextFieldDelegate, UIPicke
             .map({ $0.count > 0 })
             .share(replay: 1)
         
+        let dateValidation = viewModel.dueDate
+            .map({ $0.count > 0 })
+            .share(replay: 1)
+        
         let sectionValidation = sectionField
             .rx.text.orEmpty
             .map({ $0.count > 0 })
             .share(replay: 1)
 
-        let saveEnabled = Observable.combineLatest(desValidation, sectionValidation) {
-            $0 && $1 }.share(replay: 1)
+        let saveEnabled = Observable.combineLatest(desValidation, dateValidation, sectionValidation) {
+            $0 && $1 && $2 }.share(replay: 1)
 
         saveEnabled
             .bind(to: saveButton.rx.isEnabled)

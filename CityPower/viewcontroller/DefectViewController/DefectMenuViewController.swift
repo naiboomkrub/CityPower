@@ -58,7 +58,6 @@ class DefectMenuViewController: UIViewController, UITableViewDelegate {
         
         Observable.zip(menuTable.rx.itemSelected, menuTable.rx.modelSelected(DefectGroup.self))
             .subscribe(onNext: { [unowned self] index, model in
-                DefectDetails.shared.stopListening()
                 DefectDetails.shared.loadList(model.planTitle)
                 
                 self.menuTable.deselectRow(at: index, animated: true)
@@ -115,11 +114,7 @@ class DefectMenuViewController: UIViewController, UITableViewDelegate {
                 
         tapBag = DisposeBag()
     }
-    
-    deinit {
-        DefectDetails.shared.stopListening()
-    }
-    
+        
     private func setUpHeaderButton() {
         
         let largeConfig = UIImage.SymbolConfiguration(pointSize: 20, weight: .bold, scale: .large)

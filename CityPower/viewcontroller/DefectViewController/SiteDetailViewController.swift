@@ -10,8 +10,6 @@ import Foundation
 import CardParts
 import RxCocoa
 import RxSwift
-import UIKit
-
 
 class SiteDetailViewController: CardsViewController {
 
@@ -19,16 +17,14 @@ class SiteDetailViewController: CardsViewController {
     var siteDetailController: SiteDetailController!
     var statusTable: StatusTable!
     var durationTable: DurationTable!
-    
+        
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        viewModel.reloadStatus()
-        viewModel.reloadDuration()
         
         navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
         navigationController?.navigationBar.shadowImage = UIImage()
         navigationController?.navigationBar.isTranslucent = true
+        navigationItem.largeTitleDisplayMode = .never
         
         let statusHead = TableHeadController()
         statusHead.tableHead.text = "Defect Status"
@@ -37,6 +33,10 @@ class SiteDetailViewController: CardsViewController {
         
         let cards: [CardController] = [siteDetailController, statusHead, statusTable, durationHead, durationTable]
         loadCards(cards: cards)
+    }
+    
+    deinit {
+        DefectDetails.shared.stopListening()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -100,8 +100,6 @@ class SiteDetailController: CardPartsViewController, CustomMarginCardTrait {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        navigationController?.setNavigationBarHidden(false, animated: animated)
-                                                     
         self.defectLayer.frame = self.buttonStack.bounds
         self.defectBorder.frame = self.buttonStack.bounds
     }
@@ -134,38 +132,38 @@ class TableHeadController: CardPartsViewController, TransparentCardTrait {
     }
 }
 
-class StatusTable: CardPartsViewController, CardPartTableViewDelegate, CustomMarginCardTrait {
+class StatusTable: CardPartsViewController, CustomMarginCardTrait {
     
     func customMargin() -> CGFloat {
         return 15
     }
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-      //  guard let currentCell = tableView.cellForRow(at: indexPath) as? CardPartTableViewCell else { return }
-        tableView.deselectRow(at: indexPath, animated: true)
-    }
-    
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 75
-    }
-    
     var viewModel: SiteDetailViewModel!
     
     let statusTable = CardPartTableView()
+    let progressIndicator = CustomActivityIndicatorView(image: nil)
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        statusTable.tableView.allowsMultipleSelection = false
         statusTable.tableView.dataSource = nil
-        statusTable.delegate = self
-        statusTable.margins = UIEdgeInsets(top: 0, left: 0, bottom: 10, right: 0)
-        
+        statusTable.rowHeight = 75
+        statusTable.margins = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        statusTable.tableView.allowsSelection = false
+                
 //        statusTable.tableView.rx.modelSelected(Task.self)
 //            .subscribe(onNext: { [unowned self] task in
 //                //self.viewModel.taskDone(taskClick: task)
 //            })
 //            .disposed(by: bag)
+        
+        viewModel.loadStatus.asObservable().bind(onNext: { [weak self] bool in
+            if bool {
+                self?.progressIndicator.startAnimating()
+            } else {
+                self?.progressIndicator.stopAnimating()
+            }
+        }).disposed(by: bag)
         
         viewModel.statusData.asObservable().bind(to: statusTable.tableView.rx.items) { tableView, index, data in
             
@@ -180,40 +178,48 @@ class StatusTable: CardPartsViewController, CardPartTableViewDelegate, CustomMar
     
         setupCardParts([statusTable])
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        statusTable.addSubview(progressIndicator)
+        progressIndicator.hidesWhenStopped = true
+        progressIndicator.center = statusTable.center
+    }
 }
 
-class DurationTable: CardPartsViewController, CardPartTableViewDelegate, CustomMarginCardTrait {
+class DurationTable: CardPartsViewController, CustomMarginCardTrait {
     
     func customMargin() -> CGFloat {
         return 15
     }
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-      //  guard let currentCell = tableView.cellForRow(at: indexPath) as? CardPartTableViewCell else { return }
-        tableView.deselectRow(at: indexPath, animated: true)
-    }
-    
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 75
-    }
-    
     var viewModel: SiteDetailViewModel!
     
     let durationTable = CardPartTableView()
+    let progressIndicator = CustomActivityIndicatorView(image: nil)
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        durationTable.tableView.allowsMultipleSelection = false
         durationTable.tableView.dataSource = nil
-        durationTable.delegate = self
-        durationTable.margins = UIEdgeInsets(top: 0, left: 0, bottom: 10, right: 0)
+        durationTable.rowHeight = 75
+        durationTable.margins = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        durationTable.tableView.allowsSelection = false
         
 //        durationTable.tableView.rx.modelSelected(Task.self)
 //            .subscribe(onNext: { [unowned self] task in
 //               // self.viewModel.taskDone(taskClick: task)
 //            })
 //            .disposed(by: bag)
+        
+        viewModel.loadStatus.asObservable().bind(onNext: { [weak self] bool in
+            if bool {
+                self?.progressIndicator.startAnimating()
+            } else {
+                self?.progressIndicator.stopAnimating()
+            }
+        }).disposed(by: bag)
         
         viewModel.durationData.asObservable().bind(to: durationTable.tableView.rx.items) { tableView, index, data in
             
@@ -227,5 +233,13 @@ class DurationTable: CardPartsViewController, CardPartTableViewDelegate, CustomM
         }.disposed(by: bag)
 
         setupCardParts([durationTable])
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        durationTable.addSubview(progressIndicator)
+        progressIndicator.hidesWhenStopped = true
+        progressIndicator.center = durationTable.center
     }
 }

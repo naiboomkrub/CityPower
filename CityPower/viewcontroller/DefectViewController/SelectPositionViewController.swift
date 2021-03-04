@@ -57,11 +57,20 @@ class SelectPositionViewController: UIViewController, UIGestureRecognizerDelegat
                        let width = self?.planPicture.frame.width,
                        let height = self?.planPicture.frame.height,
                        let imgSize = self?.planPicture.image?.size {
-
-                        let aspectWidth  = width / imgSize.width
-                        let aspectHeight = height / imgSize.height
+                        
+                        var newSize = CGSize()
+                        
+                        if UIScreen.main.scale == 3 {
+                            newSize.width = imgSize.width * 1.5
+                            newSize.height = imgSize.height * 1.5
+                        } else {
+                            newSize = imgSize
+                        }
+                        
+                        let aspectWidth  = width / newSize.width
+                        let aspectHeight = height / newSize.height
                         let f = min(aspectWidth, aspectHeight)
-
+                        
                         for pos in position {
                             
                             if let imagePoint = pos.defectPosition {
@@ -70,8 +79,8 @@ class SelectPositionViewController: UIViewController, UIGestureRecognizerDelegat
 
                                 imagePoint.y *= f
                                 imagePoint.x *= f
-                                imagePoint.x += (width - imgSize.width * f) / 2.0
-                                imagePoint.y += (height - imgSize.height * f) / 2.0
+                                imagePoint.x += (width - newSize.width * f) / 2.0
+                                imagePoint.y += (height - newSize.height * f) / 2.0
 
                                 let tempView = TemView()
                                 tempView.setModel(pos)
@@ -79,7 +88,7 @@ class SelectPositionViewController: UIViewController, UIGestureRecognizerDelegat
                                 tempView.frame.origin = imagePoint
                                 tempView.layer.borderColor = UIColor.blueCity.cgColor
                                 tempView.backgroundColor = .clear
-                                //tempView.isHidden = pos.selected
+                                tempView.isUserInteractionEnabled = pos.selected
                                 self?.planPicture.addSubview(tempView)
                             }
                         }

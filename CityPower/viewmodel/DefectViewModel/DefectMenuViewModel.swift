@@ -37,10 +37,12 @@ class DefectMenuViewModel {
     }
     
     func reloadData() {
+    
+        let defectGroup = DefectDetails.shared.savedGroup
+    
+        guard defectGroup != tempData else { return }
         
         tempData.removeAll()
-        
-        let defectGroup = DefectDetails.shared.savedGroup
         
         for item in defectGroup {
             if let item = item {

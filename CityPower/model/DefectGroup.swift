@@ -86,6 +86,7 @@ struct DefectGroup: Codable {
     let numberOfStart: Int64
     let numberOfOnGoing: Int64
     let numberOfFinish: Int64
+    let defectDate: [String: String]
     let defectPosition: [ImagePosition]
         
     var dictionary: [String: Any] {
@@ -96,17 +97,19 @@ struct DefectGroup: Codable {
         "numberOfStart": numberOfStart,
         "numberOfOnGoing": numberOfOnGoing,
         "numberOfFinish": numberOfFinish,
+        "defectDate": defectDate,
         "defectPosition": defectPosition,
       ]
     }
     
-    init(planTitle: String, timeStamp: String, planUrl: String, numberOfStart: Int64, numberOfOnGoing: Int64, numberOfFinish: Int64, defectPosition: [ImagePosition]) {
+    init(planTitle: String, timeStamp: String, planUrl: String, numberOfStart: Int64, numberOfOnGoing: Int64, numberOfFinish: Int64, defectDate: [String: String], defectPosition: [ImagePosition]) {
         self.planTitle = planTitle
         self.timeStamp = timeStamp
         self.planUrl = planUrl
         self.numberOfStart = numberOfStart
         self.numberOfFinish = numberOfFinish
         self.numberOfOnGoing = numberOfOnGoing
+        self.defectDate = defectDate
         self.defectPosition = defectPosition
     }
     
@@ -117,6 +120,7 @@ struct DefectGroup: Codable {
             let numberOfStart = dictionary["numberOfStart"] as? Int64,
             let numberOfOnGoing = dictionary["numberOfOnGoing"] as? Int64,
             let numberOfFinish = dictionary["numberOfFinish"] as? Int64,
+            let defectDate = dictionary["defectDate"] as? [String: String],
             let defectPosition = dictionary["defectPosition"] as? [[String: Any]] else { return nil }
         
         self.planTitle = planTitle
@@ -125,6 +129,7 @@ struct DefectGroup: Codable {
         self.numberOfStart = numberOfStart
         self.numberOfFinish = numberOfFinish
         self.numberOfOnGoing = numberOfOnGoing
+        self.defectDate = defectDate
         self.defectPosition = defectPosition.map( {ImagePosition(x: $0["x"] as! Double, y: $0["y"] as! Double, pointNum: $0["pointNum"] as! String , system: $0["system"] as! String , selected: $0["selected"] as! Bool) } )
     }
 }
@@ -132,12 +137,18 @@ struct DefectGroup: Codable {
 extension DefectGroup: Hashable {
     static func == (lhs: DefectGroup, rhs: DefectGroup) -> Bool {
         return lhs.planTitle == rhs.planTitle &&
-            lhs.timeStamp == rhs.timeStamp
+            lhs.timeStamp == rhs.timeStamp &&
+            lhs.numberOfStart == rhs.numberOfStart &&
+            lhs.numberOfOnGoing == rhs.numberOfOnGoing &&
+            lhs.numberOfFinish == rhs.numberOfFinish
     }
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(planTitle)
         hasher.combine(timeStamp)
+        hasher.combine(numberOfStart)
+        hasher.combine(numberOfOnGoing)
+        hasher.combine(numberOfFinish)
     }
 }
 

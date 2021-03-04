@@ -144,7 +144,7 @@ class DefectDetailController: CardPartsViewController, CustomMarginCardTrait {
         dateStack.margins = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
         dateStack.pinBackground(dateStack.backgroundView, to: dateStack)
                 
-        defectView.contentMode = .scaleAspectFit
+        defectView.contentMode = .scaleAspectFill
         defectView.addConstraint(NSLayoutConstraint(item: defectView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 200))
         
         buttonStack.axis = .horizontal
@@ -231,9 +231,18 @@ class DefectDetailController: CardPartsViewController, CustomMarginCardTrait {
                        let height = self?.defectView.frame.height,
                        let imgSize = self?.defectView.image?.size {
 //                       let tr = self?.defectView.transform.scaledBy(x: 1.25, y: 1.25) {
-
-                        let aspectWidth  = width / imgSize.width
-                        let aspectHeight = height / imgSize.height
+                        
+                        var newSize = CGSize()
+                        
+                        if UIScreen.main.scale == 3 {
+                            newSize.width = imgSize.width * 1.5
+                            newSize.height = imgSize.height * 1.5
+                        } else {
+                            newSize = imgSize
+                        }
+                        
+                        let aspectWidth  = width / newSize.width
+                        let aspectHeight = height / newSize.height
                         let f = min(aspectWidth, aspectHeight)
                         let pos = position[0]
         
@@ -241,8 +250,8 @@ class DefectDetailController: CardPartsViewController, CustomMarginCardTrait {
                             
                         imagePoint.y *= f
                         imagePoint.x *= f
-                        imagePoint.x += (width - imgSize.width * f) / 2.0
-                        imagePoint.y += (height - imgSize.height * f) / 2.0
+                        imagePoint.x += (width - newSize.width * f) / 2.0
+                        imagePoint.y += (height - newSize.height * f) / 2.0
 
                         let tempView = TemView()
                         tempView.setText("\(index)")

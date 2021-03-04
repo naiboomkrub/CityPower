@@ -27,6 +27,7 @@ class RootDefectViewModel {
     }()
     
     lazy private(set) var siteDetailViewModel: SiteDetailViewModel = {
+        DefectDetails.shared.loadDefect()
         return self.createSiteDetailViewModel()
     }()
     
@@ -36,7 +37,6 @@ class RootDefectViewModel {
     }()
     
     lazy private(set) var defectMenuViewModel: DefectMenuViewModel = {
-        DefectDetails.shared.loadDefect()
         return self.createDefectMenuViewModel()
     }()
     
@@ -212,8 +212,8 @@ class RootDefectViewModel {
                     }
                     
                     self?.defectDetailViewModel.status.accept(model[0].status)
-                    self?.defectDetailViewModel.dueDate.accept("Create :  \(model[0].timeStamp)")
-                    self?.defectDetailViewModel.createDate.accept("Due     :  \(model[0].dueDate)")
+                    self?.defectDetailViewModel.createDate.accept("Create :  \(model[0].timeStamp)")
+                    self?.defectDetailViewModel.dueDate.accept("Due     :  \(model[0].dueDate)")
                     self?.defectDetailViewModel.title.accept(model[0].defectTitle)
                     self?.defectDetailViewModel.positionDefect.accept([model[0].position])
                     self?.defectDetailViewModel.photos.accept([])

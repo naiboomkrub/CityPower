@@ -236,6 +236,10 @@ class DefectDetails {
             if let updateGroup = updateGroup {
                 updateGroup()
             }
+            
+            if let updateStatus = updateStatus {
+                updateStatus()
+            }
         }
     }
     
@@ -271,6 +275,7 @@ class DefectDetails {
         }
     }
     
+    var updateStatus: (() -> Void)?
     var updateSite: (() -> Void)?
     var layoutPoint: (() -> Void)?
     var updateCell: (() -> Void)?
@@ -283,6 +288,12 @@ class DefectDetails {
     private var myUID: String?
     
     private var listener: ListenerRegistration? {
+        didSet {
+            oldValue?.remove()
+        }
+    }
+    
+    private var listListener: ListenerRegistration? {
         didSet {
             oldValue?.remove()
         }
@@ -390,7 +401,7 @@ class DefectDetails {
 
         guard listener == nil, let currentSite = selectedSite else { return }
         
-        listener = db.collection("plan").document("site").collection(currentSite).addSnapshotListener { [unowned self] querySnapshot, error in
+        listener = db.collection("plan").document("site").collection(currentSite).addSnapshotListener(includeMetadataChanges: true) { [unowned self] querySnapshot, error in
             
             guard let snapshot = querySnapshot else {
               print("Error fetching snapshot results: \(error!)")
@@ -406,7 +417,6 @@ class DefectDetails {
                     ids.append(document.documentID)
                 }
             }
-            
             self.savedGroup = models
             self.groupDocumentID = ids
             self.groupReference = snapshot.documents
@@ -415,13 +425,13 @@ class DefectDetails {
     
     func loadList(_ planName: String) {
         
-        guard listener == nil else { return }
+        guard listListener == nil else { return }
         
         if let currentIndex = currentGroup, let pos = savedGroup[currentIndex] {
             self.savedPosition = pos.defectPosition
         }
                 
-        listener = db.collection("plan").document(planName).collection("defect").addSnapshotListener(includeMetadataChanges: true) { [unowned self] querySnapshot, error in
+        listListener = db.collection("plan").document(planName).collection("defect").addSnapshotListener(includeMetadataChanges: true) { [unowned self] querySnapshot, error in
             
             guard let snapshot = querySnapshot else {
               print("Error fetching snapshot results: \(error!)")
@@ -494,7 +504,11 @@ class DefectDetails {
         listener = nil
     }
     
-    func editData<T: Hashable>(_ data: T) {
+    func stopListListening() {
+        listListener = nil
+    }
+    
+    func editData<T: Hashable>(_ data: T, _ date: T) {
 
         guard let index = currentIndex,
               let indexGroup = currentGroup,
@@ -503,17 +517,20 @@ class DefectDetails {
               let ref = ref,
               let currentSite = selectedSite else { return }
         
-        if let data = data as? String {
+        if let data = data as? String, let date = date as? String {
             
             let batch = db.batch()
             let groupRef = db.collection("plan").document("site").collection(currentSite).document(idGroup)
+            let keyDate = "defectDate." + "\(index)"
             
             if data == statusDefect.Ongoing.rawValue {
                 batch.updateData(["numberOfStart": FieldValue.increment(Int64(-1))], forDocument: groupRef)
                 batch.updateData(["numberOfOnGoing": FieldValue.increment(Int64(1))], forDocument: groupRef)
+                batch.updateData([keyDate: date], forDocument: groupRef)
             } else if data == statusDefect.Finish.rawValue {
                 batch.updateData(["numberOfOnGoing": FieldValue.increment(Int64(-1))], forDocument: groupRef)
                 batch.updateData(["numberOfOnFinish": FieldValue.increment(Int64(1))], forDocument: groupRef)
+                batch.updateData([keyDate: FieldValue.delete()], forDocument: groupRef)
             } else {
                 return
             }

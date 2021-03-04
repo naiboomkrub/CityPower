@@ -24,6 +24,10 @@ class SiteListViewController: UIViewController, UITableViewDelegate {
     private let disposeBag = DisposeBag()
     
     private var load: Bool!
+    
+    lazy private var progressIndicator : CustomActivityIndicatorView = {
+      return CustomActivityIndicatorView(image: nil)
+    }()
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 150
@@ -57,6 +61,20 @@ class SiteListViewController: UIViewController, UITableViewDelegate {
         allSiteTable.separatorStyle = .none
         allSiteTable.rx.setDelegate(self).disposed(by: disposeBag)
                 
+        progressIndicator.hidesWhenStopped = true
+        allSiteTable.addSubview(progressIndicator)
+        progressIndicator.translatesAutoresizingMaskIntoConstraints = false
+        progressIndicator.centerYAnchor.constraint(equalTo: allSiteTable.centerYAnchor, constant: -75 / 4).isActive = true
+        progressIndicator.centerXAnchor.constraint(equalTo: allSiteTable.centerXAnchor, constant: -75 / 4).isActive = true
+        
+        viewModel.dataSource.map({ $0.isEmpty }).bind(onNext: { [weak self] bool in
+            if bool {
+                self?.progressIndicator.startAnimating()
+            } else {
+                self?.progressIndicator.stopAnimating()
+            }
+        }).disposed(by: disposeBag)
+        
         siteMenuLabel.text = "Site List"
         siteMenuLabel.font = UIFont(name: "SukhumvitSet-Bold", size: CGFloat(25))!
         
@@ -84,7 +102,6 @@ class SiteListViewController: UIViewController, UITableViewDelegate {
                 }
             }
         }
-        
         viewModel.reloadData()
     }
 }

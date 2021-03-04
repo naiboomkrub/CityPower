@@ -238,30 +238,46 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
             
             switch state {
             case .All:
-                UIView.animate(withDuration: 0.2, animations: { allTem.forEach { $0.alpha = 1.0 } })
+                UIView.animate(withDuration: 0.2, animations: {
+                    allTem.forEach { $0.alpha = 1.0 }
+                    self?.expandButtonView.alpha = 0.0
+                })
             case .Empty:
-                UIView.animate(withDuration: 0.2, animations: { allTem.forEach { $0.alpha = 0.0 } })
+                UIView.animate(withDuration: 0.2, animations: {
+                    allTem.forEach { $0.alpha = 0.0 }
+                    self?.expandButtonView.alpha = 1.0
+                })
             case .NotChose:
                 UIView.animate(withDuration: 0.2, animations:
                                 {allTem.forEach {
                                     if let model = $0.imageModel , model.selected { $0.alpha = 0.0 }
-                                    else { $0.alpha = 1.0 }}})
+                                    else { $0.alpha = 1.0 }}
+                                    self?.expandButtonView.alpha = 1.0
+                                })
             case .General:
                 UIView.animate(withDuration: 0.2, animations:
                                 {allTem.forEach {
-                                    if let model = $0.imageModel , model.system == "General" { $0.alpha = 1.0 } else { $0.alpha = 0.0 }}})
+                                    if let model = $0.imageModel , model.system == "General" { $0.alpha = 1.0 } else { $0.alpha = 0.0 }}
+                                    self?.expandButtonView.alpha = 0.0
+                                })
             case .Electrical:
                 UIView.animate(withDuration: 0.2, animations:
                                 {allTem.forEach {
-                                    if let model = $0.imageModel , model.system == "Electrical" { $0.alpha = 1.0 } else { $0.alpha = 0.0 }}})
+                                    if let model = $0.imageModel , model.system == "Electrical" { $0.alpha = 1.0 } else { $0.alpha = 0.0 }}
+                                    self?.expandButtonView.alpha = 0.0
+                                })
             case .Sanitary:
                 UIView.animate(withDuration: 0.2, animations:
                                 {allTem.forEach {
-                                    if let model = $0.imageModel , model.system == "Sanitary" { $0.alpha = 1.0 } else { $0.alpha = 0.0 }}})
+                                    if let model = $0.imageModel , model.system == "Sanitary" { $0.alpha = 1.0 } else { $0.alpha = 0.0 }}
+                                    self?.expandButtonView.alpha = 0.0
+                                })
             case .Mechanical:
                 UIView.animate(withDuration: 0.2, animations:
                                 {allTem.forEach {
-                                    if let model = $0.imageModel , model.system == "Mechanical" { $0.alpha = 1.0 } else { $0.alpha = 0.0 }}})
+                                    if let model = $0.imageModel , model.system == "Mechanical" { $0.alpha = 1.0 } else { $0.alpha = 0.0 }}
+                                    self?.expandButtonView.alpha = 0.0
+                                })
             }
         }).disposed(by: disposeBag)
         
@@ -279,7 +295,7 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
     }
     
     deinit {
-        DefectDetails.shared.stopListening()
+        DefectDetails.shared.stopListListening()
         DefectDetails.shared.loadDefect()
     }
     
@@ -431,8 +447,17 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
                           let imageSize = self?.planPicture.image?.size,
                           let width = self?.planPicture.bounds.width, let height = self?.planPicture.bounds.height else { return }
                     
-                    let aspectWidth  = width / imageSize.width
-                    let aspectHeight = height / imageSize.height
+                    var newSize = CGSize()
+                    
+                    if UIScreen.main.scale == 3 {
+                        newSize.width = imageSize.width * 1.5
+                        newSize.height = imageSize.height * 1.5
+                    } else {
+                        newSize = imageSize
+                    }
+                    
+                    let aspectWidth  = width / newSize.width
+                    let aspectHeight = height / newSize.height
                     let f = min(aspectWidth, aspectHeight)
                     
                     for view in subViews {
@@ -440,8 +465,8 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
                             
                             var imagePoint = tem.frame.origin
                             
-                            imagePoint.y -= (height - imageSize.height * f) / 2.0
-                            imagePoint.x -= (width - imageSize.width * f) / 2.0
+                            imagePoint.y -= (height - newSize.height * f) / 2.0
+                            imagePoint.x -= (width - newSize.width * f) / 2.0
                             imagePoint.x /= f
                             imagePoint.y /= f
                             positionModel.append(model)
@@ -522,6 +547,7 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
                     let newTem = TemView(frame: CGRect(origin: newImagePoint, size: CGSize(width: 50, height: 70)))
                     newTem.backgroundColor = .clear
                     newTem.setText(text)
+                    newTem.alpha = subView.alpha
                     newImageView.addSubview(newTem)
                 }
             }
