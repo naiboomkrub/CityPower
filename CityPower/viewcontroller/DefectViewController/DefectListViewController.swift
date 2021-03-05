@@ -50,9 +50,9 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
     func setUpTable() {
         
         let dataSource = RxTableViewSectionedAnimatedDataSource<DefectListSection>(
-            animationConfiguration: AnimationConfiguration(insertAnimation: .top,
+            animationConfiguration: AnimationConfiguration(insertAnimation: .fade,
                                                            reloadAnimation: .fade,
-                                                           deleteAnimation: .left),
+                                                           deleteAnimation: .fade),
             configureCell: configureCell,
             canEditRowAtIndexPath: canEditRowAtIndexPath)
         
@@ -227,6 +227,9 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
                     }
                 }
             } else {
+
+                guard self?.allTem?.compactMap({ $0.imageModel }) != point else { return }
+                
                 self?.allTem?.removeAll()
                 if let subViews = self?.planPicture.subviews {
                     for view in subViews {
@@ -307,7 +310,6 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
     
     deinit {
         DefectDetails.shared.stopListListening()
-        DefectDetails.shared.loadDefect()
     }
     
     override func viewWillAppear(_ animated: Bool) {

@@ -73,12 +73,16 @@ struct ImagePosition: Codable {
 extension ImagePosition: Hashable {
     static func == (lhs: ImagePosition, rhs: ImagePosition) -> Bool {
         return abs(lhs.x - rhs.x) < 1 &&
-            abs(lhs.y - rhs.y) < 1
+            abs(lhs.y - rhs.y) < 1 &&
+            lhs.status == rhs.status &&
+            lhs.selected == rhs.selected
     }
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(x)
         hasher.combine(y)
+        hasher.combine(status)
+        hasher.combine(selected)
     }
 }
 
@@ -92,7 +96,7 @@ struct DefectGroup: Codable {
     let numberOfFinish: Int64
     let defectDate: [String: String]
     let defectPosition: [ImagePosition]
-        
+    
     var dictionary: [String: Any] {
       return [
         "planTitle": planTitle,

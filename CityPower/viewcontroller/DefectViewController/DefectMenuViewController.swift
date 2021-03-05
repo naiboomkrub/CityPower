@@ -58,11 +58,13 @@ class DefectMenuViewController: UIViewController, UITableViewDelegate {
         
         Observable.zip(menuTable.rx.itemSelected, menuTable.rx.modelSelected(DefectGroup.self))
             .subscribe(onNext: { [unowned self] index, model in
+                
+                DefectDetails.shared.currentGroup = index.row
                 DefectDetails.shared.loadList(model.planTitle)
                 
                 self.menuTable.deselectRow(at: index, animated: true)
                 self.viewModel.planDetail.accept(model.planUrl)
-                self.viewModel.selectedArea(index.row)
+                self.viewModel.selectedArea()
         }).disposed(by: disposeBag)
     }
 
@@ -168,6 +170,10 @@ class DefectMenuCell: UITableViewCell {
     @IBOutlet weak var defectPlanLabel: UILabel!
     @IBOutlet weak var pdfImage: UIImageView!
     
+    lazy private var progressIndicator : CustomActivityIndicatorView = {
+      return CustomActivityIndicatorView(image: nil)
+    }()
+    
     private var task: DataTask?
     
     override func awakeFromNib() {
@@ -176,11 +182,19 @@ class DefectMenuCell: UITableViewCell {
         self.planView.backgroundColor = . blueCity
         self.planView.layer.cornerRadius = 10.0
         
+        progressIndicator.hidesWhenStopped = true
+        pdfImage.addSubview(progressIndicator)
+        progressIndicator.translatesAutoresizingMaskIntoConstraints = false
+        progressIndicator.centerYAnchor.constraint(equalTo: pdfImage.centerYAnchor, constant: -75 / 4).isActive = true
+        progressIndicator.centerXAnchor.constraint(equalTo: pdfImage.centerXAnchor, constant: -75 / 4).isActive = true
+        
         self.defectPlanLabel.textColor = .white
         self.defectPlanLabel.font = UIFont(name: "SukhumvitSet-Text", size: CGFloat(16))!
     }
     
     func setData (_ data: DefectGroup) {
+        
+        progressIndicator.startAnimating()
         
         defectPlanLabel.text = data.planTitle
         
@@ -203,6 +217,7 @@ class DefectMenuCell: UITableViewCell {
     }
     
     private func display(_ container: ImageContainer) {
+        progressIndicator.stopAnimating()
         pdfImage.image = container.image
     }
     

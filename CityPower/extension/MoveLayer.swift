@@ -155,7 +155,7 @@ class TemView : UIView {
                 if imageModel?.status == statusDefect.Start.rawValue {
                     layer.backColor = UIColor.blueCity.cgColor
                 } else if imageModel?.status == statusDefect.Ongoing.rawValue  {
-                    layer.backColor = UIColor.general.cgColor
+                    layer.backColor = UIColor.mechincal2.cgColor
                 } else {
                     layer.backColor = UIColor.mechincal.cgColor
                 }

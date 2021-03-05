@@ -22,7 +22,6 @@ class DefectMenuViewModel {
     var tempData: [DefectGroup] = []
     var photos: [URL] = []
     
-    let indexRow = BehaviorRelay(value: 0)
     let planDetail = BehaviorRelay(value: "")
     let events = PublishSubject<Event>()
     let formatterHour: DateFormatter = {
@@ -60,8 +59,7 @@ class DefectMenuViewModel {
         dataSource.accept(newValue)
     }
     
-    func selectedArea(_ index: Int) {
-        indexRow.accept(index)
+    func selectedArea() {
         events.onNext(.SelectArea)
     }
     

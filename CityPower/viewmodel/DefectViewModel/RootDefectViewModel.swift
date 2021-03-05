@@ -248,12 +248,11 @@ class RootDefectViewModel {
     
         let defectMenuViewModel = DefectMenuViewModel()
         
-        Observable.combineLatest( defectMenuViewModel.planDetail, defectMenuViewModel.indexRow)
-            .subscribe(onNext: { [weak self] image, index in
+        defectMenuViewModel.planDetail
+            .subscribe(onNext: { [weak self] image in
                 self?.defectDetailViewModel.imageName.accept(image)
                 self?.defectListViewModel.imageName.accept(image)
                 self?.imageName.accept(image)
-                DefectDetails.shared.currentGroup = index
             }).disposed(by: disposeBag)
         
         defectMenuViewModel.events

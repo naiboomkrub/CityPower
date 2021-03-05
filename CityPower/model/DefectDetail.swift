@@ -434,13 +434,14 @@ class DefectDetails {
     
     func loadList(_ planName: String) {
         
-        guard listListener == nil else { return }
+        guard listListener == nil, let currentSite = selectedSite else { return }
                 
         if let currentIndex = currentGroup, let pos = savedGroup[currentIndex] {
             self.savedPosition = pos.defectPosition
         }
-        
-        listListener = db.collection("plan").document(planName).collection("defect").addSnapshotListener(includeMetadataChanges: true) { [unowned self] querySnapshot, error in
+
+        listListener = db.collection(currentSite).document(planName).collection("defect")
+            .addSnapshotListener(includeMetadataChanges: true) { [unowned self] querySnapshot, error in
             
             guard let snapshot = querySnapshot else {
               print("Error fetching snapshot results: \(error!)")
@@ -468,7 +469,7 @@ class DefectDetails {
                 }
             }
         }
-        ref = db.collection("plan").document(planName).collection("defect")
+        ref = db.collection(currentSite).document(planName).collection("defect")
     }
     
     func index(of document: DocumentSnapshot) -> Int? {
