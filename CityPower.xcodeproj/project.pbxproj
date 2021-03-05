@@ -74,12 +74,18 @@
 		1A25CB6A25CE95F400A7EC93 /* BaseUiKitRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A25CB6925CE95F400A7EC93 /* BaseUiKitRouter.swift */; };
 		1A26EE8F25DFC0D200E576E7 /* AddPlanViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A26EE8E25DFC0D200E576E7 /* AddPlanViewController.swift */; };
 		1A26EE9425DFC0E200E576E7 /* AddPlanViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A26EE9325DFC0E200E576E7 /* AddPlanViewModel.swift */; };
+		1A2745CC25E7B5A700343DA1 /* SiteListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2745CB25E7B5A700343DA1 /* SiteListViewController.swift */; };
+		1A2745D125E7B5E100343DA1 /* SiteListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2745D025E7B5E100343DA1 /* SiteListViewModel.swift */; };
+		1A2745DF25E7BBA900343DA1 /* SiteGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2745DE25E7BBA900343DA1 /* SiteGroup.swift */; };
+		1A2745E425E7C1AF00343DA1 /* SiteDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2745E325E7C1AF00343DA1 /* SiteDetailViewController.swift */; };
+		1A2745EC25E7C1BC00343DA1 /* SiteDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2745EB25E7C1BC00343DA1 /* SiteDetailViewModel.swift */; };
 		1A275E8B25C7AEC000805C7C /* DefectDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A275E8A25C7AEC000805C7C /* DefectDetailViewController.swift */; };
 		1A275E9025C7B6E000805C7C /* DefectDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A275E8F25C7B6E000805C7C /* DefectDetailViewModel.swift */; };
 		1A275E9825C7BDAA00805C7C /* DefectListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A275E9725C7BDAA00805C7C /* DefectListViewController.swift */; };
 		1A275EA025C7BDDD00805C7C /* DefectListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A275E9F25C7BDDD00805C7C /* DefectListViewModel.swift */; };
 		1A275EA825C7DA8900805C7C /* ExpandButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A275EA725C7DA8900805C7C /* ExpandButton.swift */; };
 		1A334DB925DBF2BA00414C47 /* CustomActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A334DB825DBF2BA00414C47 /* CustomActivityIndicator.swift */; };
+		1A36FDEC25E6187D00893490 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1A36FDEB25E6187D00893490 /* GoogleService-Info.plist */; };
 		1A37178D25D14FA0006B1108 /* SegmentControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A37178C25D14FA0006B1108 /* SegmentControl.swift */; };
 		1A37CB8325C3C8C3002815B6 /* GenerateLoadImageData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A37CB8225C3C8C3002815B6 /* GenerateLoadImageData.swift */; };
 		1A37CB8825C3CB13002815B6 /* DataPipeLineTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A37CB8725C3CB13002815B6 /* DataPipeLineTask.swift */; };
@@ -93,7 +99,6 @@
 		1A37CC7225D4050200D6F0AD /* SelectPositionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A37CC7125D4050200D6F0AD /* SelectPositionViewController.swift */; };
 		1A37CC7D25D4051000D6F0AD /* SelectPositionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A37CC7C25D4051000D6F0AD /* SelectPositionViewModel.swift */; };
 		1A39569225E4FA4300E51AEE /* DefectGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A39569125E4FA4300E51AEE /* DefectGroup.swift */; };
-		1A61C16925E3642F003F1C8F /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1A61C16825E3642F003F1C8F /* GoogleService-Info.plist */; };
 		1A843BF225DA5E0000D120F9 /* AddCommentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A843BF125DA5E0000D120F9 /* AddCommentViewModel.swift */; };
 		1A843BF725DA5E4600D120F9 /* AddCommentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A843BF625DA5E4600D120F9 /* AddCommentViewController.swift */; };
 		1A843C2125DA6CE000D120F9 /* MultiLineTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A843C2025DA6CE000D120F9 /* MultiLineTextField.swift */; };
@@ -273,12 +278,18 @@
 		1A25CB6925CE95F400A7EC93 /* BaseUiKitRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseUiKitRouter.swift; sourceTree = "<group>"; };
 		1A26EE8E25DFC0D200E576E7 /* AddPlanViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPlanViewController.swift; sourceTree = "<group>"; };
 		1A26EE9325DFC0E200E576E7 /* AddPlanViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPlanViewModel.swift; sourceTree = "<group>"; };
+		1A2745CB25E7B5A700343DA1 /* SiteListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SiteListViewController.swift; sourceTree = "<group>"; };
+		1A2745D025E7B5E100343DA1 /* SiteListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SiteListViewModel.swift; sourceTree = "<group>"; };
+		1A2745DE25E7BBA900343DA1 /* SiteGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SiteGroup.swift; sourceTree = "<group>"; };
+		1A2745E325E7C1AF00343DA1 /* SiteDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SiteDetailViewController.swift; sourceTree = "<group>"; };
+		1A2745EB25E7C1BC00343DA1 /* SiteDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SiteDetailViewModel.swift; sourceTree = "<group>"; };
 		1A275E8A25C7AEC000805C7C /* DefectDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefectDetailViewController.swift; sourceTree = "<group>"; };
 		1A275E8F25C7B6E000805C7C /* DefectDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefectDetailViewModel.swift; sourceTree = "<group>"; };
 		1A275E9725C7BDAA00805C7C /* DefectListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefectListViewController.swift; sourceTree = "<group>"; };
 		1A275E9F25C7BDDD00805C7C /* DefectListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefectListViewModel.swift; sourceTree = "<group>"; };
 		1A275EA725C7DA8900805C7C /* ExpandButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandButton.swift; sourceTree = "<group>"; };
 		1A334DB825DBF2BA00414C47 /* CustomActivityIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomActivityIndicator.swift; sourceTree = "<group>"; };
+		1A36FDEB25E6187D00893490 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		1A37178C25D14FA0006B1108 /* SegmentControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentControl.swift; sourceTree = "<group>"; };
 		1A37CB8225C3C8C3002815B6 /* GenerateLoadImageData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenerateLoadImageData.swift; sourceTree = "<group>"; };
 		1A37CB8725C3CB13002815B6 /* DataPipeLineTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataPipeLineTask.swift; sourceTree = "<group>"; };
@@ -292,7 +303,6 @@
 		1A37CC7125D4050200D6F0AD /* SelectPositionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectPositionViewController.swift; sourceTree = "<group>"; };
 		1A37CC7C25D4051000D6F0AD /* SelectPositionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectPositionViewModel.swift; sourceTree = "<group>"; };
 		1A39569125E4FA4300E51AEE /* DefectGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefectGroup.swift; sourceTree = "<group>"; };
-		1A61C16825E3642F003F1C8F /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		1A843BF125DA5E0000D120F9 /* AddCommentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCommentViewModel.swift; sourceTree = "<group>"; };
 		1A843BF625DA5E4600D120F9 /* AddCommentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCommentViewController.swift; sourceTree = "<group>"; };
 		1A843C2025DA6CE000D120F9 /* MultiLineTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiLineTextField.swift; sourceTree = "<group>"; };
@@ -565,6 +575,8 @@
 		1A3530E425D4D5E700044188 /* DefectViewModel */ = {
 			isa = PBXGroup;
 			children = (
+				1A2745D025E7B5E100343DA1 /* SiteListViewModel.swift */,
+				1A2745EB25E7C1BC00343DA1 /* SiteDetailViewModel.swift */,
 				31AAE92B2574A787003EAAC8 /* RootDefectViewModel.swift */,
 				1A37CC6C25D4036B00D6F0AD /* RootAddDefectViewModel.swift */,
 				1AA6019425BEB793000841B6 /* DefectViewModel.swift */,
@@ -582,6 +594,8 @@
 		1A3530E525D4D5FE00044188 /* DefectViewController */ = {
 			isa = PBXGroup;
 			children = (
+				1A2745CB25E7B5A700343DA1 /* SiteListViewController.swift */,
+				1A2745E325E7C1AF00343DA1 /* SiteDetailViewController.swift */,
 				1AA6018C25BEB772000841B6 /* DefectViewController.swift */,
 				1A233A3625C180BA004DF050 /* DefectMenuViewController.swift */,
 				1A37CC6225D3E62200D6F0AD /* AddDefectViewController.swift */,
@@ -783,7 +797,7 @@
 				31FA69D924F53B4900FBC9A0 /* UIColor.swift */,
 				31DB8BF124F63B8A001E33EE /* Global.swift */,
 				319CBD29257636BF00141CCE /* CityPower-Bridging-Header.h */,
-				1A61C16825E3642F003F1C8F /* GoogleService-Info.plist */,
+				1A36FDEB25E6187D00893490 /* GoogleService-Info.plist */,
 			);
 			path = CityPower;
 			sourceTree = "<group>";
@@ -817,6 +831,7 @@
 				31B7EF7F25ADA5FA00CC2C44 /* InstallHistories.swift */,
 				1A37CC1025D392D900D6F0AD /* DefectDetail.swift */,
 				1A39569125E4FA4300E51AEE /* DefectGroup.swift */,
+				1A2745DE25E7BBA900343DA1 /* SiteGroup.swift */,
 			);
 			path = model;
 			sourceTree = "<group>";
@@ -995,7 +1010,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1A61C16925E3642F003F1C8F /* GoogleService-Info.plist in Resources */,
+				1A36FDEC25E6187D00893490 /* GoogleService-Info.plist in Resources */,
 				31DEA48C24F3B1EA00D98A95 /* Main.storyboard in Resources */,
 				31DEA48E24F3B1EA00D98A95 /* Assets.xcassets in Resources */,
 				318766DA250BF614000B43F4 /* SukhumvitSet-Text.ttf in Resources */,
@@ -1146,6 +1161,7 @@
 				1A843BF725DA5E4600D120F9 /* AddCommentViewController.swift in Sources */,
 				31AAE91D2574A465003EAAC8 /* LessonViewController.swift in Sources */,
 				1A25CB3325CE6F1400A7EC93 /* PhotoLibraryAssemble.swift in Sources */,
+				1A2745CC25E7B5A700343DA1 /* SiteListViewController.swift in Sources */,
 				1A25CB5125CE6F4E00A7EC93 /* ImageStorage.swift in Sources */,
 				31D49B3524FE6B4500F90626 /* UserDefaultManager.swift in Sources */,
 				1A25CADE25CE6D3200A7EC93 /* CameraAssembly.swift in Sources */,
@@ -1235,17 +1251,21 @@
 				31CDD14E2570DA90009B148B /* AllQuizViewModel.swift in Sources */,
 				1A25CB3425CE6F1400A7EC93 /* PhotoLibraryPresenter.swift in Sources */,
 				1A25CAF625CE6EEA00A7EC93 /* ImageCroppingAssembly.swift in Sources */,
+				1A2745EC25E7C1BC00343DA1 /* SiteDetailViewModel.swift in Sources */,
 				1A25CB2325CE6F0D00A7EC93 /* ThumbnailView.swift in Sources */,
 				31FA69C724F4D1B100FBC9A0 /* Question.swift in Sources */,
 				1A843C2125DA6CE000D120F9 /* MultiLineTextField.swift in Sources */,
 				1A25CAE025CE6D3200A7EC93 /* CameraView.swift in Sources */,
+				1A2745DF25E7BBA900343DA1 /* SiteGroup.swift in Sources */,
 				1A25CB2625CE6F0D00A7EC93 /* PhotoLibraryLatestPhotoProvider.swift in Sources */,
+				1A2745E425E7C1AF00343DA1 /* SiteDetailViewController.swift in Sources */,
 				1A23E65825C2A03400382B8A /* ImageCache.swift in Sources */,
 				1A25CB1F25CE6F0D00A7EC93 /* MediaPickerRouter.swift in Sources */,
 				1A37CC6825D4035400D6F0AD /* RootAddDefectController.swift in Sources */,
 				31DEA48924F3B1EA00D98A95 /* DashBoardViewController.swift in Sources */,
 				1A25CB4225CE6F4100A7EC93 /* CaptureSessionPreviewService.swift in Sources */,
 				1A233A3C25C18174004DF050 /* DefectMenuViewModel.swift in Sources */,
+				1A2745D125E7B5E100343DA1 /* SiteListViewModel.swift in Sources */,
 				315B615E2512084A0097E40C /* UserViewController.swift in Sources */,
 				1A23E67125C2BA1E00382B8A /* DataDecoding.swift in Sources */,
 				31D546C9257788FD001908FB /* UIViewExtension.swift in Sources */,

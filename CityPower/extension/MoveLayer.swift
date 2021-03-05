@@ -128,10 +128,10 @@ class LayerMove: UIGestureRecognizer  {
                     DefectDetails.shared
                         .movePoint(ImagePosition(x: round(Double(convertedPoint.x) * 1000) / 1000,
                                                  y: round(Double(convertedPoint.y) * 1000) / 1000, pointNum: text,
-                                                 system: model.system, selected: model.selected),
+                                                 system: model.system, status: model.status, selected: model.selected),
                                    ImagePosition(x: round(Double(centerConverted.x) * 1000) / 1000,
                                                  y: round(Double(centerConverted.y) * 1000) / 1000, pointNum: text,
-                                                 system: model.system, selected: model.selected))
+                                                 system: model.system, status: model.status, selected: model.selected))
                 }
                 view.frame = CGRect(origin: centerEnd, size: view.bounds.size)
                 self.pdfView.addSubview(view)
@@ -150,6 +150,16 @@ class TemView : UIView {
     var imageModel: ImagePosition? {
         didSet {
             labelNum.text = imageModel?.pointNum
+            
+            if let layer = layer as? TemLayer {
+                if imageModel?.status == statusDefect.Start.rawValue {
+                    layer.backColor = UIColor.blueCity.cgColor
+                } else if imageModel?.status == statusDefect.Ongoing.rawValue  {
+                    layer.backColor = UIColor.general.cgColor
+                } else {
+                    layer.backColor = UIColor.mechincal.cgColor
+                }
+            }
         }
     }
     
@@ -187,11 +197,16 @@ class TemView : UIView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
 }
 
 
 class TemLayer : CALayer {
+    
+    var backColor: CGColor = UIColor.blueCity.cgColor {
+        didSet {
+            setNeedsDisplay()
+        }
+    }
     
     override func draw(in ctx: CGContext) {
         
@@ -207,7 +222,7 @@ class TemLayer : CALayer {
         ctx.setLineWidth(1)
         ctx.strokePath()
         
-        ctx.setFillColor(UIColor.blueCity.cgColor)
+        ctx.setFillColor(backColor)
         ctx.setStrokeColor(UIColor.lightBlueCity.cgColor)
         ctx.setLineWidth(7.5)
         ctx.setTextDrawingMode(.fill)

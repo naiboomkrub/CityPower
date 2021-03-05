@@ -54,20 +54,17 @@ class DefectListViewModel {
     }
     
     func reloadData() {
-                        
-        tempData.removeAll()
-        
+                   
         let defectList = DefectDetails.shared.savedDefect
+        var sortFilter = Array(defectList.values).filter({ $0?.system == filter }).compactMap({ $0 })
+        sortFilter.sort(by: { $0.defectNumber < $1.defectNumber })
         
-        for item in defectList.values {
-            if let item = item, item.system == filter {
-                tempData.append(item)
-            }
-        }
-        tempData.sort(by: { $0.defectNumber < $1.defectNumber })
-        tempData = tempData.unique(for:  \.self)
-        dataSource.accept(tempData)
         progressSpin.accept(false)
+        
+        guard tempData != sortFilter else { return }
+        
+        tempData = sortFilter
+        dataSource.accept(tempData)
     }
     
     func reloadImagePoint() {

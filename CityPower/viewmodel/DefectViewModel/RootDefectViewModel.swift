@@ -195,27 +195,7 @@ class RootDefectViewModel {
         defectListViewModel.defectDetailModel.subscribe(onNext: { [weak self] model in
                 
                 if !model.isEmpty {
-                    
-                    self?.defectDetailViewModel.photoData.accept(model[0].defectImage)
-                    self?.defectDetailViewModel.commentData.accept(model[0].defectComment)
-                    
-                    if !model[0].defectComment.isEmpty {
-                        self?.defectDetailViewModel.state.accept(.hasData)
-                    } else {
-                        self?.defectDetailViewModel.state.accept(.empty)
-                    }
-                    
-                    if !model[0].defectImage.isEmpty {
-                        self?.defectDetailViewModel.photoState.accept(.hasData)
-                    } else {
-                        self?.defectDetailViewModel.photoState.accept(.empty)
-                    }
-                    
-                    self?.defectDetailViewModel.status.accept(model[0].status)
-                    self?.defectDetailViewModel.createDate.accept("Create :  \(model[0].timeStamp)")
-                    self?.defectDetailViewModel.dueDate.accept("Due     :  \(model[0].dueDate)")
-                    self?.defectDetailViewModel.title.accept(model[0].defectTitle)
-                    self?.defectDetailViewModel.positionDefect.accept([model[0].position])
+                    self?.defectDetailViewModel.modelData = model
                     self?.defectDetailViewModel.photos.accept([])
                     DefectDetails.shared.currentIndex = Int(model[0].defectNumber)
                 }

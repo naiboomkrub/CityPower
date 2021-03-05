@@ -46,10 +46,10 @@ class AddDefectViewModel {
             DefectDetails.shared
                 .selectPoint(ImagePosition(x: dataStruct.positionX,
                                          y: dataStruct.positionY, pointNum: dataStruct.defectNumber,
-                                         system: "", selected: false),
+                                         system: "", status: dataStruct.status, selected: false),
                             ImagePosition(x: dataStruct.positionX,
                                           y: dataStruct.positionY, pointNum: dataStruct.defectNumber,
-                                          system: dataStruct.system, selected: true))
+                                          system: dataStruct.system, status: dataStruct.status, selected: true))
             
             do {
                 let jsonData = try dataStruct.jsonData()

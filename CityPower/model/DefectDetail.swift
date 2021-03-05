@@ -189,7 +189,8 @@ extension DefectDetail: Hashable {
             lhs.timeStamp == rhs.timeStamp &&
             lhs.defectTitle == rhs.defectTitle &&
             lhs.defectComment == rhs.defectComment &&
-            lhs.defectImage == rhs.defectImage
+            lhs.defectImage == rhs.defectImage &&
+            lhs.status == rhs.status
     }
     
     func hash(into hasher: inout Hasher) {
@@ -198,6 +199,7 @@ extension DefectDetail: Hashable {
         hasher.combine(defectTitle)
         hasher.combine(defectComment)
         hasher.combine(defectImage)
+        hasher.combine(status)
     }
 }
 
@@ -417,20 +419,27 @@ class DefectDetails {
                     ids.append(document.documentID)
                 }
             }
-            self.savedGroup = models
-            self.groupDocumentID = ids
-            self.groupReference = snapshot.documents
+            
+            if !snapshot.metadata.hasPendingWrites {
+                self.savedGroup = models
+                self.groupDocumentID = ids
+                self.groupReference = snapshot.documents
+                
+                if let currentIndex = currentGroup, let pos = savedGroup[currentIndex] {
+                    self.savedPosition = pos.defectPosition
+                }
+            }
         }
     }
     
     func loadList(_ planName: String) {
         
         guard listListener == nil else { return }
-        
+                
         if let currentIndex = currentGroup, let pos = savedGroup[currentIndex] {
             self.savedPosition = pos.defectPosition
         }
-                
+        
         listListener = db.collection("plan").document(planName).collection("defect").addSnapshotListener(includeMetadataChanges: true) { [unowned self] querySnapshot, error in
             
             guard let snapshot = querySnapshot else {
@@ -448,13 +457,15 @@ class DefectDetails {
                 }
             }
             
-            self.savedDefect = models
-            self.documentID = ids
-            self.defectReference = snapshot.documents
-            
-            if let currentIndex = currentIndex, let filterModel = models["\(currentIndex)"] {
-                self.savedComment = filterModel.defectComment
-                self.savedPicture = filterModel.defectImage
+            if !snapshot.metadata.hasPendingWrites {
+                self.savedDefect = models
+                self.documentID = ids
+                self.defectReference = snapshot.documents
+                
+                if let currentIndex = currentIndex, let filterModel = models["\(currentIndex)"] {
+                    self.savedComment = filterModel.defectComment
+                    self.savedPicture = filterModel.defectImage
+                }
             }
         }
         ref = db.collection("plan").document(planName).collection("defect")
@@ -508,7 +519,7 @@ class DefectDetails {
         listListener = nil
     }
     
-    func editData<T: Hashable>(_ data: T, _ date: T) {
+    func editData<T: Hashable, Q: Hashable>(_ data: T, _ model: Q) {
 
         guard let index = currentIndex,
               let indexGroup = currentGroup,
@@ -517,19 +528,34 @@ class DefectDetails {
               let ref = ref,
               let currentSite = selectedSite else { return }
         
-        if let data = data as? String, let date = date as? String {
+        if let data = data as? String, let model = model as? DefectDetail {
             
             let batch = db.batch()
             let groupRef = db.collection("plan").document("site").collection(currentSite).document(idGroup)
             let keyDate = "defectDate." + "\(index)"
+            let field = "defectPosition"
+            let newValue = FieldValue.arrayUnion([["x": model.positionX,
+                                                   "y": model.positionY,
+                                                   "pointNum": model.defectNumber,
+                                                   "system": model.system,
+                                                   "status": data,
+                                                   "selected": true]])
+            
+            let deleteValue = FieldValue.arrayRemove([["x": model.positionX,
+                                                   "y": model.positionY,
+                                                   "pointNum": model.defectNumber,
+                                                   "system": model.system,
+                                                   "status": model.status,
+                                                   "selected": true]])
+            
             
             if data == statusDefect.Ongoing.rawValue {
                 batch.updateData(["numberOfStart": FieldValue.increment(Int64(-1))], forDocument: groupRef)
                 batch.updateData(["numberOfOnGoing": FieldValue.increment(Int64(1))], forDocument: groupRef)
-                batch.updateData([keyDate: date], forDocument: groupRef)
+                batch.updateData([keyDate: model.dueDate], forDocument: groupRef)
             } else if data == statusDefect.Finish.rawValue {
                 batch.updateData(["numberOfOnGoing": FieldValue.increment(Int64(-1))], forDocument: groupRef)
-                batch.updateData(["numberOfOnFinish": FieldValue.increment(Int64(1))], forDocument: groupRef)
+                batch.updateData(["numberOfFinish": FieldValue.increment(Int64(1))], forDocument: groupRef)
                 batch.updateData([keyDate: FieldValue.delete()], forDocument: groupRef)
             } else {
                 return
@@ -537,6 +563,8 @@ class DefectDetails {
             
             let docuRef = ref.document(id)
             
+            batch.updateData([field: deleteValue], forDocument: groupRef)
+            batch.updateData([field: newValue], forDocument: groupRef)
             batch.updateData(["status": data], forDocument: docuRef)
             
             batch.commit() { err in
@@ -562,6 +590,7 @@ class DefectDetails {
                                                    "y": data.y,
                                                    "pointNum": data.pointNum,
                                                    "system": data.system,
+                                                   "status": data.status,
                                                    "selected": data.selected]])
             
             db.collection("plan").document("site").collection(currentSite).document(id).updateData([field: newValue]) { err in
@@ -591,6 +620,7 @@ class DefectDetails {
                                                            "y": subData.y,
                                                            "pointNum": subData.pointNum,
                                                            "system": subData.system,
+                                                           "status": subData.status,
                                                            "selected": subData.selected]])
                 batch.updateData([field: removeValue], forDocument: docuRef)
             }
@@ -618,6 +648,7 @@ class DefectDetails {
                                                    "y": newData.y,
                                                    "pointNum": newData.pointNum,
                                                    "system": newData.system,
+                                                   "status": newData.status,
                                                    "selected": newData.selected]])
             
             let batch = db.batch()
@@ -626,6 +657,7 @@ class DefectDetails {
                                                        "y": data.y,
                                                        "pointNum": data.pointNum,
                                                        "system": data.system,
+                                                       "status": data.status,
                                                        "selected": data.selected]])
                 
             batch.updateData([field: removeValue], forDocument: docuRef)
@@ -654,6 +686,7 @@ class DefectDetails {
                                                    "y": newData.y,
                                                    "pointNum": newData.pointNum,
                                                    "system": newData.system,
+                                                   "status": newData.status,
                                                    "selected": newData.selected]])
             
             let batch = db.batch()
@@ -662,6 +695,7 @@ class DefectDetails {
                                                        "y": data.y,
                                                        "pointNum": data.pointNum,
                                                        "system": data.system,
+                                                       "status": data.status,
                                                        "selected": data.selected]])
             
             batch.updateData(["numberOfStart": FieldValue.increment(Int64(1))], forDocument: docuRef)

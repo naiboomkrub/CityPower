@@ -22,6 +22,32 @@ class DefectDetailViewModel {
     var tempData: [CommentStruct] = []
     var tempPhoto: [ImageStruct] = []
     
+    var modelData: [DefectDetail]? {
+        didSet {
+            if let model = modelData?.first {
+                photoData.accept(model.defectImage)
+                commentData.accept(model.defectComment)
+                
+                if !model.defectComment.isEmpty {
+                    state.accept(.hasData)
+                } else {
+                    state.accept(.empty)
+                }
+                
+                if !model.defectImage.isEmpty {
+                    photoState.accept(.hasData)
+                } else {
+                    photoState.accept(.empty)
+                }
+                status.accept(model.status)
+                createDate.accept("Create :  \(model.timeStamp)")
+                dueDate.accept("Due     :  \(model.dueDate)")
+                title.accept(model.defectTitle)
+                positionDefect.accept([model.position])
+            }
+        }
+    }
+    
     let photos = BehaviorRelay(value: [ImageSource]())
     let commentData = BehaviorRelay(value: [CommentStruct]())
     let photoData = BehaviorRelay(value: [ImageStruct]())
@@ -45,7 +71,6 @@ class DefectDetailViewModel {
      }()
     
     init() {
-        
         DefectDetails.shared.updateComment = reloadComment
         DefectDetails.shared.updatePicture = reloadPhoto
     }
@@ -95,8 +120,10 @@ class DefectDetailViewModel {
     }
     
     func doneDefect(_ status: String) {
-        DefectDetails.shared.editData(status, dueDate.value)
-        events.onNext(.doneDefect)
+        if let model = modelData?.first {
+            DefectDetails.shared.editData(status, model)
+            events.onNext(.doneDefect)
+        }
     }
     
     func removeComment(_ model: CommentStruct) {

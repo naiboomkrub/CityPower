@@ -32,7 +32,6 @@ class DefectMenuViewModel {
      }()
     
     init() {
-        
         DefectDetails.shared.updateGroup = reloadData
     }
     

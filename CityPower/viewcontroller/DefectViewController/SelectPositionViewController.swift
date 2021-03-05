@@ -73,7 +73,7 @@ class SelectPositionViewController: UIViewController, UIGestureRecognizerDelegat
                         
                         for pos in position {
                             
-                            if let imagePoint = pos.defectPosition {
+                            if let imagePoint = pos.defectPosition, !pos.selected {
                                 
                                 var imagePoint = imagePoint
 
@@ -88,7 +88,6 @@ class SelectPositionViewController: UIViewController, UIGestureRecognizerDelegat
                                 tempView.frame.origin = imagePoint
                                 tempView.layer.borderColor = UIColor.blueCity.cgColor
                                 tempView.backgroundColor = .clear
-                                tempView.isUserInteractionEnabled = pos.selected
                                 self?.planPicture.addSubview(tempView)
                             }
                         }

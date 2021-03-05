@@ -54,8 +54,7 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
                                                            reloadAnimation: .fade,
                                                            deleteAnimation: .left),
             configureCell: configureCell,
-            canEditRowAtIndexPath: canEditRowAtIndexPath,
-            canMoveRowAtIndexPath: canMoveRowAtIndexPath)
+            canEditRowAtIndexPath: canEditRowAtIndexPath)
         
         viewModel.dataSource
             .map { [DefectListSection(model: "", items: $0)] }
@@ -73,11 +72,9 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
         
         Observable.zip(listTable.rx.itemSelected, listTable.rx.modelSelected(DefectDetail.self))
             .subscribe(onNext: { [unowned self] index, model in
-                
                 self.listTable.deselectRow(at: index, animated: true)
                 self.viewModel.selectedDefect(model)
-            })
-            .disposed(by: disposeBag)
+        }).disposed(by: disposeBag)
     }
     
     override func viewDidLoad() {
@@ -86,7 +83,6 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
         let segmented = CustomSegmentedControl(frame: CGRect(x: 0, y: 0, width: self.view.bounds.size.width, height: 50), buttonTitle: ["Defect","Plan"])
         segmented.backgroundColor = .clear
         segmented.delegate = self
-
         parentSwapView.addSubview(segmented)
         
         navigationItem.largeTitleDisplayMode = .never
@@ -97,6 +93,7 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
         confirmButton.setTitleColor(.blueCity, for: .normal)
         confirmButton.titleLabel?.font = UIFont(name: "SukhumvitSet-Bold", size: CGFloat(18))!
         
+        listTable.dataSource = nil
         listTable.separatorStyle = .none
         listTable.rx.setDelegate(self).disposed(by: disposeBag)
         
@@ -128,109 +125,124 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
         Observable.combineLatest(viewModel.imagePoint, viewModel.imageName)
         .subscribe(onNext: { [weak self] point, image in
             
-            guard let url = URL(string: image), self?.planPicture.image == nil else { return }
-
-            let pipeline = DataPipeLine.shared
-            let request = DataRequest(url: url, processors: [])
+            guard let url = URL(string: image) else { return }
             
-            if let container = pipeline.cachedImage(for: request) {
+            if self?.planPicture.image == nil {
                 
-                DispatchQueue.main.async {
+                let pipeline = DataPipeLine.shared
+                let request = DataRequest(url: url, processors: [])
+                
+                if let container = pipeline.cachedImage(for: request) {
                     
-                    self?.planPicture.image = container.image
-                    
-                    var newSize = CGSize()
-                    
-                    if UIScreen.main.scale == 3 {
-                        newSize.width = container.image.size.width * 1.5
-                        newSize.height = container.image.size.height * 1.5
-                    } else {
-                        newSize = container.image.size
-                    }
+                    DispatchQueue.main.async {
+                        
+                        self?.planPicture.image = container.image
+                        
+                        var newSize = CGSize()
+                        
+                        if UIScreen.main.scale == 3 {
+                            newSize.width = container.image.size.width * 1.5
+                            newSize.height = container.image.size.height * 1.5
+                        } else {
+                            newSize = container.image.size
+                        }
 
-                    if let viewSize = self?.planPicture.bounds.size {
-                        
-                        let newAspectWidth  = viewSize.width / newSize.width
-                        let newAspectHeight = viewSize.height / newSize.height
-                        let fNew = min(newAspectWidth, newAspectHeight)
-                        
-                        self?.allTem?.removeAll()
-                        
-                        for subPoint in point {
+                        if let viewSize = self?.planPicture.bounds.size {
                             
-                            if var refPoint = subPoint.defectPosition {
-                                refPoint.y *= fNew
-                                refPoint.x *= fNew
-                                refPoint.x += (viewSize.width - newSize.width * fNew) / 2.0
-                                refPoint.y += (viewSize.height - newSize.height * fNew) / 2.0
+                            let newAspectWidth  = viewSize.width / newSize.width
+                            let newAspectHeight = viewSize.height / newSize.height
+                            let fNew = min(newAspectWidth, newAspectHeight)
+                            
+                            self?.allTem?.removeAll()
+                            
+                            for subPoint in point {
                                 
-                                let tempView = TemView()
-                                tempView.setModel(subPoint)
-                                tempView.bounds.size = CGSize(width: 50, height: 70)
-                                tempView.frame.origin = refPoint
-                                tempView.backgroundColor = .clear
-                                
-                                if let tag = Int(subPoint.pointNum) {
-                                    self?.numList.append(tag)
+                                if var refPoint = subPoint.defectPosition {
+                                    refPoint.y *= fNew
+                                    refPoint.x *= fNew
+                                    refPoint.x += (viewSize.width - newSize.width * fNew) / 2.0
+                                    refPoint.y += (viewSize.height - newSize.height * fNew) / 2.0
+                                    
+                                    let tempView = TemView()
+                                    tempView.setModel(subPoint)
+                                    tempView.bounds.size = CGSize(width: 50, height: 70)
+                                    tempView.frame.origin = refPoint
+                                    tempView.backgroundColor = .clear
+                                    
+                                    if let tag = Int(subPoint.pointNum) {
+                                        self?.numList.append(tag)
+                                    }
+                                    self?.planPicture.addSubview(tempView)
+                                    self?.allTem?.append(tempView)
                                 }
-                                self?.planPicture.addSubview(tempView)
-                                self?.allTem?.append(tempView)
+                            }
+                        }
+                    }
+                    return
+                }
+                
+                pipeline.loadImage(with: request) { [weak self] result in
+                    if case let .success(response) = result {
+              
+                        self?.planPicture.image = response.image
+                        
+                        var newSize = CGSize()
+                        
+                        if UIScreen.main.scale == 3 {
+                            newSize.width = response.image.size.width * 1.5
+                            newSize.height = response.image.size.height * 1.5
+                        } else {
+                            newSize = response.image.size
+                        }
+                        
+                        if let viewSize = self?.planPicture.bounds.size {
+                            let newAspectWidth  = viewSize.width / newSize.width
+                            let newAspectHeight = viewSize.height / newSize.height
+                            let fNew = min(newAspectWidth, newAspectHeight)
+                            
+                            self?.allTem?.removeAll()
+                            
+                            for subPoint in point {
+                                
+                                if var refPoint = subPoint.defectPosition {
+                                    refPoint.y *= fNew
+                                    refPoint.x *= fNew
+                                    refPoint.x += (viewSize.width - newSize.width * fNew) / 2.0
+                                    refPoint.y += (viewSize.height - newSize.height * fNew) / 2.0
+                                    
+                                    let tempView = TemView()
+                                    tempView.setModel(subPoint)
+                                    tempView.bounds.size = CGSize(width: 50, height: 70)
+                                    tempView.frame.origin = refPoint
+                                    tempView.backgroundColor = .clear
+                                    
+                                    if let tag = Int(subPoint.pointNum) {
+                                        self?.numList.append(tag)
+                                    }
+                                    self?.planPicture.addSubview(tempView)
+                                    self?.allTem?.append(tempView)
+                                }
                             }
                         }
                     }
                 }
-                return
-            }
-            
-            pipeline.loadImage(with: request) { [weak self] result in
-                if case let .success(response) = result {
-          
-                    self?.planPicture.image = response.image
-                    
-                    var newSize = CGSize()
-                    
-                    if UIScreen.main.scale == 3 {
-                        newSize.width = response.image.size.width * 1.5
-                        newSize.height = response.image.size.height * 1.5
-                    } else {
-                        newSize = response.image.size
-                    }
-                    
-                    if let viewSize = self?.planPicture.bounds.size {
-                        let newAspectWidth  = viewSize.width / newSize.width
-                        let newAspectHeight = viewSize.height / newSize.height
-                        let fNew = min(newAspectWidth, newAspectHeight)
-                        
-                        self?.allTem?.removeAll()
-                        
-                        for subPoint in point {
-                            
-                            if var refPoint = subPoint.defectPosition {
-                                refPoint.y *= fNew
-                                refPoint.x *= fNew
-                                refPoint.x += (viewSize.width - newSize.width * fNew) / 2.0
-                                refPoint.y += (viewSize.height - newSize.height * fNew) / 2.0
-                                
-                                let tempView = TemView()
-                                tempView.setModel(subPoint)
-                                tempView.bounds.size = CGSize(width: 50, height: 70)
-                                tempView.frame.origin = refPoint
-                                tempView.backgroundColor = .clear
-                                
-                                if let tag = Int(subPoint.pointNum) {
-                                    self?.numList.append(tag)
+            } else {
+                self?.allTem?.removeAll()
+                if let subViews = self?.planPicture.subviews {
+                    for view in subViews {
+                        if let view = view as? TemView, let model = view.imageModel {
+                            for subPoint in point {
+                                if model.pointNum == subPoint.pointNum {
+                                    view.imageModel = subPoint
+                                    self?.allTem?.append(view)
+                                    break
                                 }
-                                self?.planPicture.addSubview(tempView)
-                                self?.allTem?.append(tempView)
                             }
                         }
                     }
                 }
             }
-
         }).disposed(by: disposeBag)
-        
-        listTable.dataSource = nil
         
         viewModel.temFilter.subscribe(onNext: { [weak self] state in
             
@@ -287,8 +299,7 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
                 self.listTable.setEditing(!result, animated: true)
                 if !result { self.editButton.setTitle("Done", for: .normal) }
                 else { self.editButton.setTitle("Edit", for: .normal) }
-            })
-            .disposed(by: disposeBag)
+            }).disposed(by: disposeBag)
     
         setUpFilterView()
         setUpPlanFilter()
@@ -309,7 +320,6 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
             setUpTable()
             load = true
         }
-        
         setUpHeaderButton()
         viewModel.reloadData()
     }
@@ -523,8 +533,8 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
             let f = min(aspectWidth, aspectHeight)
             
             let newAspectWidth  = newImageView.bounds.width / image.size.width
-            let nweAspectHeight = newImageView.bounds.height / image.size.height
-            let fNew = min(newAspectWidth, nweAspectHeight)
+            let newAspectHeight = newImageView.bounds.height / image.size.height
+            let fNew = min(newAspectWidth, newAspectHeight)
             
             for subView in imageView.subviews {
                 if let subView = subView as? TemView,
@@ -706,12 +716,6 @@ extension DefectListViewController {
         }
     }
     
-    private var canMoveRowAtIndexPath: RxTableViewSectionedAnimatedDataSource<DefectListSection>.CanMoveRowAtIndexPath {
-        return { _, _ in
-            return false
-        }
-    }
-    
     @objc func deleteAnnotation(_ sender: UITapGestureRecognizer) {
 
         let position = sender.location(in: planPicture)
@@ -764,7 +768,8 @@ extension DefectListViewController {
         if let convertedPoint = convertViewToImagePoint(planPicture, newPosition) {
             let doubleX = round(Double(convertedPoint.x) * 1000) / 1000
             let doubleY = round(Double(convertedPoint.y) * 1000) / 1000
-            let model = ImagePosition(x: doubleX, y: doubleY, pointNum: "\(numToUpdate)", system: "", selected: false)
+            let model = ImagePosition(x: doubleX, y: doubleY, pointNum: "\(numToUpdate)",
+                                      system: "", status: statusDefect.Start.rawValue, selected: false)
             tempView.setModel(model)
             DefectDetails.shared.addPoint(model)
         }
@@ -810,7 +815,7 @@ extension DefectListViewController {
                         numList = numList.filter { $0 != Int(text) }
                         removeSet.append(ImagePosition(x: round(Double(imagePoint.x) * 1000) / 1000,
                                                        y: round(Double(imagePoint.y) * 1000) / 1000, pointNum: text,
-                                                       system: model.system, selected: model.selected))
+                                                       system: model.system, status: model.status, selected: model.selected))
                     }
                 }
             }
@@ -866,6 +871,9 @@ class DefectListCell: UITableViewCell {
         if data.status == statusDefect.Finish.rawValue {
             doneState.setImage(UIImage(systemName: "checkmark", withConfiguration: largeConfig), for: .normal)
             doneState.tintColor = .green
+        } else if data.status == statusDefect.Ongoing.rawValue {
+            doneState.setImage(UIImage(systemName: "arrow.clockwise",  withConfiguration: largeConfig), for: .normal)
+            doneState.tintColor = .black
         }
         else {
             doneState.setImage(UIImage(systemName: "xmark",  withConfiguration: largeConfig), for: .normal)
