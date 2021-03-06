@@ -39,7 +39,8 @@ class LayerMove: UIGestureRecognizer  {
                     if annotationBound.contains(currentLocation),
                        let superView = self.pdfView.superview,
                        let view = view as? TemView,
-                       let text = view.labelNum.text {
+                       let text = view.labelNum.text,
+                       view.isHidden == false {
                         
                         self.drawVeil = UIView(frame: self.pdfView.frame)
                         superView.addSubview(self.drawVeil)
@@ -159,6 +160,16 @@ class TemView : UIView {
                 } else {
                     layer.backColor = UIColor.mechincal.cgColor
                 }
+            }
+        }
+    }
+    
+    override var alpha: CGFloat {
+        didSet {
+            if alpha == 0.0 {
+                isHidden = true
+            } else {
+                isHidden = false
             }
         }
     }

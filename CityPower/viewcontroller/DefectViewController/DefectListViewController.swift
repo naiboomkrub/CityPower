@@ -723,16 +723,18 @@ extension DefectListViewController {
         let position = sender.location(in: planPicture)
             
         for view in planPicture.subviews {
-            let annotationBound = view.frame
-            view.layer.borderColor = UIColor.blueCity.cgColor
-            if annotationBound.contains(position) && !annotationsToDelete.contains(view) {
-                view.layer.borderWidth = 1.0
-                annotationsToDelete.append(view)
-            } else if annotationBound.contains(position) {
-                view.layer.borderWidth = 0.0
-                
-                if let index = annotationsToDelete.firstIndex(of: view) {
-                    annotationsToDelete.remove(at: index)
+            if view.isHidden == false {
+                let annotationBound = view.frame
+                view.layer.borderColor = UIColor.blueCity.cgColor
+                if annotationBound.contains(position) && !annotationsToDelete.contains(view) {
+                    view.layer.borderWidth = 1.0
+                    annotationsToDelete.append(view)
+                } else if annotationBound.contains(position) {
+                    view.layer.borderWidth = 0.0
+                    
+                    if let index = annotationsToDelete.firstIndex(of: view) {
+                        annotationsToDelete.remove(at: index)
+                    }
                 }
             }
         }
