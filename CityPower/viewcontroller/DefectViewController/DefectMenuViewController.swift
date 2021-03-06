@@ -37,7 +37,7 @@ class DefectMenuViewController: UIViewController, UITableViewDelegate {
         guard !filter.isEmpty else { return sectionModels }
         return sectionModels.map {
             AnimatableSectionModel(model: $0.model,
-                                   items: $0.items.filter { $0.planTitle.range(of: filter, options: .anchored) != nil })
+                                   items: $0.items.filter { $0.planTitle.lowercased().range(of: filter.lowercased(), options: .anchored) != nil })
         }
     }
     
@@ -82,6 +82,8 @@ class DefectMenuViewController: UIViewController, UITableViewDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        setupHideKeyboardOnTap()
         
         menuTable.separatorStyle = .none
         menuTable.rx.setDelegate(self).disposed(by: disposeBag)
