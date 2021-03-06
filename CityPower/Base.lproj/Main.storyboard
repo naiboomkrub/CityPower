@@ -1000,7 +1000,7 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="RtC-9u-KSo">
-                                        <rect key="frame" x="0.0" y="50.5" width="414" height="767.5"/>
+                                        <rect key="frame" x="0.0" y="100.5" width="414" height="717.5"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <prototypes>
                                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="DefectMenuCell" rowHeight="150" id="r2L-Zj-KlF" customClass="DefectMenuCell" customModule="CityPower" customModuleProvider="target">
@@ -1058,16 +1058,26 @@
                                         </constraints>
                                         <state key="normal" title="Button"/>
                                     </button>
+                                    <searchBar contentMode="redraw" placeholder="Search" translatesAutoresizingMaskIntoConstraints="NO" id="8ZK-VE-Nnn">
+                                        <rect key="frame" x="21" y="51" width="373" height="50"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="50" id="ZhX-Cq-SqU"/>
+                                        </constraints>
+                                        <textInputTraits key="textInputTraits"/>
+                                    </searchBar>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
+                                    <constraint firstItem="8ZK-VE-Nnn" firstAttribute="bottom" secondItem="RtC-9u-KSo" secondAttribute="top" id="1vU-T7-w4q"/>
                                     <constraint firstItem="fFd-om-pog" firstAttribute="centerY" secondItem="7pN-G2-Y3a" secondAttribute="centerY" id="3Vl-sl-zy7"/>
                                     <constraint firstItem="7pN-G2-Y3a" firstAttribute="top" secondItem="YO1-Tj-t5A" secondAttribute="top" constant="20" id="5a9-Od-UYG"/>
+                                    <constraint firstItem="8ZK-VE-Nnn" firstAttribute="top" secondItem="7pN-G2-Y3a" secondAttribute="bottom" constant="10" id="8Ut-6a-Vpw"/>
                                     <constraint firstAttribute="trailing" secondItem="fFd-om-pog" secondAttribute="trailing" constant="30" id="DDQ-if-RUB"/>
+                                    <constraint firstItem="8ZK-VE-Nnn" firstAttribute="centerX" secondItem="YO1-Tj-t5A" secondAttribute="centerX" id="Ttg-Ie-ROC"/>
                                     <constraint firstItem="RtC-9u-KSo" firstAttribute="centerX" secondItem="YO1-Tj-t5A" secondAttribute="centerX" id="ZPb-nh-q3u"/>
                                     <constraint firstItem="RtC-9u-KSo" firstAttribute="width" secondItem="YO1-Tj-t5A" secondAttribute="width" id="atc-hs-Twm"/>
-                                    <constraint firstItem="7pN-G2-Y3a" firstAttribute="bottom" secondItem="RtC-9u-KSo" secondAttribute="top" constant="-10" id="jhw-tI-MUo"/>
                                     <constraint firstItem="fFd-om-pog" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="7pN-G2-Y3a" secondAttribute="trailing" constant="8" symbolic="YES" id="l4A-hV-yDW"/>
+                                    <constraint firstItem="8ZK-VE-Nnn" firstAttribute="width" secondItem="YO1-Tj-t5A" secondAttribute="width" multiplier="0.9" id="qah-eh-Ypr"/>
                                     <constraint firstItem="7pN-G2-Y3a" firstAttribute="leading" secondItem="YO1-Tj-t5A" secondAttribute="leading" constant="30" id="rke-CK-pu5"/>
                                     <constraint firstAttribute="bottom" secondItem="RtC-9u-KSo" secondAttribute="bottom" id="xPO-17-lD4"/>
                                 </constraints>
@@ -1085,6 +1095,7 @@
                     <navigationItem key="navigationItem" title="Defect Menu" largeTitleDisplayMode="always" id="Io9-mb-jVw"/>
                     <connections>
                         <outlet property="menuTable" destination="RtC-9u-KSo" id="0Mg-c4-GfO"/>
+                        <outlet property="searchArea" destination="8ZK-VE-Nnn" id="oIU-ha-deZ"/>
                         <outlet property="tableButton" destination="fFd-om-pog" id="v3X-jt-wdr"/>
                         <outlet property="tableLabel" destination="7pN-G2-Y3a" id="khB-hw-A2H"/>
                     </connections>

@@ -35,12 +35,18 @@ class AddPlanController: CardPartsViewController {
     var viewModel: AddPlanViewModel!
         
     let planTitle = CardPartTextView(type: .normal)
+    let planArea = CardPartTextView(type: .normal)
+    let planFloor = CardPartTextView(type: .normal)
     let planTitleField = CardPartTextField(format: .none)
+    let planAreaField = CardPartTextField(format: .none)
+    let planFloorField = CardPartTextField(format: .none)
     let currentDate = CardPartTextView(type: .normal)
     let dateView = CardPartTextView(type: .normal)
     let planImage = CardPartImageView()
     
     let titleStack = CardPartStackView()
+    let areaStack = CardPartStackView()
+    let floorStack = CardPartStackView()
     let planStack = CardPartStackView()
     let imageStack = CardPartStackView()
     let dateStack = CardPartStackView()
@@ -56,9 +62,13 @@ class AddPlanController: CardPartsViewController {
         setupHideKeyboardOnTap()
 
         planTitle.text = "Plan Title"
+        planArea.text = "Plan Area"
+        planFloor.text = "Plan Floor"
         currentDate.text = "Date"
 
         planTitle.textColor = .blueCity
+        planArea.textColor = .blueCity
+        planFloor.textColor = .blueCity
         currentDate.textColor = .blueCity
         dateView.textColor = .general2
         
@@ -77,11 +87,23 @@ class AddPlanController: CardPartsViewController {
         planTitleField.textColor = .black
         planTitleField.smartInsertDeleteType = UITextSmartInsertDeleteType.no
         
+        planAreaField.font = UIFont(name: "SukhumvitSet-Bold", size: CGFloat(18))!
+        planAreaField.keyboardType = .default
+        planAreaField.placeholder = "กรอกพื้นที่"
+        planAreaField.textColor = .black
+        planAreaField.smartInsertDeleteType = UITextSmartInsertDeleteType.no
+        
+        planFloorField.font = UIFont(name: "SukhumvitSet-Bold", size: CGFloat(18))!
+        planFloorField.keyboardType = .default
+        planFloorField.placeholder = "กรอกชั้น"
+        planFloorField.textColor = .black
+        planFloorField.smartInsertDeleteType = UITextSmartInsertDeleteType.no
+        
         selectPlan.setTitle("Select Plan 🔘", for: .normal)
         selectPlan.setTitleColor(.blueCity, for: .normal)
         selectPlan.titleLabel?.font = UIFont(name: "SukhumvitSet-Bold", size: CGFloat(18))!
         
-        [dateStack, titleStack, imageStack].forEach { stack in
+        [dateStack, titleStack, imageStack, floorStack, areaStack].forEach { stack in
             stack.axis = .horizontal
             stack.spacing = 50
             stack.distribution = .equalSpacing
@@ -100,17 +122,24 @@ class AddPlanController: CardPartsViewController {
         [currentDate, dateView].forEach { view in
             dateStack.addArrangedSubview(view)}
         
+        [planFloor, planFloorField].forEach { view in
+            floorStack.addArrangedSubview(view)}
+        
+        [planArea, planAreaField].forEach { view in
+            areaStack.addArrangedSubview(view)}
+        
         [planTitle, planTitleField].forEach { view in
             titleStack.addArrangedSubview(view)}
         
         [selectPlan, planImage].forEach { view in
             imageStack.addArrangedSubview(view)}
         
-        [dateStack, CardPartSeparatorView(), titleStack, CardPartSeparatorView(),
+        [dateStack, CardPartSeparatorView(), titleStack, areaStack, floorStack, CardPartSeparatorView(),
          imageStack, CardPartSeparatorView(), saveButton].forEach { view in
             planStack.addArrangedSubview(view)}
         
         viewModel.defectDate.asObservable().bind(to: dateView.rx.text).disposed(by: bag)
+        
         selectPlan.rx.tap.bind(onNext: { [weak self] in
             self?.didTapOnImageView()
         }).disposed(by: bag)
@@ -118,6 +147,18 @@ class AddPlanController: CardPartsViewController {
         planTitleField.rx.controlEvent(.editingChanged).subscribe(onNext: { [unowned self] in
             if let title = self.planTitleField.text {
                 self.viewModel.planName.accept(title)
+            }
+        }).disposed(by: bag)
+        
+        planAreaField.rx.controlEvent(.editingChanged).subscribe(onNext: { [unowned self] in
+            if let title = self.planAreaField.text {
+                self.viewModel.planArea.accept(title)
+            }
+        }).disposed(by: bag)
+        
+        planFloorField.rx.controlEvent(.editingChanged).subscribe(onNext: { [unowned self] in
+            if let title = self.planFloorField.text {
+                self.viewModel.planFloor.accept(title)
             }
         }).disposed(by: bag)
 

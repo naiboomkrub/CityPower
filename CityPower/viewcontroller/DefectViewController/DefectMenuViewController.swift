@@ -17,6 +17,7 @@ class DefectMenuViewController: UIViewController, UITableViewDelegate {
     @IBOutlet weak var tableLabel: UILabel!
     @IBOutlet weak var menuTable: UITableView!
     @IBOutlet weak var tableButton: UIButton!
+    @IBOutlet weak var searchArea: UISearchBar!
     
     var viewModel: DefectMenuViewModel!
     
@@ -32,6 +33,14 @@ class DefectMenuViewController: UIViewController, UITableViewDelegate {
         return 150
     }
     
+    func filteredSectionModels(sectionModels: [DefectAllSection], filter: String) -> [DefectAllSection] {
+        guard !filter.isEmpty else { return sectionModels }
+        return sectionModels.map {
+            AnimatableSectionModel(model: $0.model,
+                                   items: $0.items.filter { $0.planTitle.range(of: filter, options: .anchored) != nil })
+        }
+    }
+    
     func setUpTable() {
         
         let dataSource = RxTableViewSectionedAnimatedDataSource<DefectAllSection>(
@@ -42,8 +51,12 @@ class DefectMenuViewController: UIViewController, UITableViewDelegate {
             canEditRowAtIndexPath: canEditRowAtIndexPath,
             canMoveRowAtIndexPath: canMoveRowAtIndexPath)
         
-        viewModel.dataSource
-            .map { [DefectAllSection(model: "", items: $0)] }
+        let searchTerm = searchArea.rx.text.orEmpty
+            .debounce(.microseconds(200), scheduler: MainScheduler.instance)
+            .distinctUntilChanged().filter { !$0.isEmpty }
+        
+        Observable.combineLatest(viewModel.dataSource, searchTerm)
+            .map { [unowned self] in self.filteredSectionModels(sectionModels: [DefectAllSection(model: "", items: $0.0)], filter: $0.1) }
             .bind(to: menuTable.rx.items(dataSource: dataSource))
         .disposed(by: disposeBag)
         
@@ -58,11 +71,10 @@ class DefectMenuViewController: UIViewController, UITableViewDelegate {
         
         Observable.zip(menuTable.rx.itemSelected, menuTable.rx.modelSelected(DefectGroup.self))
             .subscribe(onNext: { [unowned self] index, model in
-                
-                DefectDetails.shared.currentGroup = index.row
-                DefectDetails.shared.loadList(model.planTitle)
-                
                 self.menuTable.deselectRow(at: index, animated: true)
+                DefectDetails.shared.currentGroup = model.planTitle
+                DefectDetails.shared.loadList(model.planTitle)
+            
                 self.viewModel.planDetail.accept(model.planUrl)
                 self.viewModel.selectedArea()
         }).disposed(by: disposeBag)
@@ -73,6 +85,8 @@ class DefectMenuViewController: UIViewController, UITableViewDelegate {
         
         menuTable.separatorStyle = .none
         menuTable.rx.setDelegate(self).disposed(by: disposeBag)
+        
+        searchArea.backgroundImage = UIImage()
         
         tableLabel.text = "Defect Area"
         tableLabel.font = UIFont(name: "SukhumvitSet-Bold", size: CGFloat(25))!
@@ -192,13 +206,19 @@ class DefectMenuCell: UITableViewCell {
         self.defectPlanLabel.font = UIFont(name: "SukhumvitSet-Text", size: CGFloat(16))!
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        task?.cancel()
+        pdfImage.image = nil
+    }
+    
     func setData (_ data: DefectGroup) {
         
         progressIndicator.startAnimating()
         
         defectPlanLabel.text = data.planTitle
         
-        guard let url = URL(string: data.planUrl), pdfImage.image == nil else { return }
+        guard let url = URL(string: data.planUrl), pdfImage.image == nil else { return progressIndicator.stopAnimating() }
         
         let pipeline = DataPipeLine.shared
         

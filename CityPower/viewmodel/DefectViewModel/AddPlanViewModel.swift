@@ -30,7 +30,9 @@ class AddPlanViewModel {
     let events = PublishSubject<Event>()
     let defectDate = BehaviorRelay(value: "")
     let planName = BehaviorRelay(value: "")
+    let planArea = BehaviorRelay(value: "")
     let imageLink = BehaviorRelay(value: "")
+    let planFloor = BehaviorRelay(value: "")
     
     init() {
         defectDate.accept(formatterDay.string(from: Date()))
@@ -38,7 +40,7 @@ class AddPlanViewModel {
     
     func savePlan() {
         
-        let planStruct = DefectGroup(planTitle: planName.value, timeStamp: formatterDay.string(from: Date()), planUrl: imageLink.value, numberOfStart: 0, numberOfOnGoing: 0, numberOfFinish: 0, defectDate: [:], defectPosition: [])
+        let planStruct = DefectGroup(planTitle: planName.value, timeStamp: formatterDay.string(from: Date()), planUrl: imageLink.value, numberOfStart: 0, numberOfOnGoing: 0, numberOfFinish: 0, defectDate: [:], defectPosition: [], area: planArea.value, floor: planFloor.value)
                 
         do {
             let jsonData = try planStruct.jsonData()

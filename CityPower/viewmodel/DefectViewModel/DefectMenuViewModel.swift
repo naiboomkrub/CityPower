@@ -37,18 +37,12 @@ class DefectMenuViewModel {
     func reloadData() {
     
         let defectGroup = DefectDetails.shared.savedGroup
-    
-        guard defectGroup != tempData else { return }
+        var sortFilter = Array(defectGroup.values).compactMap({ $0 })
+        sortFilter.sort(by: { $0.planTitle < $1.planTitle })
         
-        tempData.removeAll()
+        guard tempData != sortFilter else { return }
         
-        for item in defectGroup {
-            if let item = item {
-                tempData.append(item)
-            }
-        }
-        
-        tempData = tempData.unique(for:  \.self)
+        tempData = sortFilter
         dataSource.accept(tempData)
     }
     

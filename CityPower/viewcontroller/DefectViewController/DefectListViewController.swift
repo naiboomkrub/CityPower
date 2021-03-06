@@ -97,7 +97,7 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
         listTable.separatorStyle = .none
         listTable.rx.setDelegate(self).disposed(by: disposeBag)
         
-        listLabel.text = "Defect Selection"
+        listLabel.text = DefectDetails.shared.currentGroup
         listLabel.font = UIFont(name: "SukhumvitSet-Bold", size: CGFloat(25))!
         
         progressIndicator.hidesWhenStopped = true

@@ -216,10 +216,10 @@ class DefectDetails {
     static let shared = DefectDetails()
     static let fileManager = FileManager.default
     
-    var currentGroup: Int?
+    var currentGroup: String?
     var currentIndex: Int?
     var documentID: [String : String]?
-    var groupDocumentID: [String]?
+    var groupDocumentID: [String : String]?
     var ref: CollectionReference?
     var siteLoaded: Bool?
     
@@ -233,7 +233,7 @@ class DefectDetails {
         }
     }
     
-    var savedGroup: [DefectGroup?] = [] {
+    var savedGroup: [String: DefectGroup?] = [:] {
         didSet {
             if let updateGroup = updateGroup {
                 updateGroup()
@@ -410,13 +410,13 @@ class DefectDetails {
               return
             }
                         
-            var models: [DefectGroup] = []
-            var ids: [String] = []
+            var models: [String: DefectGroup] = [:]
+            var ids: [String: String] = [:]
             
             for document in snapshot.documents {
                 if let model = DefectGroup(dictionary: document.data()) {
-                    models.append(model)
-                    ids.append(document.documentID)
+                    models[model.planTitle] = model
+                    ids[model.planTitle] = document.documentID
                 }
             }
             
@@ -425,7 +425,7 @@ class DefectDetails {
                 self.groupDocumentID = ids
                 self.groupReference = snapshot.documents
                 
-                if let currentIndex = currentGroup, let pos = savedGroup[currentIndex] {
+                if let currentIndex = currentGroup, let pos = savedGroup[currentIndex] as? DefectGroup {
                     self.savedPosition = pos.defectPosition
                 }
             }
@@ -436,7 +436,7 @@ class DefectDetails {
         
         guard listListener == nil, let currentSite = selectedSite else { return }
                 
-        if let currentIndex = currentGroup, let pos = savedGroup[currentIndex] {
+        if let currentIndex = currentGroup, let pos = savedGroup[currentIndex] as? DefectGroup {
             self.savedPosition = pos.defectPosition
         }
 
@@ -581,7 +581,7 @@ class DefectDetails {
     func addPoint<T: Hashable>(_ data: T) {
 
         guard let index = currentGroup,
-              let currentData = DefectDetails.shared.savedGroup[index],
+              let currentData = DefectDetails.shared.savedGroup[index] as? DefectGroup,
               let id = groupDocumentID?[index],
               let currentSite = selectedSite else { return }
         
@@ -607,7 +607,7 @@ class DefectDetails {
     func removePoint<T: Hashable>(_ data: [T]) {
 
         guard let index = currentGroup,
-              let currentData = DefectDetails.shared.savedGroup[index],
+              let currentData = DefectDetails.shared.savedGroup[index] as? DefectGroup,
               let id = groupDocumentID?[index],
               let currentSite = selectedSite  else { return }
         
@@ -638,7 +638,7 @@ class DefectDetails {
     func movePoint<T: Hashable>(_ data: T, _ newData: T) {
 
         guard let index = currentGroup,
-              let currentData = DefectDetails.shared.savedGroup[index],
+              let currentData = DefectDetails.shared.savedGroup[index] as? DefectGroup,
               let id = groupDocumentID?[index],
               let currentSite = selectedSite  else { return }
         
@@ -676,7 +676,7 @@ class DefectDetails {
     func selectPoint<T: Hashable>(_ data: T, _ newData: T) {
 
         guard let index = currentGroup,
-              let currentData = DefectDetails.shared.savedGroup[index],
+              let currentData = DefectDetails.shared.savedGroup[index] as? DefectGroup,
               let id = groupDocumentID?[index],
               let currentSite = selectedSite  else { return }
         

@@ -83,7 +83,11 @@ class SiteDetailViewModel {
     
     func reloadStatus() {
         
-        guard guardData != DefectDetails.shared.savedGroup else { return }
+        let defectGroup = DefectDetails.shared.savedGroup
+        var sortFilter = Array(defectGroup.values).compactMap({ $0 })
+        sortFilter.sort(by: { $0.planTitle < $1.planTitle })
+        
+        guard guardData != sortFilter else { return }
         
         tempStatus.removeAll()
         tempDuration.removeAll()
@@ -97,29 +101,24 @@ class SiteDetailViewModel {
         var dateThirty: Int64 = 0
         var dateElse: Int64 = 0
             
-        DefectDetails.shared.savedGroup.forEach({
-            if let numStart = $0?.numberOfStart,
-               let numOnGoing = $0?.numberOfOnGoing,
-               let numFinish = $0?.numberOfFinish,
-               let dateAll = $0?.defectDate.values {
-                totalStart = totalStart + numStart
-                totalOngoing = totalOngoing + numOnGoing
-                totalComplete = totalComplete + numFinish
+        sortFilter.forEach({
+            totalStart = totalStart + $0.numberOfStart
+            totalOngoing = totalOngoing + $0.numberOfOnGoing
+            totalComplete = totalComplete + $0.numberOfFinish
                 
-                for date in dateAll {
-                    let date = String(date.suffix(10))
+            for date in $0.defectDate.values {
+                let date = String(date.suffix(10))
                     
-                    if let formatDay = formatterDay.date(from: date) {
-                        let delta = formatDay - Date()
-                        if delta < 604800 {
-                            dateSeven += 1
-                        } else if delta < 1296000 {
-                            dateFifteen += 1
-                        } else if delta < 2592000 {
-                            dateThirty += 1
-                        } else {
-                            dateElse += 1
-                        }
+                if let formatDay = formatterDay.date(from: date) {
+                    let delta = formatDay - Date()
+                    if delta < 604800 {
+                        dateSeven += 1
+                    } else if delta < 1296000 {
+                        dateFifteen += 1
+                    } else if delta < 2592000 {
+                        dateThirty += 1
+                    } else {
+                        dateElse += 1
                     }
                 }
             }
@@ -140,7 +139,7 @@ class SiteDetailViewModel {
             tempDuration.append(CountCell(label: item, count: "\(number)"))
         }
         
-        guardData = DefectDetails.shared.savedGroup
+        guardData = sortFilter
         
         statusData.accept(tempStatus)
         durationData.accept(tempDuration)

@@ -96,6 +96,8 @@ struct DefectGroup: Codable {
     let numberOfFinish: Int64
     let defectDate: [String: String]
     let defectPosition: [ImagePosition]
+    let area: String
+    let floor: String
     
     var dictionary: [String: Any] {
       return [
@@ -107,10 +109,12 @@ struct DefectGroup: Codable {
         "numberOfFinish": numberOfFinish,
         "defectDate": defectDate,
         "defectPosition": defectPosition,
+        "area": area,
+        "floor": floor,
       ]
     }
     
-    init(planTitle: String, timeStamp: String, planUrl: String, numberOfStart: Int64, numberOfOnGoing: Int64, numberOfFinish: Int64, defectDate: [String: String], defectPosition: [ImagePosition]) {
+    init(planTitle: String, timeStamp: String, planUrl: String, numberOfStart: Int64, numberOfOnGoing: Int64, numberOfFinish: Int64, defectDate: [String: String], defectPosition: [ImagePosition], area: String, floor: String) {
         self.planTitle = planTitle
         self.timeStamp = timeStamp
         self.planUrl = planUrl
@@ -119,6 +123,8 @@ struct DefectGroup: Codable {
         self.numberOfOnGoing = numberOfOnGoing
         self.defectDate = defectDate
         self.defectPosition = defectPosition
+        self.area = area
+        self.floor = floor
     }
     
     init?(dictionary: [String : Any]) {
@@ -129,7 +135,9 @@ struct DefectGroup: Codable {
             let numberOfOnGoing = dictionary["numberOfOnGoing"] as? Int64,
             let numberOfFinish = dictionary["numberOfFinish"] as? Int64,
             let defectDate = dictionary["defectDate"] as? [String: String],
-            let defectPosition = dictionary["defectPosition"] as? [[String: Any]] else { return nil }
+            let defectPosition = dictionary["defectPosition"] as? [[String: Any]],
+            let area = dictionary["area"] as? String,
+            let floor = dictionary["floor"] as? String else { return nil }
         
         self.planTitle = planTitle
         self.timeStamp = timeStamp
@@ -139,6 +147,8 @@ struct DefectGroup: Codable {
         self.numberOfOnGoing = numberOfOnGoing
         self.defectDate = defectDate
         self.defectPosition = defectPosition.map( {ImagePosition(x: $0["x"] as! Double, y: $0["y"] as! Double, pointNum: $0["pointNum"] as! String, system: $0["system"] as! String, status: $0["status"] as! String, selected: $0["selected"] as! Bool) } )
+        self.area = area
+        self.floor = floor
     }
 }
 
@@ -148,7 +158,9 @@ extension DefectGroup: Hashable {
             lhs.timeStamp == rhs.timeStamp &&
             lhs.numberOfStart == rhs.numberOfStart &&
             lhs.numberOfOnGoing == rhs.numberOfOnGoing &&
-            lhs.numberOfFinish == rhs.numberOfFinish
+            lhs.numberOfFinish == rhs.numberOfFinish &&
+            lhs.area == rhs.area &&
+            lhs.floor == rhs.floor
     }
     
     func hash(into hasher: inout Hasher) {
@@ -157,12 +169,14 @@ extension DefectGroup: Hashable {
         hasher.combine(numberOfStart)
         hasher.combine(numberOfOnGoing)
         hasher.combine(numberOfFinish)
+        hasher.combine(area)
+        hasher.combine(floor)
     }
 }
 
 extension DefectGroup: IdentifiableType {
     var identity: String {
-        return self.planTitle + self.timeStamp
+        return self.planTitle + self.timeStamp + self.floor
     }
     
     typealias Identity = String
