@@ -540,7 +540,7 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
             
             for subView in imageView.subviews {
                 if let subView = subView as? TemView,
-                   let text = subView.labelNum.text {
+                   let model = subView.imageModel {
                     
                     var imagePoint = subView.frame.origin
                     
@@ -558,7 +558,7 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
                     
                     let newTem = TemView(frame: CGRect(origin: newImagePoint, size: CGSize(width: 50, height: 70)))
                     newTem.backgroundColor = .clear
-                    newTem.setText(text)
+                    newTem.setModel(model)
                     newTem.alpha = subView.alpha
                     newImageView.addSubview(newTem)
                 }

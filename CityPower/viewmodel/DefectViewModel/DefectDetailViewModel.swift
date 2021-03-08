@@ -43,7 +43,7 @@ class DefectDetailViewModel {
                 createDate.accept("Create :  \(model.timeStamp)")
                 dueDate.accept("Due     :  \(model.dueDate)")
                 title.accept(model.defectTitle)
-                positionDefect.accept([model.position])
+                positionDefect.accept([model])
             }
         }
     }
@@ -60,7 +60,7 @@ class DefectDetailViewModel {
     let title = BehaviorRelay(value: "Defect Title")
     let state = BehaviorRelay(value: CardState.hasData)
     let photoState = BehaviorRelay(value: CardState.hasData)
-    let positionDefect = BehaviorRelay(value: [CGPoint]())
+    let positionDefect = BehaviorRelay(value: [DefectDetail]())
     
     let events = PublishSubject<Event>()
     

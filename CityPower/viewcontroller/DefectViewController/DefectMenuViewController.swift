@@ -30,7 +30,7 @@ class DefectMenuViewController: UIViewController, UITableViewDelegate {
     private var tapBag = DisposeBag()
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 150
+        return 130
     }
     
     func filteredSectionModels(sectionModels: [DefectAllSection], filter: String) -> [DefectAllSection] {
@@ -53,7 +53,7 @@ class DefectMenuViewController: UIViewController, UITableViewDelegate {
         
         let searchTerm = searchArea.rx.text.orEmpty
             .debounce(.microseconds(200), scheduler: MainScheduler.instance)
-            .distinctUntilChanged().filter { !$0.isEmpty }
+            .distinctUntilChanged()
         
         Observable.combineLatest(viewModel.dataSource, searchTerm)
             .map { [unowned self] in self.filteredSectionModels(sectionModels: [DefectAllSection(model: "", items: $0.0)], filter: $0.1) }
@@ -90,7 +90,7 @@ class DefectMenuViewController: UIViewController, UITableViewDelegate {
         
         searchArea.backgroundImage = UIImage()
         
-        tableLabel.text = "Defect Area"
+        tableLabel.text = "Defect Plan"
         tableLabel.font = UIFont(name: "SukhumvitSet-Bold", size: CGFloat(25))!
         
         tableButton.setTitle("Edit", for: .normal)

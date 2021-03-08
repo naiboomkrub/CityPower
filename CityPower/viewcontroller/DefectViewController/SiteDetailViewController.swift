@@ -83,7 +83,7 @@ class SiteDetailController: CardPartsViewController, CustomMarginCardTrait {
         
         numberOfDefect.font = UIFont(name: "SukhumvitSet-Bold", size: CGFloat(24))!
         numberOfDefect.text = "Total Defects : "
-        defectNumber.font = UIFont(name: "SukhumvitSet-Bold", size: CGFloat(16))!
+        defectNumber.font = UIFont(name: "SukhumvitSet-Text", size: CGFloat(20))!
 
         viewModel.totalDefect.asObservable().bind(to: defectNumber.rx.text).disposed(by: bag)
         defectButton.rx.tap.bind(onNext: viewModel.selectDefect).disposed(by: bag)
@@ -92,7 +92,7 @@ class SiteDetailController: CardPartsViewController, CustomMarginCardTrait {
             numberStack.addArrangedSubview(label)
         }
         
-        setUpButton(defectButton, "Start", UIColor.white, "icon020", buttonStack, [UIColor.start1, UIColor.start2], defectLayer, defectBorder)
+        setUpButton(defectButton, "Defect List", UIColor.white, "icon020", buttonStack, [UIColor.start1, UIColor.start2], defectLayer, defectBorder)
 
         setupCardParts([numberStack, buttonStack])
     }
@@ -172,6 +172,8 @@ class StatusTable: CardPartsViewController, CustomMarginCardTrait {
             cell.margins = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
             cell.leftTitleLabel.text = data.label
             cell.rightTitleLabel.text = data.count
+            cell.rightTitleFont = UIFont(name: "SukhumvitSet-Text", size: CGFloat(18))!
+            cell.leftTitleFont = UIFont(name: "SukhumvitSet-Bold", size: CGFloat(18))!
             
             return cell
         }.disposed(by: bag)
@@ -228,6 +230,8 @@ class DurationTable: CardPartsViewController, CustomMarginCardTrait {
             cell.margins = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
             cell.leftTitleLabel.text = data.label
             cell.rightTitleLabel.text = data.count
+            cell.rightTitleFont = UIFont(name: "SukhumvitSet-Text", size: CGFloat(18))!
+            cell.leftTitleFont = UIFont(name: "SukhumvitSet-Bold", size: CGFloat(18))!
             
             return cell
         }.disposed(by: bag)

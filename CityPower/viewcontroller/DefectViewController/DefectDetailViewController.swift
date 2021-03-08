@@ -222,7 +222,7 @@ class DefectDetailController: CardPartsViewController, CustomMarginCardTrait {
         Observable.combineLatest(viewModel.imageName, viewModel.positionDefect)
             .subscribe(onNext: { [weak self] image, position in
             
-            guard let url = URL(string: image), let index = DefectDetails.shared.currentIndex else { return }
+            guard let url = URL(string: image) else { return }
             
             self?.completion = {
                 DispatchQueue.main.async {
@@ -246,7 +246,7 @@ class DefectDetailController: CardPartsViewController, CustomMarginCardTrait {
                         let f = min(aspectWidth, aspectHeight)
                         let pos = position[0]
         
-                        var imagePoint = pos
+                        var imagePoint = pos.position
                             
                         imagePoint.y *= f
                         imagePoint.x *= f
@@ -254,7 +254,7 @@ class DefectDetailController: CardPartsViewController, CustomMarginCardTrait {
                         imagePoint.y += (height - newSize.height * f) / 2.0
 
                         let tempView = TemView()
-                        tempView.setText("\(index)")
+                        tempView.setText(pos.defectNumber)
                         tempView.bounds.size = CGSize(width: 50, height: 70)
                         tempView.frame.origin = imagePoint
                         tempView.layer.borderColor = UIColor.blueCity.cgColor
@@ -353,7 +353,7 @@ extension DefectDetailController {
     private func setUpButton(_ buttonPart: CardPartButtonView,  _ color: UIColor, _ icon: String, _ stackView: CardPartStackView, _ colours: [UIColor], _ gradient: CAGradientLayer, _ borderView: UIView) {
         
         buttonPart.setTitleColor(color, for: .normal)
-        buttonPart.titleLabel?.font = UIFont(name: "SukhumvitSet-Bold", size: CGFloat(18))!
+        buttonPart.titleLabel?.font = UIFont(name: "SukhumvitSet-Bold", size: CGFloat(16))!
         buttonPart.contentHorizontalAlignment = .center
         buttonPart.contentEdgeInsets = UIEdgeInsets(top: 15, left: 40, bottom: 15, right: 40)
         
@@ -641,11 +641,9 @@ class CommentCell: UITableViewCell {
     }
     
     func setData(_ data: CommentStruct) {
-        
         defectLabel.text = data.title
         defectBody.text = data.value
         dateLabel.text = data.timeStamp
-        
     }
 }
 
