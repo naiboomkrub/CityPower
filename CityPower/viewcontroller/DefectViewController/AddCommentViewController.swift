@@ -71,6 +71,7 @@ class AddCommentController: CardPartsViewController {
         commentStack.pinBackground(commentStack.backgroundView, to: commentStack)
         
         multiline.placeholder = "กรอกข้อมูล Comment"
+        multiline.backgroundColor = .white
         multiline.textColor = .black
         multiline.textContainerInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         multiline.font = UIFont(name: "SukhumvitSet-Bold", size: CGFloat(18))!

@@ -224,7 +224,7 @@ class DefectMenuCell: UITableViewCell {
         
         let pipeline = DataPipeLine.shared
         
-        let request = DataRequest(url: url, processors: [ImageProcessors.Resize(size: pdfImage.bounds.size)])
+        let request = DataRequest(url: url)
         
         if let image = pipeline.cachedImage(for: request) {
             return display(image)

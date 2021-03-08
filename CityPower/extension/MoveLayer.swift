@@ -154,11 +154,11 @@ class TemView : UIView {
             
             if let layer = layer as? TemLayer {
                 if imageModel?.status == statusDefect.Start.rawValue {
-                    layer.backColor = UIColor.blueCity.cgColor
+                    layer.backColor = UIColor.red.cgColor
                 } else if imageModel?.status == statusDefect.Ongoing.rawValue  {
                     layer.backColor = UIColor.mechincal2.cgColor
                 } else {
-                    layer.backColor = UIColor.mechincal.cgColor
+                    layer.backColor = UIColor.limeGreen.cgColor
                 }
             }
         }
@@ -234,7 +234,7 @@ class TemLayer : CALayer {
         ctx.strokePath()
         
         ctx.setFillColor(backColor)
-        ctx.setStrokeColor(UIColor.lightBlueCity.cgColor)
+        ctx.setStrokeColor(UIColor.white.cgColor)
         ctx.setLineWidth(7.5)
         ctx.setTextDrawingMode(.fill)
         
