@@ -805,17 +805,27 @@
                                                     </tableViewCell>
                                                 </prototypes>
                                             </tableView>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rwh-C6-esl">
+                                                <rect key="frame" x="334" y="688" width="50" height="50"/>
+                                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="50" id="5vf-IH-t7S"/>
+                                                    <constraint firstAttribute="height" constant="50" id="q2g-hv-f0n"/>
+                                                </constraints>
+                                            </view>
                                         </subviews>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <constraints>
                                             <constraint firstItem="Maz-wd-7az" firstAttribute="centerX" secondItem="qCJ-wA-J2r" secondAttribute="centerX" id="3wx-bv-40x"/>
                                             <constraint firstItem="sje-UE-tws" firstAttribute="trailing" relation="lessThanOrEqual" secondItem="w6a-MX-iXx" secondAttribute="leading" id="5ZN-LO-DO9"/>
+                                            <constraint firstAttribute="trailing" secondItem="rwh-C6-esl" secondAttribute="trailing" constant="30" id="BB9-BL-DX8"/>
                                             <constraint firstItem="Maz-wd-7az" firstAttribute="width" secondItem="qCJ-wA-J2r" secondAttribute="width" id="E2d-xM-X8n"/>
                                             <constraint firstAttribute="trailing" secondItem="w6a-MX-iXx" secondAttribute="trailing" constant="30" id="KJH-gH-3mS"/>
                                             <constraint firstItem="JDa-8C-RxH" firstAttribute="width" secondItem="qCJ-wA-J2r" secondAttribute="width" id="SMT-pO-CgQ"/>
                                             <constraint firstItem="JDa-8C-RxH" firstAttribute="top" secondItem="Maz-wd-7az" secondAttribute="bottom" id="Z7d-GT-SUB"/>
                                             <constraint firstItem="JDa-8C-RxH" firstAttribute="centerX" secondItem="qCJ-wA-J2r" secondAttribute="centerX" id="hAr-5G-Nk2"/>
                                             <constraint firstItem="sje-UE-tws" firstAttribute="top" secondItem="qCJ-wA-J2r" secondAttribute="top" constant="20" id="ht3-OM-MkS"/>
+                                            <constraint firstAttribute="bottom" secondItem="rwh-C6-esl" secondAttribute="bottom" constant="30" id="ia6-Ze-Ve3"/>
                                             <constraint firstItem="w6a-MX-iXx" firstAttribute="centerY" secondItem="sje-UE-tws" secondAttribute="centerY" id="kmH-MG-wAx"/>
                                             <constraint firstAttribute="bottom" secondItem="JDa-8C-RxH" secondAttribute="bottom" id="ma5-oZ-zgq"/>
                                             <constraint firstItem="sje-UE-tws" firstAttribute="leading" secondItem="qCJ-wA-J2r" secondAttribute="leading" constant="30" id="qze-gd-Tzd"/>
@@ -849,8 +859,10 @@
                         <outlet property="confirmButton" destination="kuh-fL-rgK" id="Dbf-eq-mYC"/>
                         <outlet property="editButton" destination="w6a-MX-iXx" id="mNp-Av-CBn"/>
                         <outlet property="expandButtonView" destination="V4A-c8-ZBb" id="cnR-gJ-hkz"/>
+                        <outlet property="filterButtonView" destination="rwh-C6-esl" id="GzM-ZX-VVN"/>
                         <outlet property="filterScroll" destination="kNA-ah-A8H" id="V4Z-sK-vbL"/>
                         <outlet property="filterView" destination="Maz-wd-7az" id="8Ge-H8-GJr"/>
+                        <outlet property="filterWidth" destination="5vf-IH-t7S" id="DbR-yJ-FcG"/>
                         <outlet property="heightScroll" destination="4ME-R4-R3c" id="lHj-cE-if1"/>
                         <outlet property="listLabel" destination="sje-UE-tws" id="k04-6r-JUx"/>
                         <outlet property="listTable" destination="JDa-8C-RxH" id="RUw-oe-9AR"/>

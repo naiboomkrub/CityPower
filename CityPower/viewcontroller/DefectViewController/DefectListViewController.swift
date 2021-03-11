@@ -15,6 +15,7 @@ import AVFoundation
 
 class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollViewDelegate  {
     
+    @IBOutlet weak var filterWidth: NSLayoutConstraint!
     @IBOutlet weak var parentSwapView: UIView!
     @IBOutlet weak var planView: UIView!
     @IBOutlet weak var listView: UIView!
@@ -25,6 +26,7 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
     @IBOutlet weak var planPicture: UIImageView!
     @IBOutlet weak var expandButtonView: UIView!
     @IBOutlet weak var filterView: UIView!
+    @IBOutlet weak var filterButtonView: UIView!
     @IBOutlet weak var planFilter: UIView!
     @IBOutlet weak var filterScroll: UIScrollView!
     @IBOutlet weak var heightScroll: NSLayoutConstraint!
@@ -47,6 +49,14 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
         return 170
     }
     
+    func filteredSectionModels(sectionModels: [DefectListSection], filter: String) -> [DefectListSection] {
+        guard !filter.isEmpty else { return sectionModels }
+        return sectionModels.map {
+            AnimatableSectionModel(model: $0.model,
+                                   items: $0.items.filter { $0.status.lowercased().range(of: filter.lowercased(), options: .anchored) != nil })
+        }
+    }
+    
     func setUpTable() {
         
         let dataSource = RxTableViewSectionedAnimatedDataSource<DefectListSection>(
@@ -56,8 +66,12 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
             configureCell: configureCell,
             canEditRowAtIndexPath: canEditRowAtIndexPath)
         
-        viewModel.dataSource
-            .map { [DefectListSection(model: "", items: $0)] }
+        let filterTerm = viewModel.statusFilter
+            .debounce(.microseconds(200), scheduler: MainScheduler.instance)
+            .distinctUntilChanged()
+        
+        Observable.combineLatest(viewModel.dataSource, filterTerm)
+            .map { [unowned self] in self.filteredSectionModels(sectionModels: [DefectListSection(model: "", items: $0.0)], filter: $0.1) }
             .bind(to: listTable.rx.items(dataSource: dataSource))
         .disposed(by: disposeBag)
         
@@ -114,8 +128,16 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
         expandButtonView.backgroundColor = .clear
         expandButtonView.addSubview(buttonExpand)
         
+        let buttonFilter = FilterPanelView()
+        buttonFilter.delegate = self
+        filterButtonView.backgroundColor = .clear
+        filterButtonView.addSubview(buttonFilter)
+        
         buttonExpand.centerYAnchor.constraint(equalTo: expandButtonView.centerYAnchor).isActive = true
         buttonExpand.rightAnchor.constraint(equalTo: expandButtonView.rightAnchor).isActive = true
+        
+        buttonFilter.centerYAnchor.constraint(equalTo: filterButtonView.centerYAnchor).isActive = true
+        buttonFilter.rightAnchor.constraint(equalTo: filterButtonView.rightAnchor).isActive = true
         
         let tap = UITapGestureRecognizer(target: self, action: #selector(self.imageTapped))
         
@@ -608,6 +630,29 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
     }
 }
 
+extension DefectListViewController: FilterPanelDelegate {
+    
+    func didCollapseFilter(_ willCollapse: Bool) {
+        filterWidth.constant = willCollapse ? 250 : 50
+    }
+    
+    func didTapEdit(_ center: CGPoint) {
+        viewModel.statusFilter.accept(statusDefect.Ongoing.rawValue)
+    }
+        
+    func didTapButton(_ center: CGPoint) {
+        viewModel.statusFilter.accept(statusDefect.Finish.rawValue)
+    }
+    
+    func didTapDelete(_ center: CGPoint) {
+        viewModel.statusFilter.accept(statusDefect.Start.rawValue)
+    }
+    
+    func didTapAll(_ center: CGPoint) {
+        viewModel.statusFilter.accept("")
+    }
+}
+
 
 extension DefectListViewController: ButtonPanelDelegate {
     
@@ -877,7 +922,7 @@ class DefectListCell: UITableViewCell {
             doneState.tintColor = .green
         } else if data.status == statusDefect.Ongoing.rawValue {
             doneState.setImage(UIImage(systemName: "arrow.clockwise",  withConfiguration: largeConfig), for: .normal)
-            doneState.tintColor = .black
+            doneState.tintColor = .Gray1
         }
         else {
             doneState.setImage(UIImage(systemName: "xmark",  withConfiguration: largeConfig), for: .normal)

@@ -32,6 +32,7 @@ class DefectListViewModel {
     var tempImagePoint = [ImagePosition]()
     var filter = "General"
     
+    let statusFilter = BehaviorRelay(value: "")
     let imageName = BehaviorRelay(value: "")
     let progressSpin = BehaviorRelay(value: true)
     let positionTag = BehaviorRelay(value: [ImagePosition]())

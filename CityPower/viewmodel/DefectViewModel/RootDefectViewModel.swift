@@ -27,7 +27,6 @@ class RootDefectViewModel {
     }()
     
     lazy private(set) var siteDetailViewModel: SiteDetailViewModel = {
-        DefectDetails.shared.loadDefect()
         return self.createSiteDetailViewModel()
     }()
     
@@ -269,6 +268,7 @@ class RootDefectViewModel {
     }
     
     private func areaSelected() {
+        defectListViewModel.statusFilter.accept("")
         self.defectStackActions.onNext(.push(viewModel: self.defectListViewModel, animated: true))
     }
     

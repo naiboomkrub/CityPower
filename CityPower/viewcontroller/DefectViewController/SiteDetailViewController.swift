@@ -21,6 +21,7 @@ class SiteDetailViewController: CardsViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        DefectDetails.shared.loadDefect()
         navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
         navigationController?.navigationBar.shadowImage = UIImage()
         navigationController?.navigationBar.isTranslucent = true
