@@ -17,7 +17,7 @@ protocol ButtonPanelDelegate: NSObject {
     func didCollapse(_ willCollapse: Bool)
 }
 
-fileprivate let buttonSize: CGFloat = 50
+fileprivate let buttonSize: CGFloat = 60
 fileprivate let shadowOpacity: Float = 0.7
 
 class ButtonPanelView: UIView {
@@ -150,7 +150,7 @@ extension ButtonPanelView {
             withDuration: 0.3, delay: 0, options: .curveEaseIn,
             animations: {
                 self.selectorView.alpha = willExpand ? 1.0 : 0.0
-                self.selectorView.frame.origin = willExpand ? CGPoint(x: 150, y: 0) : CGPoint(x: 0, y: 0)
+                self.selectorView.frame.origin = willExpand ? CGPoint(x: 180, y: 0) : CGPoint(x: 0, y: 0)
                 self.expandedStackView.subviews.forEach { $0.isHidden = !$0.isHidden }
                 self.expandedStackView.isHidden = !self.expandedStackView.isHidden
                 if willExpand {

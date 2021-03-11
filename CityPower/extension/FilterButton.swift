@@ -17,7 +17,7 @@ protocol FilterPanelDelegate: NSObject {
     func didCollapseFilter(_ willCollapse: Bool)
 }
 
-fileprivate let buttonSize: CGFloat = 50
+fileprivate let buttonSize: CGFloat = 60
 fileprivate let shadowOpacity: Float = 0.7
 
 class FilterPanelView: UIView {
@@ -176,7 +176,7 @@ extension FilterPanelView {
                 if let button = self.currentButton {
                     self.selectorView.frame.origin = willExpand ? button : CGPoint(x: 0, y: 0)
                 } else {
-                    self.selectorView.frame.origin = willExpand ? CGPoint(x: 150, y: 0) : CGPoint(x: 0, y: 0)
+                    self.selectorView.frame.origin = willExpand ? CGPoint(x: 180, y: 0) : CGPoint(x: 0, y: 0)
                 }
                 self.expandedStackView.subviews.forEach { $0.isHidden = !$0.isHidden }
                 self.expandedStackView.isHidden = !self.expandedStackView.isHidden

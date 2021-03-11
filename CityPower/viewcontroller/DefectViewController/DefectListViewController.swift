@@ -633,7 +633,7 @@ class DefectListViewController: UIViewController, UITableViewDelegate, UIScrollV
 extension DefectListViewController: FilterPanelDelegate {
     
     func didCollapseFilter(_ willCollapse: Bool) {
-        filterWidth.constant = willCollapse ? 250 : 50
+        filterWidth.constant = willCollapse ? 300 : 60
     }
     
     func didTapEdit(_ center: CGPoint) {

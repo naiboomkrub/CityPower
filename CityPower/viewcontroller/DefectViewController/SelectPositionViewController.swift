@@ -25,7 +25,12 @@ class SelectPositionViewController: UIViewController, UIGestureRecognizerDelegat
     private let disposeBag = DisposeBag()
     
     private var completion = { }
-    private var annotationsToSelect = [UIView]()
+    private var annotationsToSelect = [UIView]() {
+        didSet {
+            guard oldValue != annotationsToSelect else { return }
+            confirmButton.isEnabled = !annotationsToSelect.isEmpty
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,6 +41,16 @@ class SelectPositionViewController: UIViewController, UIGestureRecognizerDelegat
         planPicture.removeGesture()
         planPicture.isUserInteractionEnabled = true
         planPicture.addGestureRecognizer(tap)
+        
+        confirmButton.setTitle("Confirm Selection", for: .normal)
+        confirmButton.backgroundColor = .blueCity
+        confirmButton.setTitleColor(.white, for: .normal)
+        confirmButton.contentEdgeInsets = UIEdgeInsets(top: 10, left: 20, bottom: 10, right: 20)
+        confirmButton.setTitleColor(.general, for: .disabled)
+        confirmButton.titleLabel?.font = UIFont(name: "SukhumvitSet-Bold", size: CGFloat(18))!
+        confirmButton.contentHorizontalAlignment = .center
+        confirmButton.isEnabled = false
+        confirmButton.layer.cornerRadius = 15
         
         confirmButton.rx.tap.bind(onNext: { [weak self] in
             
