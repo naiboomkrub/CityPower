@@ -193,7 +193,7 @@ class AddPlanController: CardPartsViewController {
     }
     
     private func uploadFile(_ image: UIImage) {
-        guard let imageData = image.jpegData(compressionQuality: 1.0) else { return }
+        guard let imageData = image.jpegData(compressionQuality: 0.3) else { return }
         let fileName = Int(Date.timeIntervalSinceReferenceDate * 1000)
         let imagePath = "DefectPicture" + "/\(fileName).jpg"
         

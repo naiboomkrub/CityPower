@@ -36,7 +36,8 @@ class FilterPanelView: UIView {
         
     lazy var menuButton: UIButton = {
         let button = UIButton(frame: .zero)
-        button.setTitle("➕", for: .normal)
+        button.setImage(UIImage(systemName: "magnifyingglass",  withConfiguration: self.largeConfig), for: .normal)
+        button.tintColor = .black
         button.backgroundColor = .clear
         button.layer.cornerRadius = buttonSize / 2
         button.addTarget(
@@ -165,7 +166,6 @@ extension FilterPanelView {
     
     @objc private func handleTogglePanelButtonTapped(_ sender: UIButton) {
         let willExpand = expandedStackView.isHidden
-        let menuButtonNewTitle = willExpand ? "✖️" : "➕"
         delegate?.didCollapseFilter(willExpand)
         
         UIView.animate(
@@ -176,16 +176,16 @@ extension FilterPanelView {
                 if let button = self.currentButton {
                     self.selectorView.frame.origin = willExpand ? button : CGPoint(x: 0, y: 0)
                 } else {
-                    self.selectorView.frame.origin = willExpand ? CGPoint(x: 200, y: 0) : CGPoint(x: 0, y: 0)
+                    self.selectorView.frame.origin = willExpand ? CGPoint(x: 150, y: 0) : CGPoint(x: 0, y: 0)
                 }
                 self.expandedStackView.subviews.forEach { $0.isHidden = !$0.isHidden }
                 self.expandedStackView.isHidden = !self.expandedStackView.isHidden
                 if willExpand {
-                    self.menuButton.setTitle(menuButtonNewTitle, for: .normal)
+                    self.menuButton.setImage(UIImage(systemName: "xmark",  withConfiguration: self.largeConfig), for: .normal)
                 }
             }, completion: { _ in
                 if !willExpand {
-                    self.menuButton.setTitle(menuButtonNewTitle, for: .normal)
+                    self.menuButton.setImage(UIImage(systemName: "magnifyingglass",  withConfiguration: self.largeConfig), for: .normal)
                 }
         })
     }
